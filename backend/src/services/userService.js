@@ -33,4 +33,9 @@ async function findByEmailOrUsername(val) {
     return User.findOne({ $or: [{ email: val }, { userName: val }] });
 }
 
-module.exports = { createUser, listUsers, getUserById, updateUser, deleteUser, isEmailExist, isUsernameExist, findByEmailOrUsername };
+async function findById(id) {
+  console.log("Finding user by ID:", id);
+    return User.findById(id);
+}
+
+module.exports = { createUser, listUsers, getUserById, updateUser, deleteUser, isEmailExist, isUsernameExist, findByEmailOrUsername, findById };

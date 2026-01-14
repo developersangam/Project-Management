@@ -85,4 +85,31 @@ async function registerUser(req, res, next) {
   }
 }
 
-module.exports = { loginUser, registerUser };
+const getUserProfile = async (req, res, next) => {
+  console.log(req.user)
+  try {
+    const user = req.user
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        id : user._id,
+        email : user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        userName : user.userName,
+        dateOfBirth : user.dateOfBirth
+      }
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { loginUser, registerUser, getUserProfile };

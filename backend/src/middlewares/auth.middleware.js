@@ -1,11 +1,11 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/user.model");
+const User = require("../models/User");
 
 const protect = async (req, res, next) => {
   try {
     let token;
 
-    // 1️⃣ Check if token exists
+    //Check if token exists
     if (
       req.headers.authorization &&
       req.headers.authorization.startsWith("Bearer")
@@ -20,11 +20,10 @@ const protect = async (req, res, next) => {
       });
     }
 
-    // 2️⃣ Verify token
+    //Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // 3️⃣ Fetch user from DB
-    const user = await User.findById(decoded.id).select("-password");
+    //Fetch user from DB
+    const user = await User.findById(decoded.userId).select("-password");
 
     if (!user) {
       return res.status(401).json({
@@ -39,8 +38,7 @@ const protect = async (req, res, next) => {
         message: "User account is inactive"
       });
     }
-
-    // 4️⃣ Attach user to request
+    //Attach user to request
     req.user = user;
 
     next();
@@ -50,6 +48,6 @@ const protect = async (req, res, next) => {
       message: "Invalid or expired token"
     });
   }
-};
+};  
 
 module.exports = protect;
