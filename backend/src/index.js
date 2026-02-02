@@ -6,6 +6,7 @@ const connectDB = require('./config/db');
 
 const userRoutes = require('./routes/userRoutes');
 const orgRoutes = require('./routes/orgRoutes');
+const { globalErrorHandler } = require('./middlewares/error.middleware');
 
 const app = express();
 
@@ -22,10 +23,7 @@ app.use('/api/orgs', orgRoutes);
 app.get('/', (req, res) => res.json({ ok: true, time: new Date().toISOString() }));
 
 // Error handler
-app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(err.status || 500).json({ error: err.message || 'Internal Server Error' });
-});
+app.use(globalErrorHandler);
 
 const PORT = process.env.PORT || 4000;
 

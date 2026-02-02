@@ -1,13 +1,35 @@
-const mongoose = require('mongoose');
-const { Schema } = mongoose;
+const mongoose = require("mongoose");
 
-const orgSchema = new Schema(
+const organizationSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true, unique: true },
-    description: { type: String },
-    members: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    name: {
+      type: String,
+      required: true,
+      trim: true
+    },
+
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      index: true
+    },
+
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true
+    },
+
+    isActive: {
+      type: Boolean,
+      default: true
+    }
   },
-  { timestamps: true }
+  {
+    timestamps: true
+  }
 );
 
-module.exports = mongoose.model('Organization', orgSchema);
+module.exports = mongoose.model("Organization", organizationSchema);

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 async function connectDB(uri) {
-  const mongoURI = uri || process.env.MONGODB_URI || 'mongodb://localhost:27017/project_management';
+  const mongoURI = uri || process.env.MONGODB_URI;
   try {
     await mongoose.connect(mongoURI, {
       useNewUrlParser: true,

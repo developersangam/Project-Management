@@ -1,0 +1,44 @@
+const mongoose = require("mongoose");
+
+const organizationMemberSchema = new mongoose.Schema(
+  {
+    organizationId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Organization",
+      required: true
+    },
+
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true
+    },
+
+    role: {
+      type: String,
+      enum: ["OWNER", "ADMIN", "MEMBER"],
+      default: "MEMBER"
+    },
+
+    status: {
+      type: String,
+      enum: ["INVITED", "ACTIVE", "REMOVED"],
+      default: "ACTIVE"
+    },
+
+    joinedAt: {
+      type: Date,
+      default: Date.now
+    },
+
+    invitedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null
+    }
+  },
+  {
+    timestamps: true
+  }
+);
+module.exports = mongoose.model("OrganizationMember", organizationMemberSchema);
