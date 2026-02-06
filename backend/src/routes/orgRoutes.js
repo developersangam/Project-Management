@@ -12,6 +12,7 @@ const {
   getOrganizationBySlug,
 } = require("../middlewares/getOrganizationBySlug.js");
 const { inviteRateLimiter } = require("../middlewares/inviteRateLimiter.js");
+const requireOrgMember = require("../middlewares/orgMember.middleware.js");
 
 router.post("/", createOrgValidation, validate, protect, ctrl.createOrg);
 router.get("/my", protect, ctrl.getMyOrganizations);
@@ -26,5 +27,7 @@ router.post(
   ctrl.sendInvite,
 );
 router.post("/accept", inviteRateLimiter, ctrl.acceptInvite);
+router.get("/:slug/members", protect, getOrganizationBySlug, requireOrgMember, ctrl.getOrgMembers);
+// router.delete("/:slug/members/:userId", protect, getOrganizationBySlug, requireAdmin, ctrl.removeMember);
 
 module.exports = router;

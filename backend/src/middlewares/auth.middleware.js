@@ -1,10 +1,10 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const { AppError } = require("../utils/AppError");
 
 const protect = async (req, res, next) => {
   try {
     let token;
-
     //Check if token exists
     if (
       req.headers.authorization &&
@@ -14,10 +14,7 @@ const protect = async (req, res, next) => {
     }
 
     if (!token) {
-      return res.status(401).json({
-        success: false,
-        message: "Not authorized, token missing"
-      });
+      throw new AppError(401, "Not authorized, token missing");
     }
 
     //Verify token
@@ -26,27 +23,17 @@ const protect = async (req, res, next) => {
     const user = await User.findById(decoded.userId).select("-password");
 
     if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: "User no longer exists"
-      });
+      throw new AppError(401, "User no longer exists");
     }
 
     if (!user.isActive) {
-      return res.status(403).json({
-        success: false,
-        message: "User account is inactive"
-      });
+      throw new AppError(403, "User account is inactive");
     }
     //Attach user to request
     req.user = user;
-
     next();
   } catch (error) {
-    return res.status(401).json({
-      success: false,
-      message: "Invalid or expired token"
-    });
+    next(error);
   }
 };  
 

@@ -8,11 +8,13 @@ const ORG_PERMISSIONS = require("../constant/organizationPermissions");
 const userService = require("../services/userService");
 const organizationInviteService = require("../services/orgMemberInviteService");
 const emailService = require("../services/email/email.service");
-const {generateHash,verifyHash} = require("../utils/generateAndVerifyHash");
+const {
+  generateHash,
+  hashInviteToken,
+} = require("../utils/generateAndVerifyHash");
 
 async function createOrg(req, res, next) {
   const session = await mongoose.startSession();
-
   try {
     const baseSlug = generateSlug(req.body.name);
     let slug = baseSlug;
@@ -61,9 +63,7 @@ async function createOrg(req, res, next) {
 
 async function getMyOrganizations(req, res, next) {
   try {
-    console.log("Fetching organizations for user:", req.user.id);
     const memberShip = await orgMemberService.getMyOrganizations(req.user.id);
-    console.log("Organizations found:", memberShip);
     const formattedOrgs = memberShip.map((member) => ({
       organizationId: member.organizationId._id,
       name: member.organizationId.name,
@@ -88,15 +88,15 @@ async function getOrganizationBySlug(req, res, next) {
 
     const org = await orgService.getOrgBySlug(req.params.slug);
     if (!org) {
-      return next(new AppError(404, "Organization not found"));
+      throw new AppError(404, "Organization not found");
     }
     if (!org.isActive) {
-      return next(new AppError(403, "Organization is inactive"));
+      throw new AppError(403, "Organization is inactive");
     }
     const member = await orgMemberService.findMember(org._id, req.user.id);
     const isMember = member;
     if (!isMember) {
-      return next(new AppError(403, "Access denied to this organization"));
+      throw new AppError(403, "Access denied to this organization");
     }
     let organization = {
       id: org._id,
@@ -178,10 +178,7 @@ async function sendInvite(req, res, next) {
     });
 
     // 6️⃣ Send response
-    return res.status(200).json({
-      success: true,
-      message: "Invitation sent successfully",
-    });
+    return successResponse(res, 200, "Invitation sent successfully");
   } catch (err) {
     next(err);
   }
@@ -190,23 +187,25 @@ async function sendInvite(req, res, next) {
 async function acceptInvite(req, res, next) {
   try {
     const { token } = req.body;
-
+    if (!token) {
+      throw new AppError(400, "Invite token is required");
+    }
     // 1️⃣ Find invite by token
-    const tokenHash = verifyHash(token);
+    const tokenHash = hashInviteToken(token);
     console.log("Accepting invite with token hash:", tokenHash);
-    const invite = await organizationInviteService.getInviteByTokenHash(tokenHash);
+    const invite =
+      await organizationInviteService.getInviteByTokenHash(tokenHash);
     if (!invite) {
       throw new AppError(400, "Invalid or expired invite token");
-    }
-
-    if (invite.status !== "PENDING" ) {
-      throw new AppError(400, "Invite is already used or expired");
     }
 
     if (invite.expiresAt < new Date()) {
       invite.status = "EXPIRED";
       await invite.save();
       throw new AppError(400, "Invite has expired");
+    }
+    if (invite.status !== "PENDING") {
+      throw new AppError(400, "Invite is already used or expired");
     }
 
     let user = await userService.isEmailExist(invite.email);
@@ -218,34 +217,61 @@ async function acceptInvite(req, res, next) {
         { email: invite.email },
       );
     }
-     const existingMember = await orgMemberService.findMember(
+    const existingMember = await orgMemberService.findMember(
       invite.organizationId,
       user._id,
     );
 
     if (existingMember) {
-      return next(new AppError("User already a member", 409));
+      throw new AppError("User already a member", 409);
     }
-    
-        const session = await mongoose.startSession();
+
+    const session = await mongoose.startSession();
     await session.withTransaction(async () => {
       // 2️⃣ Add user to organization
-      await orgMemberService.createOrgMember({
-        organizationId: invite.organizationId,
-        userId: user._id,
-        role: invite.role,
-        status: "ACTIVE",
-        joinedAt: new Date(),
-        invitedBy: invite.invitedBy,
-      }, session);
+      await orgMemberService.createOrgMember(
+        {
+          organizationId: invite.organizationId,
+          userId: user._id,
+          role: invite.role,
+          status: "ACTIVE",
+          joinedAt: new Date(),
+          invitedBy: invite.invitedBy,
+        },
+        session,
+      );
+      const inviteInTx = await organizationInviteService
+        .getInviteById(invite._id)
+        .session(session);
 
       // 3️⃣ Update invite status
-      invite.status = "ACCEPTED";
-      await invite.save({ session });
+      inviteInTx.status = "ACCEPTED";
+      await inviteInTx.save({ session });
     });
     session.endSession();
     // 4️⃣ Send response
     return successResponse(res, 200, "Invitation accepted successfully");
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function getOrgMembers(req, res, next) {
+  try {
+    const { organization } = req;
+    const { page, limit, role } = req.query;
+    const members = await orgMemberService.getOrgMembers(
+      organization._id,
+      page,
+      limit,
+      role,
+    );
+    return successResponse(
+      res,
+      200,
+      "Organization members fetched successfully",
+      members,
+    );
   } catch (err) {
     next(err);
   }
@@ -257,4 +283,5 @@ module.exports = {
   getOrganizationBySlug,
   sendInvite,
   acceptInvite,
+  getOrgMembers,
 };

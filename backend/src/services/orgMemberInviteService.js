@@ -12,4 +12,8 @@ async function getInviteByTokenHash(tokenHash) {
     return await OrganizationInvite.findOne({ tokenHash});
 }
 
-module.exports = { inviteMember,getInviteByEmailAndStatus, getInviteByTokenHash };
+async function getInviteById(id) {
+    return await OrganizationInvite.findById(id);
+}   
+
+module.exports = { inviteMember,getInviteByEmailAndStatus, getInviteByTokenHash, getInviteById };

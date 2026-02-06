@@ -10,15 +10,13 @@ export const requireAdmin = (req, res, next) => {
     const membership = req.membership;
     // 1️⃣ User must be a member
     if (!membership) {
-      return next(
-        new AppError(403, "You are not a member of this organization"),
-      );
+      throw new AppError(403, "You are not a member of this organization");
     }
 
     // 2️⃣ Check if role is OWNER or ADMIN
     const role = membership.role;
     if (!["OWNER", "ADMIN"].includes(role)) {
-      return next(new AppError(403, "Admin access required"));
+      throw new AppError(403, "Admin access required");
     }
 
     // ✅ Passed, continue

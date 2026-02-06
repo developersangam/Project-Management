@@ -15,12 +15,12 @@ export const getOrganizationBySlug = async (req, res, next) => {
     console.log("Organization found:", organization);
 
     if (!organization) {
-      return next(new AppError("Organization not found", 404));
+      throw new AppError("Organization not found", 404);
     }
 
     // 2️⃣ Check if organization is active
     if (!organization.isActive) {
-      return next(new AppError("Organization is inactive", 403));
+      throw new AppError("Organization is inactive", 403);
     }
 
     // 3️⃣ Attach organization to request
@@ -32,7 +32,6 @@ export const getOrganizationBySlug = async (req, res, next) => {
       console.log("User membership found:", membership);
       req.membership = membership || null;
     }
-
     next();
   } catch (err) {
     next(err);

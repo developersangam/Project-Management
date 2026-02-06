@@ -6,9 +6,9 @@ const generateHash = () => {
   return { rawToken, tokenHash };
 };
 
-const verifyHash = (token) => {
+const hashInviteToken = (token) => {
   const computedHash = crypto.createHash("sha256").update(token).digest("hex");
   return computedHash;
 }
 
-module.exports = { generateHash, verifyHash };
+module.exports = { generateHash, hashInviteToken };

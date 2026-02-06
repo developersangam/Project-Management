@@ -5,7 +5,7 @@ const organizationMemberSchema = new mongoose.Schema(
     organizationId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Organization",
-      required: true
+      required: true,
     },
 
     userId: {
@@ -22,7 +22,7 @@ const organizationMemberSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["INVITED", "ACTIVE", "REMOVED"],
+      enum: ["ACTIVE", "REMOVED"],
       default: "ACTIVE"
     },
 
@@ -41,4 +41,7 @@ const organizationMemberSchema = new mongoose.Schema(
     timestamps: true
   }
 );
+organizationMemberSchema.index({ organizationId: 1 });
+organizationMemberSchema.index({ organizationId: 1, userId: 1 }, { unique: true });
+
 module.exports = mongoose.model("OrganizationMember", organizationMemberSchema);
