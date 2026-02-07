@@ -4,21 +4,20 @@ export const paginate = async ({
   page = 1,
   limit = 20,
   sort = { createdAt: -1 },
-  populate = []
+  populate = [],
 }) => {
+  page = Math.max(1, parseInt(page, 10) || 1);
+  limit = Math.min(100, parseInt(limit, 10) || 20);
+  
   const skip = (page - 1) * limit;
 
-  const query = model
-    .find(filter)
-    .sort(sort)
-    .skip(skip)
-    .limit(limit);
+  const query = model.find(filter).sort(sort).skip(skip).limit(limit);
 
-  populate.forEach(p => query.populate(p));
+  populate.forEach((p) => query.populate(p));
 
   const [data, total] = await Promise.all([
     query,
-    model.countDocuments(filter)
+    model.countDocuments(filter),
   ]);
 
   const totalPages = Math.ceil(total / limit);
@@ -31,7 +30,7 @@ export const paginate = async ({
       total,
       totalPages,
       hasNext: page < totalPages,
-      hasPrev: page > 1
-    }
+      hasPrev: page > 1,
+    },
   };
 };

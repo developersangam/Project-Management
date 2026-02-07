@@ -22,19 +22,27 @@ async function getInviteById(id) {
   return await OrganizationInvite.findById(id);
 }
 
-async function listInvitesByOrganization(organizationId, page, limit,status) {
-  const filter = { organizationId };
-  if (status) {
-    filter.status = status;
-  }
-  return await paginate({
-    model: OrganizationInvite,
-    filter,
-    page,
-    limit,
-    sort: { createdAt: -1 },
-    populate: [{ path: "invitedBy", select: "userName email" }],
+// services/organizationInviteService.js
+async function revokeInvite({ inviteId, organizationId, revokedBy }) {
+  const invite = await OrganizationInvite.findOne({
+    _id: inviteId,
+    organizationId,
   });
+
+  if (!invite) {
+    throw new AppError("Invite not found", 404);
+  }
+
+  // ✅ Idempotent behavior
+  if (invite.status !== "PENDING") {
+    return;
+  }
+
+  invite.status = "REVOKED";
+  invite.revokedAt = new Date();
+  invite.revokedBy = revokedBy;
+
+  await invite.save();
 }
 
 module.exports = {
@@ -42,5 +50,5 @@ module.exports = {
   getInviteByEmailAndStatus,
   getInviteByTokenHash,
   getInviteById,
-  listInvitesByOrganization,
+  revokeInvite,
 };

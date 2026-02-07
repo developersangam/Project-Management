@@ -32,7 +32,7 @@ const organizationInviteSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["PENDING", "ACCEPTED", "EXPIRED"],
+      enum: ["PENDING", "ACCEPTED", "EXPIRED", "REVOKED"],
       default: "PENDING",
     },
 
@@ -47,6 +47,14 @@ const organizationInviteSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+
+    revokedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+    
+    revokedAt: { type: Date, default: null },
   },
   {
     timestamps: true,
@@ -56,6 +64,5 @@ const organizationInviteSchema = new mongoose.Schema(
 organizationInviteSchema.index({ organizationId: 1, status: 1 });
 organizationInviteSchema.index({ organizationId: 1, email: 1 });
 organizationInviteSchema.index({ expiresAt: 1 });
-
 
 module.exports = mongoose.model("OrganizationInvite", organizationInviteSchema);

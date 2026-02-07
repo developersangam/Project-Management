@@ -5,6 +5,8 @@ const protect = require("../middlewares/auth.middleware");
 const {
   createOrgValidation,
   inviteValidation,
+  listOrgInvitesValidation,
+  revokeInviteValidation,
 } = require("../validations/org.validation");
 const { requireAdmin } = require("../middlewares/orgAdmin.middleware.js");
 const { validate } = require("../middlewares/validator.middleware.js");
@@ -30,10 +32,22 @@ router.post("/accept", inviteRateLimiter, ctrl.acceptInvite);
 router.get("/:slug/members", protect, getOrganizationBySlug, requireOrgMember, ctrl.getOrgMembers);
 router.get(
   "/:slug/invitees",
+  listOrgInvitesValidation,
+  validate,
   protect,
   getOrganizationBySlug,
   requireAdmin,
   ctrl.listOrganizationInvites,
+);
+
+router.delete(
+  "/:slug/invites/:inviteId",
+  revokeInviteValidation,
+  validate,
+  protect,
+  getOrganizationBySlug,
+  requireAdmin,
+  ctrl.revokeInvite,
 );
 // Uncomment the following line to enable member removal
 // router.delete("/:slug/members/:userId", protect, getOrganizationBySlug, requireAdmin, ctrl.removeMember);

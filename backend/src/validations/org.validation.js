@@ -1,7 +1,10 @@
-const { body } = require("express-validator");
+const { body, query, param} = require("express-validator");
 
 const createOrgValidation = [
-  body("name").notEmpty().withMessage("Organization name is required"),
+  body("name")
+    .trim()
+    .notEmpty().withMessage("Organization name is required")
+    .isLength({ min: 3 }).withMessage("Organization name must be at least 3 characters"),
 ];
 
 const inviteValidation = [
@@ -18,5 +21,16 @@ const organizationMemberValidation = [
     .withMessage("Role must be OWNER, ADMIN, or MEMBER"),
 ];
 
+const listOrgInvitesValidation = [
+  query("status")
+    .optional()
+    .isIn(["PENDING", "ACCEPTED", "EXPIRED"])
+    .withMessage("Status must be PENDING, ACCEPTED, or EXPIRED"),
+];
 
-module.exports = { createOrgValidation, inviteValidation, organizationMemberValidation };
+const revokeInviteValidation = [
+  param("inviteId").isMongoId().withMessage("Invalid invite ID"),
+];
+
+module.exports = { createOrgValidation, inviteValidation, organizationMemberValidation, listOrgInvitesValidation, revokeInviteValidation };
+
