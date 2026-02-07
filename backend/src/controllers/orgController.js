@@ -63,7 +63,13 @@ async function createOrg(req, res, next) {
 
 async function getMyOrganizations(req, res, next) {
   try {
-    const memberShip = await orgMemberService.getMyOrganizations(req.user.id);
+    const { page, limit, status } = req.query;
+    const memberShip = await orgMemberService.getMyOrganizations(
+      req.user.id,
+      page,
+      limit,
+      status,
+    );
     const formattedOrgs = memberShip.map((member) => ({
       organizationId: member.organizationId._id,
       name: member.organizationId.name,
@@ -137,7 +143,7 @@ async function sendInvite(req, res, next) {
       );
 
       if (existingMember) {
-        throw new AppError("User is already a member", 409);
+        throw new AppError(409, "User is already a member");
       }
     }
     // 3️⃣ Check for existing pending invite
@@ -223,7 +229,7 @@ async function acceptInvite(req, res, next) {
     );
 
     if (existingMember) {
-      throw new AppError("User already a member", 409);
+      throw new AppError(409, "User already a member");
     }
 
     const session = await mongoose.startSession();
@@ -240,9 +246,9 @@ async function acceptInvite(req, res, next) {
         },
         session,
       );
-      const inviteInTx = await organizationInviteService
-        .getInviteById(invite._id)
-        .session(session);
+      const inviteInTx = await organizationInviteService.getInviteById(
+        invite._id,
+      );
 
       // 3️⃣ Update invite status
       inviteInTx.status = "ACCEPTED";
@@ -277,6 +283,28 @@ async function getOrgMembers(req, res, next) {
   }
 }
 
+async function listOrganizationInvites(req, res, next) {
+  try {
+    const { organization } = req;
+    const { page, limit, status } = req.query;
+    const invites = await organizationInviteService.listInvitesByOrganization(
+      organization._id,
+      page,
+      limit,
+      status,
+    );
+
+    return successResponse(
+      res,
+      200,
+      "Organization invites fetched successfully",
+      invites,
+    );
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   createOrg,
   getMyOrganizations,
@@ -284,4 +312,5 @@ module.exports = {
   sendInvite,
   acceptInvite,
   getOrgMembers,
+  listOrganizationInvites,
 };

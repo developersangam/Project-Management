@@ -7,13 +7,15 @@ async function createOrgMember(data, session) {
   return orgMember;
 }
 
-async function getMyOrganizations(userId) {
-  return await OrganizationMember.find({
-    userId,
-    status: "ACTIVE",
-  })
-    .populate("organizationId", "name slug owner isActive")
-    .lean();
+async function getMyOrganizations(userId, page, limit, status) {
+  
+  return paginate({
+    model: OrganizationMember,
+    filter: { userId, status: status || "ACTIVE" },
+    page,
+    limit,
+    populate: [{ path: "organizationId", select: "name slug owner isActive" }],
+  });
 }
 
 async function findMember(organizationId, userId) {

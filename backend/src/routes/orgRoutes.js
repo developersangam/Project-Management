@@ -28,6 +28,14 @@ router.post(
 );
 router.post("/accept", inviteRateLimiter, ctrl.acceptInvite);
 router.get("/:slug/members", protect, getOrganizationBySlug, requireOrgMember, ctrl.getOrgMembers);
+router.get(
+  "/:slug/invitees",
+  protect,
+  getOrganizationBySlug,
+  requireAdmin,
+  ctrl.listOrganizationInvites,
+);
+// Uncomment the following line to enable member removal
 // router.delete("/:slug/members/:userId", protect, getOrganizationBySlug, requireAdmin, ctrl.removeMember);
 
 module.exports = router;

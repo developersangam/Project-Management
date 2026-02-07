@@ -15,17 +15,18 @@ export const getOrganizationBySlug = async (req, res, next) => {
     console.log("Organization found:", organization);
 
     if (!organization) {
-      throw new AppError("Organization not found", 404);
+      throw new AppError(404, "Organization not found");
     }
 
     // 2️⃣ Check if organization is active
     if (!organization.isActive) {
-      throw new AppError("Organization is inactive", 403);
+      throw new AppError(403, "Organization is inactive");
     }
 
     // 3️⃣ Attach organization to request
     req.organization = organization;
-
+    console.log("Organization attached to request:", req.organization);
+    console.log("User attached to request:", req.user?.id || "No user");
     // 4️⃣ Fetch current user's membership if authenticated
     if (req.user?.id) {
       const membership = await findMember(organization._id, req.user.id);

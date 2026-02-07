@@ -53,4 +53,9 @@ const organizationInviteSchema = new mongoose.Schema(
   },
 );
 
+organizationInviteSchema.index({ organizationId: 1, status: 1 });
+organizationInviteSchema.index({ organizationId: 1, email: 1 });
+organizationInviteSchema.index({ expiresAt: 1 });
+
+
 module.exports = mongoose.model("OrganizationInvite", organizationInviteSchema);
