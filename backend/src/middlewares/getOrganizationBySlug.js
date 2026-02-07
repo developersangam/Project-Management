@@ -1,5 +1,5 @@
-import { findMember } from "../services/orgMemberService.js";
-import { getOrgBySlug } from "../services/orgService.js";
+import { findMember } from "../modules/organizationMember/organizationMember.service.js";
+import { getOrgBySlug } from "../modules/organization/organization.service.js";
 import { AppError } from "../utils/AppError.js";
 /**
  * Middleware to load organization by slug

@@ -2,10 +2,10 @@ require('dotenv').config();
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
-const connectDB = require('./config/db');
+const connectDB = require('./config/db.config');
 
-const userRoutes = require('./routes/userRoutes');
-const orgRoutes = require('./routes/orgRoutes');
+const userRoutes = require('./modules/user/user.routes');
+const organizationRoutes = require('./modules/organization/organization.routes');
 const { globalErrorHandler } = require('./middlewares/error.middleware');
 
 const app = express();
@@ -17,7 +17,7 @@ app.use(morgan('dev'));
 
 // Routes
 app.use('/api/users', userRoutes);
-app.use('/api/orgs', orgRoutes);
+app.use('/api/orgs', organizationRoutes);
 
 // Health
 app.get('/', (req, res) => res.json({ ok: true, time: new Date().toISOString() }));

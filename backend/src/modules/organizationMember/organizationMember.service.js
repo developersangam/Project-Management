@@ -1,5 +1,5 @@
-const OrganizationMember = require("../models/OrganizationMember");
-const { paginate } = require("../utils/paginate");
+const OrganizationMember = require("./organizationMember.model");
+const { paginate } = require("../../utils/paginate");
 
 async function createOrgMember(data, session) {
   console.log("Creating organization member with data:", data);
@@ -8,7 +8,6 @@ async function createOrgMember(data, session) {
 }
 
 async function getMyOrganizations(userId, page, limit, status) {
-  
   return paginate({
     model: OrganizationMember,
     filter: { userId, status: status || "ACTIVE" },

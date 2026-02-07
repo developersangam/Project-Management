@@ -1,43 +1,17 @@
-const userService = require("../services/userService");
-const { successResponse } = require("../utils/apiResponse");
-const { AppError } = require("../utils/AppError");
-const generateToken = require("../utils/generateToken");
+const userService = require("./user.service");
+const { successResponse } = require("../../utils/apiResponse");
+const { AppError } = require("../../utils/AppError");
+const generateToken = require("../../utils/generateToken");
 
 async function loginUser(req, res, next) {
   try {
-    const { email, password } = req.body;
-
-    const user = await userService.isEmailExist(email);
-
-    if (!user) {
-      throw new AppError(401, "Invalid email or password");
-    }
-
-    if (!user.isActive) {
-      throw new AppError(403, "Account is not active. Please contact support.");
-    }
-
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
-      throw new AppError(401, "Invalid email or password");
-    }
-
-    const token = generateToken({
-      id: user._id,
-      email: user.email,
-      userName: user.userName,
-    });
-
-    return successResponse(res, 200, "Login successful", {
-      id: user._id,
-      email: user.email,
-      userName: user.userName,
-      token,
-    });
+    const result = await userService.login(req.body);
+    return successResponse(res, 200, "Login successful", result);
   } catch (err) {
     next(err);
   }
 }
+
 
 async function registerUser(req, res, next) {
   try {

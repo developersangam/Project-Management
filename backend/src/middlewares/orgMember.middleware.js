@@ -3,7 +3,7 @@ const { AppError } = require("../utils/AppError");
 const requireOrgMember = async (req, res, next) => {
   try {
     if (!req.membership || req.membership.status !== "ACTIVE") {
-      return next(new AppError("You are not a member of this organization", 403));
+      return next(new AppError(403, "You are not a member of this organization"));
     }
     next();
   } catch (error) {
