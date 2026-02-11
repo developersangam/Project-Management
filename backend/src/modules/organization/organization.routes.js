@@ -95,6 +95,14 @@ router.delete(
   orgMemberController.removeMember
 );
 
+router.delete(
+  "/organizations/:slug",
+  protect,
+  getOrganizationBySlug,
+  requireAdmin,
+  ctrl.deleteOrganization
+);
+
 
 // Uncomment the following line to enable member removal
 // router.delete("/:slug/members/:userId", protect, getOrganizationBySlug, requireAdmin, ctrl.removeMember);
