@@ -29,6 +29,7 @@ async function getInviteByTokenHash(tokenHash) {
 }
 
 async function getInviteById(id) {
+
   return await OrganizationInvite.findById(id);
 }
 
@@ -112,7 +113,6 @@ async function revokeInvite({ inviteId, organizationId, revokedBy }) {
 
 async function acceptInvite({ token }) {
   const tokenHash = hashInviteToken(token);
-
   const session = await mongoose.startSession();
 
   try {
@@ -172,7 +172,7 @@ async function acceptInvite({ token }) {
   }
 }
 
-export async function resendInvite({
+async function resendInvite({
   organizationId,
   email,
   role,
@@ -214,6 +214,19 @@ export async function resendInvite({
   };
 }
 
+async function listInvitesByOrganization(organizationId, page, limit, status) {
+  return await paginate({
+    model: OrganizationInvite,
+    filter: {
+      organizationId,
+      status,
+    },
+    page,
+    limit,
+    sort: { createdAt: -1 },
+  });
+}
+
 module.exports = {
   inviteMember,
   getInviteByEmailAndStatus,
@@ -222,5 +235,6 @@ module.exports = {
   sendInvite,
   acceptInvite,
   revokeInvite,
-  resendInvite
+  resendInvite,
+  listInvitesByOrganization,
 };

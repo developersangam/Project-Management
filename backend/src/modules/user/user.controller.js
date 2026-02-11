@@ -1,7 +1,6 @@
 const userService = require("./user.service");
 const { successResponse } = require("../../utils/apiResponse");
 const { AppError } = require("../../utils/AppError");
-const generateToken = require("../../utils/generateToken");
 
 async function loginUser(req, res, next) {
   try {
@@ -11,7 +10,6 @@ async function loginUser(req, res, next) {
     next(err);
   }
 }
-
 
 async function registerUser(req, res, next) {
   try {

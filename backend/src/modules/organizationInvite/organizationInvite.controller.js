@@ -68,7 +68,6 @@ async function listOrganizationInvites(req, res, next) {
       limit,
       status,
     );
-
     return successResponse(
       res,
       200,
@@ -80,7 +79,7 @@ async function listOrganizationInvites(req, res, next) {
   }
 }
 
-export async function resendOrganizationInvite(req, res, next) {
+async function resendOrganizationInvite(req, res, next) {
   try {
     const { email, role } = req.body;
     const { organization } = req;
@@ -107,4 +106,4 @@ export async function resendOrganizationInvite(req, res, next) {
   }
 }
 
-module.exports = { sendInvite,revokeInvite,acceptInvite,listOrganizationInvites };
+module.exports = { sendInvite,revokeInvite,acceptInvite,listOrganizationInvites ,resendOrganizationInvite};

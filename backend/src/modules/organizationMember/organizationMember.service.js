@@ -39,9 +39,113 @@ async function getOrgMembers(organizationId, page, limit, role) {
   });
 }
 
+async function changeMemberRole({
+  organization,
+  actor,
+  targetMemberId,
+  newRole,
+}) {
+  // 1️⃣ Fetch target member
+  const targetMember = await OrganizationMember.findOne({
+    _id: targetMemberId,
+    organizationId: organization._id,
+    status: "ACTIVE",
+  });
+
+  if (!targetMember) {
+    throw new AppError(404, "Organization member not found");
+  }
+
+  // 2️⃣ Self-role change check
+  if (String(actor.userId) === String(targetMember.userId)) {
+    throw new AppError(400, "You cannot change your own role");
+  }
+
+  // 3️⃣ Owner protection
+  if (targetMember.role === "ADMIN") {
+    throw new AppError(403, "Admin role cannot be changed");
+  }
+
+  // 4️⃣ Permission rules
+  if (actor.role === "ADMIN") {
+    if (targetMember.role !== "MEMBER") {
+      throw new AppError(403, "Admins can only modify members");
+    }
+    if (newRole === "ADMIN") {
+      throw new AppError(403, "Admins cannot promote members to admin");
+    }
+  }
+
+  if (!["OWNER", "ADMIN"].includes(actor.role)) {
+    throw new AppError(403, "Insufficient permissions");
+  }
+
+  // 5️⃣ No-op (idempotent)
+  if (targetMember.role === newRole) {
+    return;
+  }
+
+  // 6️⃣ Update role
+  targetMember.role = newRole;
+  await targetMember.save();
+}
+
+async function removeMember({
+  organizationId,
+  actorUserId,
+  targetUserId,
+}) {
+  // 1️⃣ Cannot remove yourself
+  if (String(actorUserId) === String(targetUserId)) {
+    throw new AppError(400, "You cannot remove yourself from the organization");
+  }
+
+  const member = await OrganizationMember.findOne({
+    organizationId,
+    userId: targetUserId,
+  });
+
+  if (!member) {
+    throw new AppError(404, "Member not found");
+  }
+
+  // 2️⃣ Idempotent success
+  if (member.status === "REMOVED") {
+    return member;
+  }
+
+  // 3️⃣ Prevent removing last admin
+  if (member.role === "ADMIN" && member.status === "ACTIVE") {
+    const adminCount = await OrganizationMember.countDocuments({
+      organizationId,
+      role: "ADMIN",
+      status: "ACTIVE",
+    });
+
+    if (adminCount === 1) {
+      throw new AppError(400, "Cannot remove the last admin");
+    }
+  }
+
+  // 4️⃣ Soft remove
+  member.status = "REMOVED";
+  member.removedAt = new Date();
+  await member.save();
+
+  return member;
+}
+
+module.exports = {
+  removeMember,
+};
+
+
+
 module.exports = {
   createOrgMember,
   getMyOrganizations,
   findMember,
   getOrgMembers,
+  changeMemberRole,
+  removeMember,
 };

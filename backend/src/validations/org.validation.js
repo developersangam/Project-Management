@@ -41,6 +41,12 @@ const resendInviteValidation = [
     .withMessage("Role must be ADMIN, MEMBER, or PROJECT_MANAGER"),
 ];
 
+const changeMemberRoleValidation = [
+  body("role")
+    .isIn(["MEMBER","PROJECT_MANAGER"])
+    .withMessage("Invalid role"),
+];
+
 module.exports = {
   createOrgValidation,
   inviteValidation,
@@ -48,4 +54,5 @@ module.exports = {
   listOrgInvitesValidation,
   revokeInviteValidation,
   resendInviteValidation,
+  changeMemberRoleValidation,
 };

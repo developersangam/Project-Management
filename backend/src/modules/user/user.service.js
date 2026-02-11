@@ -20,10 +20,6 @@ async function updateUser(id, updates) {
   );
 }
 
-async function deleteUser(id) {
-  return User.findByIdAndDelete(id);
-}
-
 async function isEmailExist(email) {
   return User.findOne({ email });
 }
@@ -75,7 +71,6 @@ module.exports = {
   listUsers,
   getUserById,
   updateUser,
-  deleteUser,
   isEmailExist,
   isUsernameExist,
   findByEmailOrUsername,

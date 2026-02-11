@@ -2,12 +2,15 @@ const express = require("express");
 const router = express.Router();
 const ctrl = require("./organization.controller.js");
 const inviteController = require("../organizationInvite/organizationInvite.controller.js");
+const orgMemberController = require("../organizationMember/organizationMember.controller.js");
 const protect = require("../../middlewares/auth.middleware.js");
 const {
   createOrgValidation,
   inviteValidation,
   listOrgInvitesValidation,
   revokeInviteValidation,
+  resendInviteValidation,
+  changeMemberRoleValidation,
 } = require("../../validations/org.validation.js");
 const { requireAdmin } = require("../../middlewares/orgAdmin.middleware.js");
 const { validate } = require("../../middlewares/validator.middleware.js");
@@ -71,8 +74,27 @@ router.post(
   resendInviteValidation,
   getOrganizationBySlug,
   requireAdmin,
-  inviteController.resendOrganizationInvite
+  inviteController.resendOrganizationInvite,
 );
+
+router.patch(
+  "/:slug/members/:memberId/role",
+  protect,
+  getOrganizationBySlug,
+  requireAdmin,
+  changeMemberRoleValidation, // or OWNER logic inside service
+  validate,
+  orgMemberController.changeMemberRole
+);
+
+router.delete(
+  "/:slug/members/:userId",
+  protect,
+  getOrganizationBySlug,
+  requireAdmin,
+  orgMemberController.removeMember
+);
+
 
 // Uncomment the following line to enable member removal
 // router.delete("/:slug/members/:userId", protect, getOrganizationBySlug, requireAdmin, ctrl.removeMember);

@@ -30,7 +30,6 @@ async function createOrganizationWithOwner({ name, ownerId }, session) {
   return organization;
 }
 
-
 async function isSlugExist(slug) {  
   const org = await Organization.exists({ slug });
   return org;
