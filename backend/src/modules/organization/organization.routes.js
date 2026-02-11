@@ -96,7 +96,7 @@ router.delete(
 );
 
 router.delete(
-  "/organizations/:slug",
+  "/:slug",
   protect,
   getOrganizationBySlug,
   requireAdmin,
