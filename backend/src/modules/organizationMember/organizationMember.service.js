@@ -130,6 +130,7 @@ async function removeMember({
   // 4️⃣ Soft remove
   member.status = "REMOVED";
   member.removedAt = new Date();
+  member.removedBy = actorUserId;
   await member.save();
 
   return member;

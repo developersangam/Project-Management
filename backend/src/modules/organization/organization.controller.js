@@ -112,11 +112,29 @@ async function getOrgMembers(req, res, next) {
   }
 }
 
+async function deleteOrganization(req, res, next) {
+  try {
+    const { organization } = req;
 
+    await orgService.deleteOrganization({
+      organizationId: organization._id,
+      actorUserId: req.user.id,
+    });
+
+    return successResponse(
+      res,
+      200,
+      "Organization deleted successfully"
+    );
+  } catch (err) {
+    next(err);
+  }
+}
 
 module.exports = {
   createOrg,
   getMyOrganizations,
   getOrganizationBySlug,
   getOrgMembers,
+  deleteOrganization
 };
