@@ -5,7 +5,8 @@ const projectSchema = new mongoose.Schema(
     organizationId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Organization",
-      required: true
+      required: true,
+      index: true
     },
 
     name: {
@@ -16,22 +17,43 @@ const projectSchema = new mongoose.Schema(
 
     slug: {
       type: String,
-      lowercase: true
+      required: true,
+      lowercase: true,
+      trim: true
     },
 
-    description: String,
+    description: {
+      type: String,
+      trim: true,
+      default: ""
+    },
+
+    visibility: {
+      type: String,
+      enum: ["PRIVATE", "ORG_PUBLIC"],
+      default: "PRIVATE"
+    },
 
     status: {
       type: String,
-      enum: ["ACTIVE", "ARCHIVED"],
+      enum: ["ACTIVE", "ARCHIVED", "DELETED"],
       default: "ACTIVE"
     },
 
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
+      ref: "User",
+      required: true
     }
   },
   { timestamps: true }
 );
+
+// 🔐 Indexes
+projectSchema.index(
+  { organizationId: 1, slug: 1 },
+  { unique: true }
+);
+projectSchema.index({ organizationId: 1, status: 1 });
+
 module.exports = mongoose.model("Project", projectSchema);

@@ -16,8 +16,8 @@ const projectMemberSchema = new mongoose.Schema(
 
     role: {
       type: String,
-      enum: ["PROJECT_MANAGER", "DEVELOPER", "TESTER", "VIEWER"],
-      default: "DEVELOPER"
+      enum: ["MANAGER", "CONTRIBUTOR", "VIEWER"],
+      default: "CONTRIBUTOR"
     },
 
     status: {
@@ -28,14 +28,17 @@ const projectMemberSchema = new mongoose.Schema(
 
     addedBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
+      ref: "User",
+      required: true
     },
-
-    joinedAt: {
-      type: Date,
-      default: Date.now
-    }
   },
   { timestamps: true }
 );
+projectMemberSchema.index({ userId: 1 });
+projectMemberSchema.index({ projectId: 1, status: 1 });
+projectMemberSchema.index(
+  { projectId: 1, userId: 1 },
+  { unique: true }
+);
+
 module.exports = mongoose.model("ProjectMember", projectMemberSchema);
