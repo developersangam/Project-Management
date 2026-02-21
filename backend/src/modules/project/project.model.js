@@ -28,12 +28,6 @@ const projectSchema = new mongoose.Schema(
       default: ""
     },
 
-    visibility: {
-      type: String,
-      enum: ["PRIVATE", "ORG_PUBLIC"],
-      default: "PRIVATE"
-    },
-
     status: {
       type: String,
       enum: ["ACTIVE", "ARCHIVED", "DELETED"],

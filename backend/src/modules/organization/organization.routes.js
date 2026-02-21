@@ -19,6 +19,7 @@ const {
 } = require("../../middlewares/getOrganizationBySlug.js");
 const { inviteRateLimiter } = require("../../middlewares/inviteRateLimiter.js");
 const requireOrgMember = require("../../middlewares/orgMember.middleware.js");
+const projectRoutes = require("../project/project.routes");
 
 // Organization routes
 router.post("/", createOrgValidation, validate, protect, ctrl.createOrg);
@@ -102,6 +103,9 @@ router.delete(
   requireAdmin,
   ctrl.deleteOrganization
 );
+
+router.use("/:slug/projects", projectRoutes);
+
 
 
 // Uncomment the following line to enable member removal

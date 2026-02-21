@@ -5,40 +5,40 @@ const projectMemberSchema = new mongoose.Schema(
     projectId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Project",
-      required: true
+      required: true,
     },
 
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true
+      required: true,
     },
 
     role: {
       type: String,
-      enum: ["MANAGER", "CONTRIBUTOR", "VIEWER"],
-      default: "CONTRIBUTOR"
+      enum: ["PROJECT_MANAGER", "CONTRIBUTOR", "VIEWER"],
+      default: "CONTRIBUTOR",
     },
 
     status: {
       type: String,
       enum: ["ACTIVE", "REMOVED"],
-      default: "ACTIVE"
+      default: "ACTIVE",
     },
 
     addedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true
+      required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 projectMemberSchema.index({ userId: 1 });
 projectMemberSchema.index({ projectId: 1, status: 1 });
 projectMemberSchema.index(
   { projectId: 1, userId: 1 },
-  { unique: true }
+  { unique: true, partialFilterExpression: { status: "ACTIVE" } },
 );
 
 module.exports = mongoose.model("ProjectMember", projectMemberSchema);
