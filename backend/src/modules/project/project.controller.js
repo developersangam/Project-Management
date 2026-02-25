@@ -61,10 +61,45 @@ async function listProjects(req, res, next) {
   }
 }
 
+async function addProjectMember(req, res, next) {
+  const session = await mongoose.startSession();
+
+  try {
+    const { project, organization, user } = req;
+    const { userId, role } = req.body;
+
+    let membership;
+
+    await session.withTransaction(async () => {
+      membership = await projectService.addProjectMember(
+        {
+          projectId: project._id,
+          organizationId: organization._id,
+          userId,
+          role,
+          addedBy: user.id,
+        },
+        session
+      );
+    });
+
+    return successResponse(
+      res,
+      201,
+      "Project member added successfully",
+      membership
+    );
+  } catch (err) {
+    next(err);
+  } finally {
+    session.endSession();
+  }
+}
 
 module.exports = {
   createProject,
-  listProjects
+  listProjects,
+    addProjectMember,
 };
 
 

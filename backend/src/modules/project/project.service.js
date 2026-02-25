@@ -3,7 +3,8 @@ const ProjectMember = require("../projectMember/projectMember.model");
 const { paginate } = require("../../utils/paginate");
 const generateSlug = require("../../utils/generateSlug");
 const { AppError } = require("../../utils/AppError");
-const { path } = require("../..");
+const userModel = require("../user/user.model");
+const organizationMemberModel = require("../organizationMember/organizationMember.model");
 
 async function createProject(data, session) {
   const baseSlug = generateSlug(data.name);
@@ -67,6 +68,7 @@ async function listProjects({ organizationId, userId, page, limit, status }) {
       },
     ],
   });
+  console.log("Raw pagination result:", result.data);
   const filteredData = result.data
     .filter((member) => member.projectId) // Filter out memberships where the project doesn't match the status filter
     .map((member) => ({
@@ -79,7 +81,68 @@ async function listProjects({ organizationId, userId, page, limit, status }) {
   };
 }
 
+async function addProjectMember(
+  { projectId, organizationId, userId, role, addedBy },
+  session,
+) {
+  // 1️⃣ Ensure user exists
+  const user = await userModel.findById(userId).session(session);
+  if (!user) {
+    throw new AppError(404, "User not found");
+  }
+
+  // 2️⃣ Ensure user belongs to same organization
+  const orgMember = await organizationMemberModel
+    .findOne({
+      organizationId,
+      userId,
+      status: "ACTIVE",
+    })
+    .session(session);
+
+  if (!orgMember) {
+    throw new AppError(404, "User is not a member of this organization");
+  }
+
+  // 3️⃣ Check existing project membership
+  const existing = await ProjectMember.findOne({
+    projectId,
+    userId,
+  }).session(session);
+
+  if (existing) {
+    if (existing.status === "ACTIVE") {
+      throw new AppError(400, "User is already a project member");
+    }
+
+    // Reactivate if previously removed
+    existing.status = "ACTIVE";
+    existing.role = role || existing.role;
+    existing.addedBy = addedBy;
+    await existing.save({ session });
+
+    return existing;
+  }
+
+  // 4️⃣ Create new membership
+  const [membership] = await ProjectMember.create(
+    [
+      {
+        projectId,
+        userId,
+        role: role || "CONTRIBUTOR",
+        status: "ACTIVE",
+        addedBy,
+      },
+    ],
+    { session },
+  );
+
+  return membership;
+}
+
 module.exports = {
   createProject,
   listProjects,
+  addProjectMember,
 };

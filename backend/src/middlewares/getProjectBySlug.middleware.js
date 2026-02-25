@@ -1,11 +1,11 @@
-const Project = require("./project.model");
+const projectModel = require("../modules/project/project.model");
 
 async function getProjectBySlug(req, res, next) {
   try {
     const { projectSlug } = req.params;
     const { organization } = req;
 
-    const project = await Project.findOne({
+    const project = await projectModel.findOne({
       slug: projectSlug,
       organizationId: organization._id,
     });

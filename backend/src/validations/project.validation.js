@@ -31,7 +31,22 @@ const listProjectsValidation = [
     .withMessage("Invalid project status"),
 ];
 
+const addProjectMemberValidation = [
+  body("userId")
+    .trim()
+    .notEmpty()
+    .withMessage("User ID is required"),
+
+  body("role")
+    .optional()
+    .isIn(["PROJECT_MANAGER", "CONTRIBUTOR", "VIEWER"])
+    .withMessage("Invalid role"),
+];
+
+
+
 module.exports = {
   createProjectValidation,
   listProjectsValidation,
+  addProjectMemberValidation,
 };

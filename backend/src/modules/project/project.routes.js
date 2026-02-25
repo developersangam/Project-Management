@@ -5,6 +5,7 @@ const projectController = require("./project.controller");
 const {
   createProjectValidation,
   listProjectsValidation,
+    addProjectMemberValidation,
 } = require("../../validations/project.validation");
 
 const protect = require("../../middlewares/auth.middleware");
@@ -12,6 +13,8 @@ const { getOrganizationBySlug } = require("../../middlewares/getOrganizationBySl
 const {requireAdmin} = require("../../middlewares/orgAdmin.middleware.js");
 const { validate } = require("../../middlewares/validator.middleware.js");
 const requireOrgMember = require("../../middlewares/orgMember.middleware.js");
+const { getProjectBySlug } = require("../../middlewares/getProjectBySlug.middleware.js");
+const { requireProjectRole } = require("../../middlewares/requireProjectRole.middlewarejs");
 
 // CREATE project
 router.post(
@@ -33,6 +36,19 @@ router.get(
   validate,
   projectController.listProjects
 );
+
+router.post(
+  "/:projectSlug/members",
+  protect,
+  getOrganizationBySlug,
+  requireOrgMember,
+  getProjectBySlug,
+  requireProjectRole(["PROJECT_MANAGER"]),
+  addProjectMemberValidation,
+  validate,
+  projectController.addProjectMember
+);
+
 
 // LIST projects
 // router.get(
