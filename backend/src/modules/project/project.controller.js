@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const projectService = require("./project.service");
 const { successResponse } = require("../../utils/apiResponse");
+const { use } = require("react");
 
 async function createProject(req, res, next) {
   const session = await mongoose.startSession();
@@ -19,16 +20,11 @@ async function createProject(req, res, next) {
           description,
           createdBy: user.id,
         },
-        session
+        session,
       );
     });
 
-    return successResponse(
-      res,
-      201,
-      "Project created successfully",
-      project
-    );
+    return successResponse(res, 201, "Project created successfully", project);
   } catch (err) {
     next(err);
   } finally {
@@ -39,8 +35,7 @@ async function createProject(req, res, next) {
 async function listProjects(req, res, next) {
   try {
     const { organization, user } = req;
-        const { page, limit, status } = req.query;
-
+    const { page, limit, status } = req.query;
 
     const projects = await projectService.listProjects({
       organizationId: organization._id,
@@ -50,12 +45,7 @@ async function listProjects(req, res, next) {
       status,
     });
 
-    return successResponse(
-      res,
-      200,
-      "Projects fetched successfully",
-      projects
-    );
+    return successResponse(res, 200, "Projects fetched successfully", projects);
   } catch (err) {
     next(err);
   }
@@ -63,10 +53,10 @@ async function listProjects(req, res, next) {
 
 async function addProjectMember(req, res, next) {
   const session = await mongoose.startSession();
-
+  console.log("Request body for adding project member:", req.body);
   try {
     const { project, organization, user } = req;
-    const { userId, role } = req.body;
+    const { userId, roleKey } = req.body;
 
     let membership;
 
@@ -76,10 +66,10 @@ async function addProjectMember(req, res, next) {
           projectId: project._id,
           organizationId: organization._id,
           userId,
-          role,
+          roleKey,
           addedBy: user.id,
         },
-        session
+        session,
       );
     });
 
@@ -87,7 +77,7 @@ async function addProjectMember(req, res, next) {
       res,
       201,
       "Project member added successfully",
-      membership
+      membership,
     );
   } catch (err) {
     next(err);
@@ -96,10 +86,140 @@ async function addProjectMember(req, res, next) {
   }
 }
 
+async function removeProjectMember(req, res, next) {
+  const session = await mongoose.startSession();
+
+  try {
+    const { project, organization, user } = req;
+    const { userId } = req.body;
+    console.log(
+      `Attempting to remove user ${userId} from project ${project._id} by user ${user.id}`,
+    );
+    let result;
+
+    await session.withTransaction(async () => {
+      result = await projectService.removeProjectMember(
+        {
+          projectId: project._id,
+          organizationId: organization._id,
+          userId,
+          removedBy: user.id,
+        },
+        session,
+      );
+    });
+
+    return successResponse(res, 200, "Project member removed successfully", {
+      userId: result.userId,
+      status: result.status,
+    });
+  } catch (err) {
+    next(err);
+  } finally {
+    session.endSession();
+  }
+}
+
+async function changeProjectMemberRole(req, res, next) {
+  const session = await mongoose.startSession();
+
+  try {
+    const { project, user } = req;
+    const { userId } = req.params;
+    const { roleKey } = req.body;
+
+    let result;
+
+    await session.withTransaction(async () => {
+      result = await projectService.changeProjectMemberRole(
+        {
+          projectId: project._id,
+          targetUserId: userId,
+          roleKey,
+          changedBy: user.id,
+        },
+        session
+      );
+    });
+
+    return successResponse(
+      res,
+      200,
+      "Project member role updated successfully"
+    );
+  } catch (err) {
+    next(err);
+  } finally {
+    session.endSession();
+  }
+}
+
+async function getProjectMembers(req, res, next) {
+  try {
+    const { project } = req;
+
+    const members = await projectService.getProjectMembers(project._id);
+
+    return successResponse(
+      res,
+      200,
+      "Project members fetched successfully",
+      members
+    );
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function updateProject(req, res, next) {
+  try {
+    const { project } = req;
+
+    const updatedProject = await projectService.updateProject(
+      project._id,
+      req.body
+    );
+
+    return successResponse(
+      res,
+      200,
+      "Project updated successfully",
+      updatedProject
+    );
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function archiveProject(req, res, next) {
+  try {
+    const { project } = req;
+
+    await projectService.archiveProject(
+      project._id,
+      req.user.id
+    );
+
+    return successResponse(
+      res,
+      200,
+      "Project archived successfully"
+    );
+  } catch (err) {
+    next(err);
+  }
+}
+
+
+
+
 module.exports = {
   createProject,
   listProjects,
-    addProjectMember,
+  addProjectMember,
+  removeProjectMember,
+  changeProjectMemberRole,
+  getProjectMembers,
+  updateProject,
+  archiveProject,
 };
-
-

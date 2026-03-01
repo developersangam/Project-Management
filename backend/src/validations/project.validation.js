@@ -36,11 +36,11 @@ const addProjectMemberValidation = [
     .trim()
     .notEmpty()
     .withMessage("User ID is required"),
-
-  body("role")
-    .optional()
-    .isIn(["PROJECT_MANAGER", "CONTRIBUTOR", "VIEWER"])
-    .withMessage("Invalid role"),
+  
+  body("roleKey")
+    .trim()
+    .notEmpty()
+    .withMessage("Role key is required"),
 ];
 
 

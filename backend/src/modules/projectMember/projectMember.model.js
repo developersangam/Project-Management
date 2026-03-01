@@ -15,9 +15,9 @@ const projectMemberSchema = new mongoose.Schema(
     },
 
     role: {
-      type: String,
-      enum: ["PROJECT_MANAGER", "CONTRIBUTOR", "VIEWER"],
-      default: "CONTRIBUTOR",
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ProjectRole",
+      required: true,
     },
 
     status: {
@@ -34,6 +34,7 @@ const projectMemberSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
 projectMemberSchema.index({ userId: 1 });
 projectMemberSchema.index({ projectId: 1, status: 1 });
 projectMemberSchema.index(

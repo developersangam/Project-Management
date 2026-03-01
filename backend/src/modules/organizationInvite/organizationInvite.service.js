@@ -96,7 +96,7 @@ async function revokeInvite({ inviteId, organizationId, revokedBy }) {
   });
 
   if (!invite) {
-    throw new AppError("Invite not found", 404);
+    throw new AppError(404, "Invite not found");
   }
 
   // ✅ Idempotent behavior

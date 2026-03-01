@@ -1,4 +1,4 @@
-const ProjectMember = require("./projectMember.model");
+const ProjectMember = require("../modules/projectMember/projectMember.model");
 
 async function requireProjectMember(req, res, next) {
   try {
