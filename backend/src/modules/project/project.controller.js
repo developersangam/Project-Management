@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const projectService = require("./project.service");
 const { successResponse } = require("../../utils/apiResponse");
-const { use } = require("react");
 
 async function createProject(req, res, next) {
   const session = await mongoose.startSession();

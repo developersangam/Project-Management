@@ -51,6 +51,8 @@ async function seedProjectRoles() {
       permissionMap[p.key] = p._id;
     });
 
+    console.log("Seeding project roles...permission map:", permissionMap);
+
     for (const role of DEFAULT_PROJECT_ROLES) {
       let permissionIds = [];
 

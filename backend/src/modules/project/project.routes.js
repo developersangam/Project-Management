@@ -107,5 +107,5 @@ router.patch(
   projectController.archiveProject
 );
 
-
+router.use("/tasks", taskRoutes);
 module.exports = router;
