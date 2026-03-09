@@ -1,8 +1,3 @@
-const TASK_STATUS = {
-  TODO: "TODO",
-  IN_PROGRESS: "IN_PROGRESS",
-  DONE: "DONE"
-};
 
 const TASK_PRIORITY = {
   LOW: "LOW",
@@ -11,6 +6,5 @@ const TASK_PRIORITY = {
 };
 
 module.exports = {
-  TASK_STATUS,
   TASK_PRIORITY
 };

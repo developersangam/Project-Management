@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { TASK_PRIORITY } = require("../../constant/task.constant");
 
 const taskSchema = new mongoose.Schema(
   {
