@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
-
+const taskRoutes = require("../Task/task.routes");
+const columnRoutes = require("../Task/boardColumn.routes");
 const projectController = require("./project.controller");
 const {
   createProjectValidation,
@@ -14,7 +15,6 @@ const {requireAdmin} = require("../../middlewares/orgAdmin.middleware.js");
 const { validate } = require("../../middlewares/validator.middleware.js");
 const requireOrgMember = require("../../middlewares/orgMember.middleware.js");
 const { getProjectBySlug } = require("../../middlewares/getProjectBySlug.middleware.js");
-const { requireProjectMember } = require("../../middlewares/requireProjectMember.middleware.js");
 const { requireProjectPermission } = require("../../middlewares/requireProjectPermission.middleware.js");
 
 // CREATE project
@@ -107,5 +107,7 @@ router.patch(
   projectController.archiveProject
 );
 
-router.use("/tasks", taskRoutes);
+router.use("/:projectSlug/tasks", taskRoutes);
+router.use("/:projectSlug/columns", columnRoutes);
+
 module.exports = router;

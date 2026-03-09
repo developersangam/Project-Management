@@ -6,6 +6,7 @@ const { AppError } = require("../../utils/AppError");
 const userModel = require("../user/user.model");
 const organizationMemberModel = require("../organizationMember/organizationMember.model");
 const projectRoleModel = require("../accessControl/projectRole.model");
+const { seedDefaultColumns } = require("../Task/task.seed");
 
 async function createProject(data, session) {
   const baseSlug = generateSlug(data.name);
@@ -49,6 +50,8 @@ async function createProject(data, session) {
     ],
     { session },
   );
+
+  await seedDefaultColumns(project._id);
 
   return project;
 }
@@ -184,7 +187,6 @@ async function removeProjectMember({ projectId, userId, removedBy }, session) {
     throw new AppError(400, "You cannot remove yourself");
   }
 
-
   const removerLevel = remover.role.level;
   const targetLevel = target.role.level;
 
@@ -210,7 +212,7 @@ async function removeProjectMember({ projectId, userId, removedBy }, session) {
 
 async function changeProjectMemberRole(
   { projectId, targetUserId, roleKey, changedBy },
-  session
+  session,
 ) {
   // 1️⃣ Get changer membership
   const changer = await ProjectMember.findOne({
@@ -244,7 +246,9 @@ async function changeProjectMemberRole(
   }
 
   // 4️⃣ Get new role
-  const newRole = await projectRoleModel.findOne({ key: roleKey }).session(session);
+  const newRole = await projectRoleModel
+    .findOne({ key: roleKey })
+    .session(session);
 
   if (!newRole) {
     throw new AppError(400, "Invalid role");
@@ -257,17 +261,14 @@ async function changeProjectMemberRole(
 
   // Cannot modify equal or higher
   if (changerLevel <= targetLevel) {
-    throw new AppError(
-      403,
-      "You cannot change role of equal or higher member"
-    );
+    throw new AppError(403, "You cannot change role of equal or higher member");
   }
 
   // Cannot assign role equal or higher than yourself
   if (changerLevel <= newRoleLevel) {
     throw new AppError(
       403,
-      "You cannot assign a role equal or higher than yourself"
+      "You cannot assign a role equal or higher than yourself",
     );
   }
 
@@ -346,7 +347,7 @@ async function updateProject(projectId, payload) {
   const updatedProject = await Project.findByIdAndUpdate(
     projectId,
     { $set: updates },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   ).lean();
 
   return {

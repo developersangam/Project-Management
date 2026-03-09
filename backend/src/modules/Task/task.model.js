@@ -64,14 +64,10 @@ const taskSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-taskSchema.index({ projectId: 1, createdAt: -1 });
 taskSchema.index({ projectId: 1, createdAt: -1, _id: -1 });
-taskSchema.index({ assigneeId: 1, status: 1 });
-taskSchema.index({ organizationId: 1 });
-taskSchema.index({
-  projectId: 1,
-  status: 1,
-  position: 1,
-});
+
+taskSchema.index({ projectId: 1, assigneeId: 1 });
+
+taskSchema.index({ columnId: 1, position: 1 }, { unique: true });
 
 module.exports = mongoose.model("Task", taskSchema);

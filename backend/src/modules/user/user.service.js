@@ -1,3 +1,4 @@
+const { AppError } = require("../../utils/AppError");
 const generateToken = require("../../utils/generateToken");
 const User = require("./user.model");
 

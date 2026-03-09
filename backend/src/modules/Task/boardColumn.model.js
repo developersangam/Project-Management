@@ -4,7 +4,9 @@ const boardColumnSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true
+      required: true,
+      trim: true,
+      maxlength: 100
     },
 
     projectId: {
@@ -17,11 +19,26 @@ const boardColumnSchema = new mongoose.Schema(
     position: {
       type: Number,
       required: true
+    },
+
+    isDeleted: {
+      type: Boolean,
+      default: false
     }
   },
   {
     timestamps: true
   }
+);
+
+boardColumnSchema.index(
+  { projectId: 1, name: 1 },
+  { unique: true }
+);
+
+boardColumnSchema.index(
+  { projectId: 1, position: 1 },
+  { unique: true }
 );
 
 module.exports = mongoose.model("BoardColumn", boardColumnSchema);

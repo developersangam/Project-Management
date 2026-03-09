@@ -9,7 +9,7 @@ export const getOrganizationBySlug = async (req, res, next) => {
   try {
     console.log("Loading organization for slug:", req.params.slug);
     const { slug } = req.params;
-
+    console.log("Received slug:", slug);
     // 1️⃣ Find organization by slug
     const organization = await getOrgBySlug(slug);
     console.log("Organization found:", organization);

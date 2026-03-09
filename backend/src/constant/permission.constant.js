@@ -63,4 +63,15 @@ export const DEFAULT_PERMISSIONS = [
     description: "Can view tasks",
     module: "TASK",
   },
+
+  {
+    key: "MOVE_TASK",
+    description: "Move task across columns",
+    module: "TASK"
+  },
+  {
+    key: "ASSIGN_TASK",
+    description: "Assign task to user",
+    module: "TASK"
+  },
 ];
