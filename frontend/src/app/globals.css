@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #172b4d;
+  --muted: #f4f5f7;
+  --muted-foreground: #5e6c84;
+  --popover: #ffffff;
+  --popover-foreground: #172b4d;
+  --border: #dfe1e6;
+  --input: #dfe1e6;
+  --card: #ffffff;
+  --card-foreground: #172b4d;
+  --primary: #0052cc;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f5f7;
+  --secondary-foreground: #172b4d;
+  --accent: #deebff;
+  --accent-foreground: #0052cc;
+  --destructive: #ff5630;
+  --destructive-foreground: #ffffff;
+  --ring: #0052cc;
+  --success: #36b37e;
+  --warning: #ffab00;
+  --info: #00b8d9;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #ffffff;
+    --foreground: #172b4d;
+    --muted: #f4f5f7;
+    --muted-foreground: #5e6c84;
+    --popover: #ffffff;
+    --popover-foreground: #172b4d;
+    --border: #dfe1e6;
+    --input: #dfe1e6;
+    --card: #ffffff;
+    --card-foreground: #172b4d;
+    --primary: #0052cc;
+    --primary-foreground: #ffffff;
+    --secondary: #f4f5f7;
+    --secondary-foreground: #172b4d;
+    --accent: #deebff;
+    --accent-foreground: #0052cc;
+    --destructive: #ff5630;
+    --destructive-foreground: #ffffff;
+    --ring: #0052cc;
+    --success: #36b37e;
+    --warning: #ffab00;
+    --info: #00b8d9;
+  }
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  line-height: 1.5;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
+}
+
+/* Focus styles */
+.focus-visible:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
