@@ -12,16 +12,29 @@ import {
 import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { Column } from "./column"
 import { TaskCard } from "./taskCard"
-import { Task } from "../../types"
+import { Task, Column as ColumnType } from "../../types"
 import { useAppDispatch } from "../../hooks/redux"
 import { updateTaskThunk } from "../../store/task/taskThunk"
 
 interface BoardContainerProps {
   tasks: Task[]
-  onTaskClick: (task: Task) => void
+  columns: ColumnType[]
+  projectSlug: string
+  orgSlug: string
+  showCreateTask?: boolean
+  onCreateTaskClose?: () => void
+  onTaskClick?: (task: Task) => void
 }
 
-export const BoardContainer: React.FC<BoardContainerProps> = ({ tasks, onTaskClick }) => {
+export const BoardContainer: React.FC<BoardContainerProps> = ({
+  tasks,
+  columns,
+  projectSlug,
+  orgSlug,
+  showCreateTask = false,
+  onCreateTaskClose,
+  onTaskClick,
+}) => {
   const dispatch = useAppDispatch()
   const [activeTask, setActiveTask] = React.useState<Task | null>(null)
 
@@ -33,11 +46,10 @@ export const BoardContainer: React.FC<BoardContainerProps> = ({ tasks, onTaskCli
     })
   )
 
-  const columns = [
-    { id: 'todo', title: 'To Do', tasks: tasks.filter(t => t.status === 'todo') },
-    { id: 'in-progress', title: 'In Progress', tasks: tasks.filter(t => t.status === 'in-progress') },
-    { id: 'done', title: 'Done', tasks: tasks.filter(t => t.status === 'done') },
-  ]
+  // Group tasks by column
+  const getTasksByColumn = (columnId: string) => {
+    return tasks.filter(t => t.columnId === columnId)
+  }
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event
@@ -57,20 +69,37 @@ export const BoardContainer: React.FC<BoardContainerProps> = ({ tasks, onTaskCli
     const activeTask = tasks.find(t => t.id === activeId)
     if (!activeTask) return
 
-    let newStatus: Task['status'] = activeTask.status
+    let newColumnId = activeTask.columnId
+    let newStatus = activeTask.status
 
-    if (overId === 'todo' || overId === 'in-progress' || overId === 'done') {
-      newStatus = overId as Task['status']
+    // Check if dropped on a column
+    const overColumn = columns.find(c => c.id === overId)
+    if (overColumn) {
+      newColumnId = overId
+      // Map column name to status
+      const statusMap: Record<string, any> = {
+        'To Do': 'TODO',
+        'In Progress': 'IN_PROGRESS',
+        'Done': 'DONE',
+      }
+      newStatus = statusMap[overColumn.name] || activeTask.status
     } else {
       // Dropped on another task, find its column
       const overTask = tasks.find(t => t.id === overId)
       if (overTask) {
+        newColumnId = overTask.columnId
         newStatus = overTask.status
       }
     }
 
-    if (newStatus !== activeTask.status) {
-      dispatch(updateTaskThunk({ ...activeTask, status: newStatus }))
+    if (newColumnId !== activeTask.columnId || newStatus !== activeTask.status) {
+      dispatch(
+        updateTaskThunk({
+          ...activeTask,
+          columnId: newColumnId,
+          status: newStatus,
+        })
+      )
     }
   }
 
@@ -81,15 +110,21 @@ export const BoardContainer: React.FC<BoardContainerProps> = ({ tasks, onTaskCli
       onDragEnd={handleDragEnd}
     >
       <div className="flex space-x-6 overflow-x-auto pb-6 px-2">
-        {columns.map(column => (
-          <Column
-            key={column.id}
-            id={column.id}
-            title={column.title}
-            tasks={column.tasks}
-            onTaskClick={onTaskClick}
-          />
-        ))}
+        {columns && columns.length > 0 ? (
+          columns.map(column => (
+            <Column
+              key={column.id}
+              id={column.id}
+              title={column.name}
+              tasks={getTasksByColumn(column.id)}
+              onTaskClick={onTaskClick}
+              projectSlug={projectSlug}
+              orgSlug={orgSlug}
+            />
+          ))
+        ) : (
+          <div className="text-muted-foreground">No columns available</div>
+        )}
       </div>
       <DragOverlay>
         {activeTask ? <TaskCard task={activeTask} onClick={() => {}} /> : null}
