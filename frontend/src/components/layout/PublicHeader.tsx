@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { Button } from '../ui/button'
 import { Target } from 'lucide-react'
 
 export const PublicHeader: React.FC = () => {
@@ -18,7 +17,7 @@ export const PublicHeader: React.FC = () => {
 
         {/* Navigation - Hidden on mobile */}
         <nav className="hidden md:flex items-center space-x-6">
-          <Link href="/#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <Link href="/features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             Features
           </Link>
           <Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -27,19 +26,19 @@ export const PublicHeader: React.FC = () => {
           <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             About
           </Link>
-          <Link href="/#contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             Contact
           </Link>
         </nav>
 
         {/* Auth Buttons */}
         <div className="flex items-center space-x-4">
-          <Button variant="ghost" asChild>
-            <Link href="/login">Sign In</Link>
-          </Button>
-          <Button asChild>
-            <Link href="/register">Get Started</Link>
-          </Button>
+          <Link href="/login" className="text-sm px-4 py-2 text-foreground hover:opacity-80 transition-opacity">
+            Sign In
+          </Link>
+          <Link href="/register" className="text-sm px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+            Get Started
+          </Link>
         </div>
       </div>
     </header>
