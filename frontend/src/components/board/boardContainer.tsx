@@ -117,7 +117,7 @@ export const BoardContainer: React.FC<BoardContainerProps> = ({
               id={column.id}
               title={column.name}
               tasks={getTasksByColumn(column.id)}
-              onTaskClick={onTaskClick}
+              onTaskClick={onTaskClick || (() => {})}
               projectSlug={projectSlug}
               orgSlug={orgSlug}
             />

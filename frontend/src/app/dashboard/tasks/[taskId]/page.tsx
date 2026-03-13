@@ -37,7 +37,7 @@ export default function TaskDetailPage() {
 
   React.useEffect(() => {
     if (currentTask) {
-      setEditTitle(currentTask.title)
+      setEditTitle(currentTask.title || '')
       setEditDescription(currentTask.description || '')
     }
   }, [currentTask])
@@ -310,7 +310,7 @@ export default function TaskDetailPage() {
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Labels</label>
                   <div className="flex flex-wrap gap-1 mt-1">
-                    {currentTask.labels.map((label, index) => (
+                    {currentTask.labels.map((label: any, index: number) => (
                       <Badge key={index} variant="outline" className="text-xs">
                         {label}
                       </Badge>

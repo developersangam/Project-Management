@@ -124,11 +124,11 @@ export default function ProjectDetailsPage() {
             </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground">Created</label>
-              <p className="text-sm">{new Date(currentProject.createdAt).toLocaleDateString()}</p>
+              <p className="text-sm">{currentProject.createdAt ? new Date(currentProject.createdAt).toLocaleDateString() : 'N/A'}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground">Last Updated</label>
-              <p className="text-sm">{new Date(currentProject.updatedAt).toLocaleDateString()}</p>
+              <p className="text-sm">{currentProject.updatedAt ? new Date(currentProject.updatedAt).toLocaleDateString() : 'N/A'}</p>
             </div>
           </CardContent>
         </Card>

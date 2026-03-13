@@ -6,6 +6,7 @@ import { useAppSelector } from '../hooks/redux'
 import { Button } from '../components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '../components/ui/badge'
+import { PublicHeader } from '@/components/layout/PublicHeader'
 import Link from 'next/link'
 import {
   ArrowRight,

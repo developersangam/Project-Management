@@ -12,6 +12,8 @@ interface ColumnProps {
   tasks: Task[]
   onTaskClick: (task: Task) => void
   onAddTask?: () => void
+  projectSlug: string
+  orgSlug: string
 }
 
 export const Column: React.FC<ColumnProps> = ({
@@ -19,7 +21,9 @@ export const Column: React.FC<ColumnProps> = ({
   title,
   tasks,
   onTaskClick,
-  onAddTask
+  onAddTask,
+  projectSlug,
+  orgSlug
 }) => {
   const { setNodeRef, isOver } = useDroppable({
     id,

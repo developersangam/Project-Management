@@ -122,6 +122,7 @@ export default function DashboardPage() {
 
         {projects.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
+            {projects.map((project) => (
               <Card key={project.id} className="hover:shadow-lg transition-all duration-200 group cursor-pointer border-0 shadow-sm bg-card">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between gap-3">
@@ -155,6 +156,7 @@ export default function DashboardPage() {
                   </div>
                 </CardContent>
               </Card>
+            ))}
           </div>
         ) : (
           <Card className="border-2 border-dashed border-muted-foreground/25 bg-card">

@@ -7,6 +7,7 @@ import { register } from '../../store/auth/authThunk'
 import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { PublicHeader } from '@/components/layout/PublicHeader'
 import Link from 'next/link'
 
 export default function RegisterPage() {
@@ -30,7 +31,9 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
+    <>
+      <PublicHeader />
+      <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">Create account</CardTitle>
@@ -86,5 +89,6 @@ export default function RegisterPage() {
         </CardContent>
       </Card>
     </div>
+    </>
   )
 }

@@ -15,6 +15,7 @@ export default function BoardPage() {
   const params = useParams()
   const router = useRouter()
   const projectSlug = params.projectSlug as string
+  const orgSlug = params.orgSlug as string
   const dispatch = useAppDispatch()
   const { tasks, loading } = useAppSelector(state => state.task)
   const { currentProject } = useAppSelector(state => state.project)
@@ -29,6 +30,13 @@ export default function BoardPage() {
   const handleTaskClick = (task: any) => {
     dispatch(openTaskDrawer(task))
   }
+
+  // Default columns if project doesn't have them
+  const columns = currentProject?.columns || [
+    { id: 'todo', name: 'To Do', position: 0 },
+    { id: 'in-progress', name: 'In Progress', position: 1 },
+    { id: 'done', name: 'Done', position: 2 },
+  ]
 
   return (
     <div className="relative space-y-4">
@@ -72,7 +80,13 @@ export default function BoardPage() {
           <p className="text-muted-foreground">Loading board...</p>
         </div>
       ) : (
-        <BoardContainer tasks={tasks} onTaskClick={handleTaskClick} />
+        <BoardContainer 
+          tasks={tasks} 
+          columns={columns}
+          projectSlug={projectSlug}
+          orgSlug={orgSlug || ''}
+          onTaskClick={handleTaskClick} 
+        />
       )}
 
       {/* Task Drawer */}

@@ -87,7 +87,7 @@ export default function ProjectsPage() {
                         </div>
                         <div className="flex items-center gap-1">
                           <Calendar className="w-4 h-4" />
-                          <span>{new Date(project.createdAt).toLocaleDateString()}</span>
+                          <span>{project.createdAt ? new Date(project.createdAt).toLocaleDateString() : 'N/A'}</span>
                         </div>
                       </div>
                       <Button

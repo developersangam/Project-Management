@@ -150,7 +150,7 @@ export default function CreateTaskPage() {
                     <SelectValue placeholder="Select assignee" />
                   </SelectTrigger>
                   <SelectContent>
-                    {currentOrganization?.members?.map(member => (
+                    {currentOrganization?.members?.map((member: any) => (
                       <SelectItem key={member.id} value={member.id}>
                         {member.name}
                       </SelectItem>

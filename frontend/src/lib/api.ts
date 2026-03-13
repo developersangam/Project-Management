@@ -197,9 +197,9 @@ export const projectAPI = {
       createdAt: new Date().toISOString(),
       members: [],
       columns: [
-        { id: '1', name: 'Todo', position: 0, projectId, tasks: [] },
-        { id: '2', name: 'In Progress', position: 1, projectId, tasks: [] },
-        { id: '3', name: 'Done', position: 2, projectId, tasks: [] },
+        { id: '1', name: 'Todo', position: 0 },
+        { id: '2', name: 'In Progress', position: 1 },
+        { id: '3', name: 'Done', position: 2 },
       ],
     }
   },
@@ -214,9 +214,9 @@ export const projectAPI = {
       createdAt: new Date().toISOString(),
       members: [],
       columns: [
-        { id: '1', name: 'Todo', position: 0, projectId: Date.now().toString(), tasks: [] },
-        { id: '2', name: 'In Progress', position: 1, projectId: Date.now().toString(), tasks: [] },
-        { id: '3', name: 'Done', position: 2, projectId: Date.now().toString(), tasks: [] },
+        { id: '1', name: 'Todo', position: 0 },
+        { id: '2', name: 'In Progress', position: 1 },
+        { id: '3', name: 'Done', position: 2 },
       ],
     }
   },
@@ -259,9 +259,9 @@ export const columnAPI = {
   async getColumns(projectId: string): Promise<Column[]> {
     // TODO: Replace with actual API call
     return [
-      { id: '1', name: 'Todo', position: 0, projectId, tasks: [] },
-      { id: '2', name: 'In Progress', position: 1, projectId, tasks: [] },
-      { id: '3', name: 'Done', position: 2, projectId, tasks: [] },
+      { id: '1', name: 'Todo', position: 0 },
+      { id: '2', name: 'In Progress', position: 1 },
+      { id: '3', name: 'Done', position: 2 },
     ]
   },
 
@@ -271,8 +271,6 @@ export const columnAPI = {
       id: Date.now().toString(),
       ...data,
       position: 0,
-      projectId,
-      tasks: [],
     }
   },
 
@@ -304,12 +302,11 @@ export const taskAPI = {
             id: '1',
             title: 'Design homepage mockups',
             description: 'Create high-fidelity mockups for the new homepage',
-            priority: 'HIGH',
-            status: 'IN_PROGRESS',
+            priority: 'high',
+            status: 'in-progress',
             columnId: '1',
             projectId,
             position: 0,
-            createdBy: 'user-1',
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
@@ -325,12 +322,11 @@ export const taskAPI = {
       id: taskId,
       title: 'Design homepage mockups',
       description: 'Create high-fidelity mockups for the new homepage',
-      priority: 'HIGH',
-      status: 'IN_PROGRESS',
+      priority: 'high',
+      status: 'in-progress',
       columnId: '1',
       projectId: '',
       position: 0,
-      createdBy: 'user-1',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
@@ -342,11 +338,10 @@ export const taskAPI = {
     return {
       id: Date.now().toString(),
       ...data,
-      status: 'TODO',
+      status: 'todo',
       columnId,
       projectId,
       position: 0,
-      createdBy: 'user-1',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
@@ -367,12 +362,11 @@ export const taskAPI = {
     return {
       id: taskId,
       title: '',
-      priority: 'MEDIUM',
-      status: 'TODO',
+      priority: 'medium',
+      status: 'todo',
       columnId,
       projectId: '',
       position,
-      createdBy: '',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
@@ -383,13 +377,12 @@ export const taskAPI = {
     return {
       id: taskId,
       title: '',
-      priority: 'MEDIUM',
-      status: 'TODO',
+      priority: 'medium',
+      status: 'todo',
       assigneeId: userId,
       columnId: '',
       projectId: '',
       position: 0,
-      createdBy: '',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
@@ -400,12 +393,11 @@ export const taskAPI = {
     return {
       id: taskId,
       title: '',
-      priority: 'MEDIUM',
+      priority: 'medium',
       status: status as any,
       columnId: '',
       projectId: '',
       position: 0,
-      createdBy: '',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }

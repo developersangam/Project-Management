@@ -53,7 +53,7 @@ export default function BoardPage() {
               projectSlug={projectSlug}
               orgSlug={orgSlug}
               tasks={tasks}
-              columns={currentProject?.columns || []}
+              columns={(currentProject?.columns as any) || []}
               showCreateTask={showCreateTask}
               onCreateTaskClose={() => setShowCreateTask(false)}
             />

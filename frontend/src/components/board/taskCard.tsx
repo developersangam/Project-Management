@@ -42,11 +42,11 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onClick }) => {
       <div className="flex items-center justify-between mb-2">
         <div className={cn(
           "w-3 h-3 rounded-full flex-shrink-0",
-          priorityColors[task.priority]
+          priorityColors[task.priority as keyof typeof priorityColors] || 'bg-gray-500'
         )} />
         {task.labels && task.labels.length > 0 && (
           <div className="flex space-x-1">
-            {task.labels.slice(0, 2).map((label, index) => (
+            {task.labels.slice(0, 2).map((label: any, index: number) => (
               <span
                 key={index}
                 className="px-2 py-0.5 text-xs rounded bg-muted text-muted-foreground"

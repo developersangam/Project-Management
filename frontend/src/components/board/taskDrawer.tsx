@@ -35,9 +35,9 @@ export const TaskDrawer: React.FC<TaskDrawerProps> = ({ task, isOpen }) => {
             <div>
               <h3 className="text-lg font-medium text-foreground mb-2">{task.title}</h3>
               <div className="flex items-center space-x-2">
-                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${priorityColors[task.priority]}`}>
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${priorityColors[task.priority as keyof typeof priorityColors] || 'text-gray-600 bg-gray-100'}`}>
                   <AlertCircle className="w-3 h-3 mr-1" />
-                  {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)} Priority
+                  {(task.priority as any)?.charAt(0)?.toUpperCase() + (task.priority as any)?.slice(1)} Priority
                 </span>
               </div>
             </div>
@@ -53,7 +53,7 @@ export const TaskDrawer: React.FC<TaskDrawerProps> = ({ task, isOpen }) => {
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Status</label>
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-secondary text-secondary-foreground">
-                  {task.status.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                  {task.status.replace('-', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
                 </span>
               </div>
 
