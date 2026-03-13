@@ -51,7 +51,7 @@ export default function CreateProjectPage() {
 
   return (
     <AuthGuard>
-      <DashboardLayout>
+      {/* <DashboardLayout> */}
         <div className="p-8 max-w-2xl mx-auto">
           <div className="mb-8">
             <h1 className="text-3xl font-bold">Create Project</h1>
@@ -123,7 +123,7 @@ export default function CreateProjectPage() {
             </CardContent>
           </Card>
         </div>
-      </DashboardLayout>
+      {/* </DashboardLayout> */}
     </AuthGuard>
   )
 }

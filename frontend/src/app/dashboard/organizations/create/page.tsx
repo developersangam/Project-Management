@@ -53,7 +53,7 @@ export default function CreateOrganizationPage() {
 
   return (
     <AuthGuard>
-      <DashboardLayout>
+      {/* <DashboardLayout> */}
         <div className="p-8 max-w-2xl mx-auto">
           <div className="mb-8">
             <h1 className="text-3xl font-bold">Create Organization</h1>
@@ -134,7 +134,7 @@ export default function CreateOrganizationPage() {
             </CardContent>
           </Card>
         </div>
-      </DashboardLayout>
+      {/* </DashboardLayout> */}
     </AuthGuard>
   )
 }

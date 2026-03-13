@@ -27,7 +27,7 @@ export default function ProjectsPage() {
 
   return (
     <AuthGuard>
-      <DashboardLayout>
+      {/* <DashboardLayout> */}
         <div className="p-8">
           <div className="flex items-center justify-between mb-8">
             <div>
@@ -87,13 +87,13 @@ export default function ProjectsPage() {
                         </div>
                         <div className="flex items-center gap-1">
                           <Calendar className="w-4 h-4" />
-                          <span>{project.createdAt ? new Date(project.createdAt).toLocaleDateString() : 'N/A'}</span>
+                          <span>{new Date(project.createdAt).toLocaleDateString()}</span>
                         </div>
                       </div>
                       <Button
                         onClick={(e) => {
                           e.stopPropagation()
-                          router.push(`/dashboard/${orgSlug}/projects/${project.slug}/board`)
+                          router.push(`/dashboard/projects/${project.slug}/board`)
                         }}
                         className="w-full gap-2 group-hover:translate-x-1 transition-transform"
                       >
@@ -106,7 +106,7 @@ export default function ProjectsPage() {
             </div>
           )}
         </div>
-      </DashboardLayout>
+      {/* </DashboardLayout> */}
     </AuthGuard>
   )
 }
