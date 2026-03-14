@@ -1,6 +1,6 @@
 'use client'
 
-import * as React from 'react'
+import { use, useEffect } from 'react';
 import Link from 'next/link'
 import { useAppSelector, useAppDispatch } from '@/hooks/redux'
 import { fetchOrganizations } from '@/store/organization/organizationThunk'
@@ -9,21 +9,27 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Users, FolderOpen, BarChart3, Plus, ArrowRight, Clock, CheckCircle, TrendingUp } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { get } from 'http'
+import { getUserProfile } from '@/store/auth/authThunk'
 
 export default function DashboardPage() {
   const dispatch = useAppDispatch()
   const { currentOrganization } = useAppSelector(state => state.organization)
   const { projects } = useAppSelector(state => state.project)
 
-  React.useEffect(() => {
+  useEffect(() => {
     dispatch(fetchOrganizations())
   }, [dispatch])
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (currentOrganization) {
       dispatch(fetchProjects(currentOrganization.id))
     }
   }, [currentOrganization, dispatch])
+
+  useEffect(() => {
+    dispatch(getUserProfile())
+  }, [])
 
   const stats = [
     {

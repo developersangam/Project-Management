@@ -1,26 +1,34 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { setOrganizations, setCurrentOrganization, setLoading } from './organizationSlice';
 import { Organization } from '../../types';
+import { getOrganizationsAPI } from '../../../service/organization.service';
+import { RootState } from "../../store";
 
-const getOrganizationsAPI = async (): Promise<Organization[]> => {
-  // Placeholder
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  return [
-    { id: '1', name: 'Org 1', slug: 'org1', members: [] },
-    { id: '2', name: 'Org 2', slug: 'org2', members: [] },
-  ];
-};
 
 export const fetchOrganizations = createAsyncThunk(
-  'organization/fetchOrganizations',
-  async (_, { dispatch }) => {
+  "organization/fetchOrganizations",
+  async (_, { dispatch, getState }) => {
     dispatch(setLoading(true));
+
     try {
-      const organizations = await getOrganizationsAPI();
+      const response = await getOrganizationsAPI();
+
+      const organizations: Organization[] = response.data.data;
+
       dispatch(setOrganizations(organizations));
-      if (organizations.length > 0 && !organizations.find(o => o.id === organizations[0].id)) {
+
+      // get current organization from store
+      const state: RootState = getState() as RootState;
+      const currentOrganization = state.organization.currentOrganization;
+
+      if (
+        organizations.length > 0 &&
+        (!currentOrganization ||
+          !organizations.some((o) => o.id === currentOrganization.id))
+      ) {
         dispatch(setCurrentOrganization(organizations[0]));
       }
+
       return organizations;
     } finally {
       dispatch(setLoading(false));

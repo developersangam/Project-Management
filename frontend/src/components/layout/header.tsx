@@ -100,7 +100,7 @@ export const Header: React.FC = () => {
             Switch Organization
           </div>
           {organizations.map(org => (
-            <DropdownItem key={org.id} onClick={() => handleOrgSwitch(org.id)}>
+            <DropdownItem key={org.organizationId} onClick={() => handleOrgSwitch(org.id)}>
               <div className="w-5 h-5 bg-primary rounded flex items-center justify-center text-primary-foreground text-xs font-medium mr-3">
                 {org.name.charAt(0).toUpperCase()}
               </div>
@@ -121,7 +121,7 @@ export const Header: React.FC = () => {
           trigger={
             <Button variant="ghost" size="sm" className="flex items-center space-x-2 px-2 lg:px-3">
               <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
-                {user?.name?.charAt(0).toUpperCase() || 'U'}
+                {user?.userName?.charAt(0).toUpperCase() || 'G'}
               </div>
               <ChevronDown className="w-4 h-4" />
             </Button>
