@@ -71,4 +71,9 @@ taskSchema.index({ projectId: 1, assigneeId: 1 });
 
 taskSchema.index({ columnId: 1, position: 1 }, { unique: true });
 
+taskSchema.index({
+  projectId: 1,
+  isDeleted: 1,
+});
+
 module.exports = mongoose.model("Task", taskSchema);
