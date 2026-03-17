@@ -7,6 +7,7 @@ const createOrgValidation = [
     .withMessage("Organization name is required")
     .isLength({ min: 3 })
     .withMessage("Organization name must be at least 3 characters"),
+    body("description").optional().isString().withMessage("Description must be a string"),
 ];
 
 const inviteValidation = [

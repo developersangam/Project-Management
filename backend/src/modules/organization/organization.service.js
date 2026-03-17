@@ -2,7 +2,7 @@ const Organization = require("./organization.model");
 const organizationMemberModel = require("../organizationMember/organizationMember.model");
 const generateSlug = require("../../utils/generateSlug");
 
-async function createOrganizationWithOwner({ name, ownerId }, session) {
+async function createOrganizationWithOwner({ name, description, ownerId }, session) {
   const baseSlug = generateSlug(name);
   let slug = baseSlug;
   let counter = 1;
@@ -15,6 +15,7 @@ async function createOrganizationWithOwner({ name, ownerId }, session) {
     [
       {
         name,
+        description,
         slug,
         owner: ownerId,
         isActive: true,

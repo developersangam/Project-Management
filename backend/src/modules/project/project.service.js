@@ -76,10 +76,16 @@ async function listProjects({ organizationId, userId, page, limit, status }) {
   console.log("Raw pagination result:", result.data);
   const filteredData = result.data
     .filter((member) => member.projectId) // Filter out memberships where the project doesn't match the status filter
-    .map((member) => ({
-      project: member.projectId,
-      role: member.role,
-    }));
+    .map((member) => {
+      let data = member.projectId.toObject(); // Convert Mongoose document to plain object
+      let role = member.role;
+
+      return {
+        ...data,
+        role: role,
+      };
+    });
+  console.log("Filtered and mapped projects:", filteredData);
   return {
     data: filteredData,
     meta: result.meta,
@@ -87,11 +93,12 @@ async function listProjects({ organizationId, userId, page, limit, status }) {
 }
 
 async function addProjectMember(
-  { projectId, organizationId, userId, roleKey, addedBy },
+  { projectId, organizationId, email, roleKey, addedBy },
   session,
 ) {
-  // 1️⃣ Validate user
-  const user = await userModel.findById(userId).session(session);
+  // 1️⃣ Find user by email
+  const user = await userModel.findOne({ email }).session(session);
+
   if (!user) {
     throw new AppError(404, "User not found");
   }
@@ -100,7 +107,7 @@ async function addProjectMember(
   const orgMember = await organizationMemberModel
     .findOne({
       organizationId,
-      userId,
+      userId: user._id,
       status: "ACTIVE",
     })
     .session(session);
@@ -109,7 +116,7 @@ async function addProjectMember(
     throw new AppError(400, "User is not a member of this organization");
   }
 
-  // 3️⃣ Resolve role by key
+  // 3️⃣ Resolve role
   const projectRole = await projectRoleModel
     .findOne({ key: roleKey })
     .session(session);
@@ -121,12 +128,12 @@ async function addProjectMember(
   // 4️⃣ Check existing membership
   const existing = await ProjectMember.findOne({
     projectId,
-    userId,
+    userId: user._id,
   }).session(session);
 
   if (existing) {
     if (existing.status === "ACTIVE") {
-      throw new AppError(400, "User is already a project member");
+      throw new AppError(400, "User already in project");
     }
 
     existing.status = "ACTIVE";
@@ -143,7 +150,7 @@ async function addProjectMember(
     [
       {
         projectId,
-        userId,
+        userId: user._id,
         role: projectRole._id,
         status: "ACTIVE",
         addedBy,
@@ -286,7 +293,7 @@ async function getProjectMembers(projectId) {
   })
     .populate({
       path: "userId",
-      select: "name email avatar", // adjust to your User model
+      select: "name email avatar firstName lastName", // adjust to your User model
     })
     .populate({
       path: "role",

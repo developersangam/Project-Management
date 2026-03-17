@@ -14,7 +14,7 @@ async function sendInvite(req, res, next) {
       inviterName: user.firstName,
     });
 
-    return successResponse(res, 200, "Invitation sent successfully");
+    return successResponse(res, 200, "Invitation sent successfully",{});
   } catch (err) {
     next(err);
   }

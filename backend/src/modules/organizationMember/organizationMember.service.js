@@ -1,5 +1,7 @@
 const OrganizationMember = require("./organizationMember.model");
 const { paginate } = require("../../utils/paginate");
+const { aggregatePaginate } = require("../../utils/aggregatePagination");
+const { default: mongoose } = require("mongoose");
 
 async function createOrgMember(data, session) {
   console.log("Creating organization member with data:", data);
@@ -8,13 +10,95 @@ async function createOrgMember(data, session) {
 }
 
 async function getMyOrganizations(userId, page, limit, status) {
-  return paginate({
-    model: OrganizationMember,
-    filter: { userId, status: status || "ACTIVE" },
-    page,
-    limit,
-    populate: [{ path: "organizationId", select: "name slug owner isActive" }],
-  });
+  const pipeline = [
+    {
+      $match: {
+        userId: new mongoose.Types.ObjectId(userId),
+        status: status || "ACTIVE",
+      },
+    },
+
+    // Join organization
+    {
+      $lookup: {
+        from: "organizations",
+        localField: "organizationId",
+        foreignField: "_id",
+        as: "organization",
+      },
+    },
+    { $unwind: "$organization" },
+
+    // Count members
+    {
+      $lookup: {
+        from: "organizationmembers",
+        let: { orgId: "$organizationId" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$organizationId", "$$orgId"] },
+                  { $eq: ["$status", "ACTIVE"] },
+                ],
+              },
+            },
+          },
+          { $count: "totalMembers" },
+        ],
+        as: "memberStats",
+      },
+    },
+
+    // Count projects
+    {
+      $lookup: {
+        from: "projects",
+        let: { orgId: "$organizationId" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$organizationId", "$$orgId"],
+              },
+            },
+          },
+          { $count: "totalProjects" },
+        ],
+        as: "projectStats",
+      },
+    },
+
+    // Flatten counts
+    {
+      $addFields: {
+        totalMembers: {
+          $ifNull: [{ $arrayElemAt: ["$memberStats.totalMembers", 0] }, 0],
+        },
+        totalProjects: {
+          $ifNull: [{ $arrayElemAt: ["$projectStats.totalProjects", 0] }, 0],
+        },
+      },
+    },
+
+    // Clean response
+    {
+      $project: {
+        _id: 0,
+        organization: {
+          _id: "$organization._id",
+          name: "$organization.name",
+          slug: "$organization.slug",
+          owner: "$organization.owner",
+          isActive: "$organization.isActive",
+        },
+        totalMembers: 1,
+        totalProjects: 1,
+      },
+    },
+  ];
+  return aggregatePaginate({ model: OrganizationMember, pipeline, page, limit });
 }
 
 async function findMember(organizationId, userId) {
@@ -90,11 +174,7 @@ async function changeMemberRole({
   await targetMember.save();
 }
 
-async function removeMember({
-  organizationId,
-  actorUserId,
-  targetUserId,
-}) {
+async function removeMember({ organizationId, actorUserId, targetUserId }) {
   // 1️⃣ Cannot remove yourself
   if (String(actorUserId) === String(targetUserId)) {
     throw new AppError(400, "You cannot remove yourself from the organization");
@@ -139,8 +219,6 @@ async function removeMember({
 module.exports = {
   removeMember,
 };
-
-
 
 module.exports = {
   createOrgMember,
