@@ -1,14 +1,20 @@
-'use client'
+"use client";
 
-import * as React from 'react'
-import Link from 'next/link'
-import { useParams, useRouter } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import * as React from "react";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -16,7 +22,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
+} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,21 +32,21 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+} from "@/components/ui/alert-dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from "@/components/ui/select";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -48,12 +54,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import { 
+} from "@/components/ui/table";
+import {
   ArrowLeft,
-  Users, 
-  FolderOpen, 
-  Settings, 
+  Users,
+  FolderOpen,
+  Settings,
   UserPlus,
   MoreHorizontal,
   Shield,
@@ -65,175 +71,276 @@ import {
   ChevronRight,
   Search,
   Edit,
-  Trash2
-} from 'lucide-react'
+  Trash2,
+} from "lucide-react";
+import {
+  getMemberOfOrganization,
+  getOrganizationDetails,
+} from "@/store/organization/organizationThunk";
+import { useAppDispatch } from "@/hooks/redux";
+import { fetchProjects } from "@/store/project/projectThunk";
 
 // Mock data - replace with your Redux store
 const mockOrganization = {
-  id: '1',
-  name: 'Acme Corporation',
-  slug: 'acme-corp',
-  description: 'Building the future of software. We are a team of passionate developers creating innovative solutions.',
-  createdAt: '2024-01-15',
+  id: "1",
+  name: "Acme Corporation",
+  slug: "acme-corp",
+  description:
+    "Building the future of software. We are a team of passionate developers creating innovative solutions.",
+  createdAt: "2024-01-15",
   members: [
-    { id: '1', name: 'John Doe', email: 'john@acme.com', role: 'Owner', avatar: '', joinedAt: '2024-01-15' },
-    { id: '2', name: 'Jane Smith', email: 'jane@acme.com', role: 'Admin', avatar: '', joinedAt: '2024-01-20' },
-    { id: '3', name: 'Bob Wilson', email: 'bob@acme.com', role: 'Member', avatar: '', joinedAt: '2024-02-05' },
-    { id: '4', name: 'Alice Brown', email: 'alice@acme.com', role: 'Member', avatar: '', joinedAt: '2024-02-10' },
-    { id: '5', name: 'Charlie Davis', email: 'charlie@acme.com', role: 'Viewer', avatar: '', joinedAt: '2024-02-15' },
-    { id: '6', name: 'Diana Evans', email: 'diana@acme.com', role: 'Member', avatar: '', joinedAt: '2024-02-20' },
-    { id: '7', name: 'Edward Fox', email: 'edward@acme.com', role: 'Member', avatar: '', joinedAt: '2024-03-01' },
-    { id: '8', name: 'Fiona Green', email: 'fiona@acme.com', role: 'Viewer', avatar: '', joinedAt: '2024-03-05' },
-    { id: '9', name: 'George Harris', email: 'george@acme.com', role: 'Member', avatar: '', joinedAt: '2024-03-10' },
-    { id: '10', name: 'Helen Irving', email: 'helen@acme.com', role: 'Admin', avatar: '', joinedAt: '2024-03-15' },
-    { id: '11', name: 'Ian Johnson', email: 'ian@acme.com', role: 'Member', avatar: '', joinedAt: '2024-03-20' },
-    { id: '12', name: 'Julia King', email: 'julia@acme.com', role: 'Member', avatar: '', joinedAt: '2024-03-25' },
+    {
+      id: "1",
+      name: "John Doe",
+      email: "john@acme.com",
+      role: "Owner",
+      avatar: "",
+      joinedAt: "2024-01-15",
+    },
+    {
+      id: "2",
+      name: "Jane Smith",
+      email: "jane@acme.com",
+      role: "Admin",
+      avatar: "",
+      joinedAt: "2024-01-20",
+    },
+    {
+      id: "3",
+      name: "Bob Wilson",
+      email: "bob@acme.com",
+      role: "Member",
+      avatar: "",
+      joinedAt: "2024-02-05",
+    },
+    {
+      id: "4",
+      name: "Alice Brown",
+      email: "alice@acme.com",
+      role: "Member",
+      avatar: "",
+      joinedAt: "2024-02-10",
+    },
+    {
+      id: "5",
+      name: "Charlie Davis",
+      email: "charlie@acme.com",
+      role: "Viewer",
+      avatar: "",
+      joinedAt: "2024-02-15",
+    },
+    {
+      id: "6",
+      name: "Diana Evans",
+      email: "diana@acme.com",
+      role: "Member",
+      avatar: "",
+      joinedAt: "2024-02-20",
+    },
+    {
+      id: "7",
+      name: "Edward Fox",
+      email: "edward@acme.com",
+      role: "Member",
+      avatar: "",
+      joinedAt: "2024-03-01",
+    },
+    {
+      id: "8",
+      name: "Fiona Green",
+      email: "fiona@acme.com",
+      role: "Viewer",
+      avatar: "",
+      joinedAt: "2024-03-05",
+    },
+    {
+      id: "9",
+      name: "George Harris",
+      email: "george@acme.com",
+      role: "Member",
+      avatar: "",
+      joinedAt: "2024-03-10",
+    },
+    {
+      id: "10",
+      name: "Helen Irving",
+      email: "helen@acme.com",
+      role: "Admin",
+      avatar: "",
+      joinedAt: "2024-03-15",
+    },
+    {
+      id: "11",
+      name: "Ian Johnson",
+      email: "ian@acme.com",
+      role: "Member",
+      avatar: "",
+      joinedAt: "2024-03-20",
+    },
+    {
+      id: "12",
+      name: "Julia King",
+      email: "julia@acme.com",
+      role: "Member",
+      avatar: "",
+      joinedAt: "2024-03-25",
+    },
   ],
   projects: [
-    { id: '1', name: 'Website Redesign', slug: 'website-redesign', status: 'Active', taskCount: 24 },
-    { id: '2', name: 'Mobile App', slug: 'mobile-app', status: 'Active', taskCount: 45 },
-    { id: '3', name: 'API Integration', slug: 'api-integration', status: 'Completed', taskCount: 18 },
-    { id: '4', name: 'Dashboard v2', slug: 'dashboard-v2', status: 'Planning', taskCount: 8 },
-    { id: '5', name: 'Analytics Platform', slug: 'analytics-platform', status: 'Active', taskCount: 32 },
+    {
+      id: "1",
+      name: "Website Redesign",
+      slug: "website-redesign",
+      status: "Active",
+      taskCount: 24,
+    },
+    {
+      id: "2",
+      name: "Mobile App",
+      slug: "mobile-app",
+      status: "Active",
+      taskCount: 45,
+    },
+    {
+      id: "3",
+      name: "API Integration",
+      slug: "api-integration",
+      status: "Completed",
+      taskCount: 18,
+    },
+    {
+      id: "4",
+      name: "Dashboard v2",
+      slug: "dashboard-v2",
+      status: "Planning",
+      taskCount: 8,
+    },
+    {
+      id: "5",
+      name: "Analytics Platform",
+      slug: "analytics-platform",
+      status: "Active",
+      taskCount: 32,
+    },
   ],
-}
+};
 
-const ITEMS_PER_PAGE = 5
+const ITEMS_PER_PAGE = 5;
 
 export default function ViewOrganizationPage() {
-  const params = useParams()
-  const router = useRouter()
-  const orgSlug = params.orgSlug as string
+  const params = useParams();
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const orgSlug = params.orgSlug as string;
 
   // State
-  const [organization, setOrganization] = React.useState(mockOrganization)
-  const [searchQuery, setSearchQuery] = React.useState('')
-  const [currentPage, setCurrentPage] = React.useState(1)
-  
+  const [organization, setOrganization] = React.useState<any>({});
+  const [organizationMember, setOrganizationMember] = React.useState<any>({
+    data: [],
+    meta: {},
+  });
+
+  const [organizationProjects, setOrganizationProjects] = React.useState<any>({
+    data: [],
+    meta: {},
+  });
+  const [totalPage, setTotalPage] = React.useState("");
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [currentPage, setCurrentPage] = React.useState(1);
+
   // Dialog states
-  const [isAddMemberOpen, setIsAddMemberOpen] = React.useState(false)
-  const [isChangeRoleOpen, setIsChangeRoleOpen] = React.useState(false)
-  const [isRemoveMemberOpen, setIsRemoveMemberOpen] = React.useState(false)
-  const [selectedMember, setSelectedMember] = React.useState<typeof organization.members[0] | null>(null)
-  
+  const [isAddMemberOpen, setIsAddMemberOpen] = React.useState(false);
+  const [isChangeRoleOpen, setIsChangeRoleOpen] = React.useState(false);
+  const [isRemoveMemberOpen, setIsRemoveMemberOpen] = React.useState(false);
+  const [selectedMember, setSelectedMember] = React.useState<
+    (typeof organization.members)[0] | null
+  >(null);
+
   // Form states
-  const [newMemberEmail, setNewMemberEmail] = React.useState('')
-  const [newMemberRole, setNewMemberRole] = React.useState('Member')
-  const [newRole, setNewRole] = React.useState('')
-  const [isLoading, setIsLoading] = React.useState(false)
-
-  // Filter members by search
-  const filteredMembers = organization.members.filter(member =>
-    member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    member.email.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  // Pagination
-  const totalPages = Math.ceil(filteredMembers.length / ITEMS_PER_PAGE)
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
-  const paginatedMembers = filteredMembers.slice(startIndex, startIndex + ITEMS_PER_PAGE)
+  const [newMemberEmail, setNewMemberEmail] = React.useState("");
+  const [newMemberRole, setNewMemberRole] = React.useState("Member");
+  const [newRole, setNewRole] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(false);
 
   // Reset to page 1 when search changes
   React.useEffect(() => {
-    setCurrentPage(1)
-  }, [searchQuery])
+    setCurrentPage(1);
+  }, [searchQuery]);
 
-  const handleAddMember = async () => {
-    if (!newMemberEmail) return
-    setIsLoading(true)
-    await new Promise(resolve => setTimeout(resolve, 1000))
+  React.useEffect(() => {
+    getOrganizationDetailsHandler();
+    getOrganizationMembersHandler();
+    getProjectInOrganization();
+  }, [orgSlug]);
 
-    setOrganization(prev => ({
-      ...prev,
-      members: [
-        ...prev.members,
-        {
-          id: Date.now().toString(),
-          name: newMemberEmail.split('@')[0],
-          email: newMemberEmail,
-          role: newMemberRole,
-          avatar: '',
-          joinedAt: new Date().toISOString().split('T')[0],
-        },
-      ],
-    }))
+  const getOrganizationDetailsHandler = async () => {
+    try {
+      const response = await dispatch(getOrganizationDetails(orgSlug)).unwrap();
+      setOrganization(response);
+    } catch (error) {
+      console.error("Error fetching organization details:", error);
+    }
+  };
 
-    setNewMemberEmail('')
-    setNewMemberRole('Member')
-    setIsAddMemberOpen(false)
-    setIsLoading(false)
-  }
+  const getOrganizationMembersHandler = async () => {
+    try {
+      const response = await dispatch(
+        getMemberOfOrganization(orgSlug),
+      ).unwrap();
+      setOrganizationMember(response);
+    } catch (error) {
+      console.error("Error fetching organization details:", error);
+    }
+  };
 
-  const handleChangeRole = async () => {
-    if (!selectedMember || !newRole) return
-    setIsLoading(true)
-    await new Promise(resolve => setTimeout(resolve, 1000))
+  const getProjectInOrganization = async () => {
+    try {
+      const response = await dispatch(fetchProjects()).unwrap();
+      console.log("PERRR",response)
+      setOrganizationProjects(response);
+    } catch (error) {}
+  };
 
-    setOrganization(prev => ({
-      ...prev,
-      members: prev.members.map(member =>
-        member.id === selectedMember.id ? { ...member, role: newRole } : member
-      ),
-    }))
+  const handleAddMember = async () => {};
 
-    setSelectedMember(null)
-    setNewRole('')
-    setIsChangeRoleOpen(false)
-    setIsLoading(false)
-  }
+  const handleChangeRole = async () => {};
 
-  const handleRemoveMember = async () => {
-    if (!selectedMember) return
-    setIsLoading(true)
-    await new Promise(resolve => setTimeout(resolve, 1000))
+  const handleRemoveMember = async () => {};
 
-    setOrganization(prev => ({
-      ...prev,
-      members: prev.members.filter(member => member.id !== selectedMember.id),
-    }))
+  const openChangeRoleDialog = (member: (typeof organization.members)[0]) => {
+    setSelectedMember(member);
+    setNewRole(member.role);
+    setIsChangeRoleOpen(true);
+  };
 
-    setSelectedMember(null)
-    setIsRemoveMemberOpen(false)
-    setIsLoading(false)
-  }
-
-  const openChangeRoleDialog = (member: typeof organization.members[0]) => {
-    setSelectedMember(member)
-    setNewRole(member.role)
-    setIsChangeRoleOpen(true)
-  }
-
-  const openRemoveMemberDialog = (member: typeof organization.members[0]) => {
-    setSelectedMember(member)
-    setIsRemoveMemberOpen(true)
-  }
+  const openRemoveMemberDialog = (member: (typeof organization.members)[0]) => {
+    setSelectedMember(member);
+    setIsRemoveMemberOpen(true);
+  };
 
   const getRoleBadgeVariant = (role: string) => {
     switch (role) {
-      case 'Owner':
-        return 'default'
-      case 'Admin':
-        return 'secondary'
-      case 'Member':
-        return 'outline'
+      case "ADMIN":
+        return "default";
+      case "MEMBER":
+        return "secondary";
       default:
-        return 'outline'
+        return "outline";
     }
-  }
+  };
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
-      case 'Active':
-        return 'default'
-      case 'Completed':
-        return 'secondary'
-      case 'Planning':
-        return 'outline'
+      case "Active":
+        return "default";
+      case "Completed":
+        return "secondary";
+      case "Planning":
+        return "outline";
       default:
-        return 'outline'
+        return "outline";
     }
-  }
-
+  };
   return (
     <div className="space-y-6 p-6">
       {/* Header */}
@@ -242,7 +349,7 @@ export default function ViewOrganizationPage() {
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Organizations
         </Button>
-        
+
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div>
             <div className="flex items-center gap-3">
@@ -250,12 +357,16 @@ export default function ViewOrganizationPage() {
                 <Building2 className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-foreground">{organization.name}</h1>
-                <p className="text-muted-foreground text-sm">/{organization.slug}</p>
+                <h1 className="text-3xl font-bold text-foreground">
+                  {organization?.organization?.name}
+                </h1>
+                <p className="text-muted-foreground text-sm">
+                  /{organization?.organization?.slug}
+                </p>
               </div>
             </div>
             <p className="text-muted-foreground mt-3 max-w-2xl">
-              {organization.description}
+              {organization?.organization?.description}
             </p>
           </div>
           <Button variant="outline" asChild>
@@ -276,7 +387,9 @@ export default function ViewOrganizationPage() {
                 <Users className="w-6 h-6 text-blue-500" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{organization.members.length}</p>
+                <p className="text-2xl font-bold">
+                  {organizationMember?.data?.length}
+                </p>
                 <p className="text-sm text-muted-foreground">Team Members</p>
               </div>
             </div>
@@ -289,7 +402,9 @@ export default function ViewOrganizationPage() {
                 <FolderOpen className="w-6 h-6 text-green-500" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{organization.projects.length}</p>
+                <p className="text-2xl font-bold">
+                  {organizationProjects.data.length}
+                </p>
                 <p className="text-sm text-muted-foreground">Projects</p>
               </div>
             </div>
@@ -303,7 +418,11 @@ export default function ViewOrganizationPage() {
               </div>
               <div>
                 <p className="text-2xl font-bold">
-                  {organization.members.filter(m => m.role === 'Admin' || m.role === 'Owner').length}
+                  {
+                    organizationMember?.data?.filter(
+                      (m: any) => m.role === "ADMIN"
+                    ).length
+                  }
                 </p>
                 <p className="text-sm text-muted-foreground">Admins</p>
               </div>
@@ -318,7 +437,12 @@ export default function ViewOrganizationPage() {
               </div>
               <div>
                 <p className="text-2xl font-bold">
-                  {new Date(organization.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                  {new Date(
+                    organization?.organization?.createdAt,
+                  ).toLocaleDateString("en-US", {
+                    month: "short",
+                    year: "numeric",
+                  })}
                 </p>
                 <p className="text-sm text-muted-foreground">Created</p>
               </div>
@@ -376,31 +500,46 @@ export default function ViewOrganizationPage() {
                     <TableRow>
                       <TableHead>Member</TableHead>
                       <TableHead>Role</TableHead>
-                      <TableHead className="hidden md:table-cell">Joined</TableHead>
+                      <TableHead className="hidden md:table-cell">
+                        Joined
+                      </TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {paginatedMembers.length === 0 ? (
+                    {organizationMember?.data?.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                        <TableCell
+                          colSpan={4}
+                          className="text-center py-8 text-muted-foreground"
+                        >
                           No members found
                         </TableCell>
                       </TableRow>
                     ) : (
-                      paginatedMembers.map(member => (
-                        <TableRow key={member.id}>
+                      organizationMember?.data?.map((member: any) => (
+                        <TableRow key={member._id}>
                           <TableCell>
                             <div className="flex items-center gap-3">
                               <Avatar className="w-9 h-9">
-                                <AvatarImage src={member.avatar} alt={member.name} />
+                                <AvatarImage
+                                  src={member?.avatar}
+                                  alt={member?.userId?.name}
+                                />
                                 <AvatarFallback>
-                                  {member.name.split(' ').map(n => n[0]).join('')}
+                                  {member?.userId?.userName
+                                    .split(" ")
+                                    .map((n: any) => n[0])
+                                    .join("")}
                                 </AvatarFallback>
                               </Avatar>
                               <div>
-                                <p className="font-medium">{member.name}</p>
-                                <p className="text-sm text-muted-foreground">{member.email}</p>
+                                <p className="font-medium">
+                                  {member?.userId?.userName}
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                  {member?.userId?.email}
+                                </p>
                               </div>
                             </div>
                           </TableCell>
@@ -415,13 +554,19 @@ export default function ViewOrganizationPage() {
                           <TableCell className="text-right">
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" disabled={member.role === 'Owner'}>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  disabled={member.role === "Owner"}
+                                >
                                   <MoreHorizontal className="w-4 h-4" />
                                   <span className="sr-only">Open menu</span>
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => openChangeRoleDialog(member)}>
+                                <DropdownMenuItem
+                                  onClick={() => openChangeRoleDialog(member)}
+                                >
                                   <Shield className="w-4 h-4 mr-2" />
                                   Change Role
                                 </DropdownMenuItem>
@@ -430,7 +575,7 @@ export default function ViewOrganizationPage() {
                                   Send Email
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem 
+                                <DropdownMenuItem
                                   className="text-destructive focus:text-destructive"
                                   onClick={() => openRemoveMemberDialog(member)}
                                 >
@@ -448,38 +593,49 @@ export default function ViewOrganizationPage() {
               </div>
 
               {/* Pagination */}
-              {totalPages > 1 && (
+              {/* {totalPages > 1 && (
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-muted-foreground">
-                    Showing {startIndex + 1} to {Math.min(startIndex + ITEMS_PER_PAGE, filteredMembers.length)} of {filteredMembers.length} members
+                    Showing {startIndex + 1} to{" "}
+                    {Math.min(
+                      startIndex + ITEMS_PER_PAGE,
+                      filteredMembers.length,
+                    )}{" "}
+                    of {filteredMembers.length} members
                   </p>
                   <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                       disabled={currentPage === 1}
                     >
                       <ChevronLeft className="w-4 h-4" />
                       Previous
                     </Button>
                     <div className="flex items-center gap-1">
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                        <Button
-                          key={page}
-                          variant={currentPage === page ? 'default' : 'outline'}
-                          size="sm"
-                          className="w-9"
-                          onClick={() => setCurrentPage(page)}
-                        >
-                          {page}
-                        </Button>
-                      ))}
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                        (page) => (
+                          <Button
+                            key={page}
+                            variant={
+                              currentPage === page ? "default" : "outline"
+                            }
+                            size="sm"
+                            className="w-9"
+                            onClick={() => setCurrentPage(page)}
+                          >
+                            {page}
+                          </Button>
+                        ),
+                      )}
                     </div>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                      onClick={() =>
+                        setCurrentPage((p) => Math.min(totalPages, p + 1))
+                      }
                       disabled={currentPage === totalPages}
                     >
                       Next
@@ -487,7 +643,7 @@ export default function ViewOrganizationPage() {
                     </Button>
                   </div>
                 </div>
-              )}
+              )} */}
             </CardContent>
           </Card>
         </TabsContent>
@@ -518,32 +674,42 @@ export default function ViewOrganizationPage() {
                     <TableRow>
                       <TableHead>Project</TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead className="hidden md:table-cell">Tasks</TableHead>
+                      <TableHead className="hidden md:table-cell">
+                        Created At
+                      </TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {organization.projects.map(project => (
-                      <TableRow key={project.id}>
+                    {organizationProjects?.data?.map((project: any) => (
+                      <TableRow key={project._id}>
                         <TableCell>
                           <div>
                             <p className="font-medium">{project.name}</p>
-                            <p className="text-sm text-muted-foreground">/{project.slug}</p>
+                            <p className="text-sm text-muted-foreground">
+                              /{project.slug}
+                            </p>
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant={getStatusBadgeVariant(project.status)}>
+                          <Badge
+                            variant={getStatusBadgeVariant(project.status)}
+                          >
                             {project.status}
                           </Badge>
                         </TableCell>
                         <TableCell className="hidden md:table-cell text-muted-foreground">
-                          {project.taskCount} tasks
+                           {new Date(project?.createdAt).toLocaleDateString(
+                            "en-US",
+                            {
+                              month: "short",
+                              year: "numeric",
+                            },
+                          )}
                         </TableCell>
                         <TableCell className="text-right">
                           <Button variant="ghost" size="sm" asChild>
-                            <Link href={`/projects/${project.slug}`}>
-                              View
-                            </Link>
+                            <Link href={`/projects/${project.slug}`}>View</Link>
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -562,7 +728,8 @@ export default function ViewOrganizationPage() {
           <DialogHeader>
             <DialogTitle>Add Team Member</DialogTitle>
             <DialogDescription>
-              Invite a new member to join {organization.name}. They will receive an email invitation.
+              Invite a new member to join {organization?.name}. They will
+              receive an email invitation.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
@@ -593,9 +760,11 @@ export default function ViewOrganizationPage() {
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground">
-                {newMemberRole === 'Admin' && 'Full access to manage organization settings and members'}
-                {newMemberRole === 'Member' && 'Can view and contribute to all projects'}
-                {newMemberRole === 'Viewer' && 'Read-only access to projects'}
+                {newMemberRole === "Admin" &&
+                  "Full access to manage organization settings and members"}
+                {newMemberRole === "Member" &&
+                  "Can view and contribute to all projects"}
+                {newMemberRole === "Viewer" && "Read-only access to projects"}
               </p>
             </div>
           </div>
@@ -603,11 +772,11 @@ export default function ViewOrganizationPage() {
             <Button variant="outline" onClick={() => setIsAddMemberOpen(false)}>
               Cancel
             </Button>
-            <Button 
-              onClick={handleAddMember} 
+            <Button
+              onClick={handleAddMember}
               disabled={!newMemberEmail || isLoading}
             >
-              {isLoading ? 'Sending...' : 'Send Invitation'}
+              {isLoading ? "Sending..." : "Send Invitation"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -625,14 +794,22 @@ export default function ViewOrganizationPage() {
           <div className="space-y-4 py-4">
             <div className="flex items-center gap-3 p-3 rounded-lg bg-muted">
               <Avatar className="w-10 h-10">
-                <AvatarImage src={selectedMember?.avatar} alt={selectedMember?.name} />
+                <AvatarImage
+                  src={selectedMember?.avatar}
+                  alt={selectedMember?.name}
+                />
                 <AvatarFallback>
-                  {selectedMember?.name.split(' ').map(n => n[0]).join('')}
+                  {selectedMember?.name
+                    .split(" ")
+                    .map((n: any) => n[0])
+                    .join("")}
                 </AvatarFallback>
               </Avatar>
               <div>
                 <p className="font-medium">{selectedMember?.name}</p>
-                <p className="text-sm text-muted-foreground">{selectedMember?.email}</p>
+                <p className="text-sm text-muted-foreground">
+                  {selectedMember?.email}
+                </p>
               </div>
             </div>
             <div className="space-y-2">
@@ -652,27 +829,32 @@ export default function ViewOrganizationPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsChangeRoleOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setIsChangeRoleOpen(false)}
+            >
               Cancel
             </Button>
-            <Button 
-              onClick={handleChangeRole} 
-              disabled={!newRole || isLoading}
-            >
-              {isLoading ? 'Updating...' : 'Update Role'}
+            <Button onClick={handleChangeRole} disabled={!newRole || isLoading}>
+              {isLoading ? "Updating..." : "Update Role"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Remove Member Alert Dialog */}
-      <AlertDialog open={isRemoveMemberOpen} onOpenChange={setIsRemoveMemberOpen}>
+      <AlertDialog
+        open={isRemoveMemberOpen}
+        onOpenChange={setIsRemoveMemberOpen}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Remove Member</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to remove <span className="font-medium">{selectedMember?.name}</span> from {organization.name}? 
-              They will lose access to all projects in this organization.
+              Are you sure you want to remove{" "}
+              <span className="font-medium">{selectedMember?.name}</span> from{" "}
+              {organization?.name}? They will lose access to all projects in
+              this organization.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -681,11 +863,11 @@ export default function ViewOrganizationPage() {
               onClick={handleRemoveMember}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isLoading ? 'Removing...' : 'Remove Member'}
+              {isLoading ? "Removing..." : "Remove Member"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </div>
-  )
+  );
 }

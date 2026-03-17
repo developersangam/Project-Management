@@ -62,12 +62,11 @@ export default function OrganizationsPage() {
   }, [dispatch]);
 
   const handleSwitch = (org: any) => {
+    console.log(org)
     dispatch(switchOrganization(org));
   };
 
-  const handleAddMember = async () => {
-
-  };
+  const handleAddMember = async () => {};
 
   const openAddMemberDialog = () => {
     setIsAddMemberOpen(true);
@@ -105,9 +104,14 @@ export default function OrganizationsPage() {
                   {currentOrganization?.organization?.name}
                 </CardDescription>
               </div>
-              <Badge variant="secondary">
-                {currentOrganization?.totalMembers || 0} members
-              </Badge>
+              <div className="flex items-center gap-2">
+                <Badge variant="default">
+                  {currentOrganization?.totalProjects || 0} projects
+                </Badge>
+                <Badge variant="secondary">
+                  {currentOrganization?.totalMembers || 0} members
+                </Badge>
+              </div>
             </div>
           </CardHeader>
           <CardContent>
@@ -126,12 +130,7 @@ export default function OrganizationsPage() {
                   View Projects
                 </Link>
               </Button>
-              <Button
-                variant="outline"
-                onClick={() =>
-                  openAddMemberDialog()
-                }
-              >
+              <Button variant="outline" onClick={() => openAddMemberDialog()}>
                 <UserPlus className="w-4 h-4 mr-2" />
                 Add Member
               </Button>
@@ -168,7 +167,8 @@ export default function OrganizationsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {organizations?.map((org) => {
-              const isCurrentOrg = currentOrganization?.organization?.id === org?.organization?.id;
+              const isCurrentOrg =
+                currentOrganization?.organization?.id === org?.organization?.id;
               return (
                 <Card
                   key={org?.organization?.id}
@@ -184,7 +184,7 @@ export default function OrganizationsPage() {
                       )}
                     </CardTitle>
                     <CardDescription className="line-clamp-2">
-                      {org.description || "No description"}
+                      {org.organization?.description || "No description"}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -204,7 +204,7 @@ export default function OrganizationsPage() {
                       {isCurrentOrg ? (
                         <>
                           <Button variant="outline" className="w-full" asChild>
-                            <Link href={`/organizations/${org.slug}`}>
+                            <Link href={`/organizations/${org?.organization?.slug}`}>
                               <Eye className="w-4 h-4 mr-2" />
                               View Organization
                               <ArrowRight className="w-4 h-4 ml-auto" />
@@ -228,12 +228,12 @@ export default function OrganizationsPage() {
                           >
                             Switch to this Organization
                           </Button>
-                          <Button variant="ghost" className="w-full" asChild>
-                            <Link href={`/organizations/${org.slug}`}>
+                          {/* <Button variant="ghost" className="w-full" asChild>
+                            <Link href={`/organizations/${org?.organization?.slug}`}>
                               <Eye className="w-4 h-4 mr-2" />
                               View Details
                             </Link>
-                          </Button>
+                          </Button> */}
                         </>
                       )}
                     </div>
@@ -244,7 +244,10 @@ export default function OrganizationsPage() {
           </div>
         )}
       </div>
-        <AddOrgMemberModal isAddMemberOpen={isAddMemberOpen} setIsAddMemberOpen={setIsAddMemberOpen} />
+      <AddOrgMemberModal
+        isAddMemberOpen={isAddMemberOpen}
+        setIsAddMemberOpen={setIsAddMemberOpen}
+      />
     </div>
   );
 }

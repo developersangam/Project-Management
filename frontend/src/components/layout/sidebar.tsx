@@ -47,7 +47,7 @@ export const Sidebar: React.FC = () => {
         <ul className="space-y-1">
           {navigation.map((item) => {
             const Icon = item.icon
-            const isActive = pathname === item.href
+            const isActive = pathname.includes(item.href)
             return (
               <li key={item.name}>
                 <Link

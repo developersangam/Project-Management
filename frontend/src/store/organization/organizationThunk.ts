@@ -8,7 +8,11 @@ import { Organization } from "../../types";
 import {
   addMemberToOrganizationAPI,
   createOrganizationAPI,
+  deleteOrganizationAPI,
+  getOrganizationDetailsAPI,
+  getOrganizationMembersAPI,
   getOrganizationsAPI,
+  updateOrganizationAPI,
 } from "../../../service/organization.service";
 import { RootState } from "../../store";
 import { toast } from "sonner";
@@ -108,3 +112,85 @@ export const addMemberToOrganization = createAsyncThunk(
     }
   },
 );
+
+export const getOrganizationDetails = createAsyncThunk(
+  "organization/getOrganizationDetails",
+  async (orgSlug: string, { dispatch }) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await getOrganizationDetailsAPI(orgSlug);
+      return response.data;
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Failed to fetch organization details");
+      throw error;
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
+
+export const deleteOrganization = createAsyncThunk(
+  "organization/deleteOrganization",
+  async (orgSlug: string, { dispatch }) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await deleteOrganizationAPI(orgSlug);
+      // After deleting organization, refetch organizations to update the list
+      dispatch(fetchOrganizations());
+      toast.success(response.data.message || "Organization deleted successfully");
+      return response.data;
+    } catch (error: any) {
+      console.log("Error response from API:", error);
+      toast.error(error?.response?.data?.message || "Failed to delete organization");
+      console.error("Failed to delete organization:", error);
+      throw error;
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
+
+export const updateOrganization = createAsyncThunk(
+  "organization/updateOrganization",
+  async (
+    { orgSlug, data }: { orgSlug: string; data: { name?: string; description?: string } },
+    { dispatch },
+  ) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await updateOrganizationAPI(orgSlug, data);
+      // After updating organization, refetch organizations to update the list
+      dispatch(fetchOrganizations());
+      // toast.success(response.data.message || "Organization updated successfully");
+      return response.data;
+    } catch (error: any) {
+      console.log("Error response from API:", error);
+      toast.error(error?.response?.data?.message || "Failed to update organization");
+      console.error("Failed to update organization:", error);
+      throw error;
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);    
+
+
+export const getMemberOfOrganization = createAsyncThunk(
+  "organization/getMemberOfOrganization",
+  async ( orgSlug: string, { dispatch }) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await getOrganizationMembersAPI(orgSlug);
+      // toast.success(response.data.message || "Organization updated successfully");
+      return response.data;
+    } catch (error: any) {
+      console.log("Error response from API:", error);
+      toast.error(error?.response?.data?.message || "Failed to update organization");
+      console.error("Failed to update organization:", error);
+      throw error;
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);    
+
