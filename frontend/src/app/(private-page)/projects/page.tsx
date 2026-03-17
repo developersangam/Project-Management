@@ -74,7 +74,6 @@ export default function ProjectsPage() {
       console.error("Failed to create project:", error);
     }
   };
-
   return (
     <div className="space-y-4 lg:space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -117,7 +116,7 @@ export default function ProjectsPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
           {projects.data?.map((project) => (
             <Card
-              key={project.id}
+              key={project._id}
               className="hover:shadow-lg transition-all duration-200 border-0 shadow-sm bg-card"
             >
               <CardHeader className="pb-3">
