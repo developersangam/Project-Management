@@ -103,7 +103,7 @@ export const Header: React.FC = () => {
     dispatch(logoutThunk());
     setUserDropdownOpen(false);
   };
-console.log("Header - Organizations:", organizations);
+  console.log("Header - Organizations:", organizations);
   return (
     <header className="bg-card border-b border-border h-16 flex items-center justify-between px-4 lg:px-6 shadow-sm">
       <div className="flex items-center space-x-4 lg:space-x-6 flex-1">
@@ -133,7 +133,8 @@ console.log("Header - Organizations:", organizations);
                 {currentOrganization?.name?.charAt(0).toUpperCase() || "O"}
               </div>
               <span className="hidden lg:inline text-sm font-medium">
-                {currentOrganization?.organization?.name || "Select Organization"}
+                {currentOrganization?.organization?.name ||
+                  "Select Organization"}
               </span>
               <ChevronDown className="w-4 h-4" />
             </Button>
