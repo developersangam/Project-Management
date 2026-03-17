@@ -4,7 +4,7 @@ import * as React from 'react'
 import { useAppSelector } from '@/hooks/redux'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Progress } from '../../../components/ui/progress'
+import { Progress } from '@/components/ui/progress'
 import {
   BarChart3,
   TrendingUp,

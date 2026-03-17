@@ -34,7 +34,7 @@ axiosInstance.interceptors.response.use(
 
     const message = error.response?.data?.message || "Something went wrong";
 
-    return Promise.reject(message);
+    return Promise.reject(error);
   },
 );
 

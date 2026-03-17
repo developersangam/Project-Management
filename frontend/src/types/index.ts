@@ -71,10 +71,14 @@ export interface OrganizationState {
 }
 
 export interface ProjectState {
-  projects: any[];
+  projects: {
+    data : any[];
+    meta: {}
+  };
   currentProject: Project | null;
   loading: boolean;
   error?: string;
+  projectMembers: any[];  
 }
 
 export interface TaskState {

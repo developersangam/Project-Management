@@ -60,13 +60,13 @@ export default function BoardPage() {
         </div>
         <div className="flex gap-2">
           <Button asChild>
-            <Link href="/dashboard/tasks/create">
+            <Link href="/tasks/create">
               <Plus className="w-4 h-4 mr-2" />
               New Task
             </Link>
           </Button>
           <Button variant="outline" asChild>
-            <Link href={`/dashboard/projects/${projectSlug}`}>
+            <Link href={`/projects/${projectSlug}`}>
               <Settings className="w-4 h-4 mr-2" />
               Project
             </Link>

@@ -14,9 +14,15 @@ const authPersistConfig = {
   whitelist: ["user", "token","isAuthenticated"], // Only persist user and token
 };
 
+const organizationPersistConfig = {
+  key: "organization",
+  storage,
+  whitelist: ["currentOrganization"], // Only persist currentOrganization
+};
+
 const rootReducer = combineReducers({
   auth: persistReducer(authPersistConfig, authReducer),
-  organization: organizationReducer,
+  organization: persistReducer(organizationPersistConfig, organizationReducer),
   project: projectReducer,
   task: taskReducer,
   ui: uiReducer,

@@ -2,10 +2,10 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { useAppDispatch, useAppSelector } from "../../hooks/redux";
-import { registerUser } from "../../store/auth/authThunk";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
+import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
+import { registerUser } from "../../../store/auth/authThunk";
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
 import {
   Card,
   CardContent,

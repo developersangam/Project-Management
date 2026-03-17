@@ -49,7 +49,6 @@ export default function LoginPage() {
   }, [isAuthenticated, router]);
 
   const onSubmit = async (data: LoginFormValues) => {
-
     await dispatch(login(data));
   };
 
