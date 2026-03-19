@@ -62,7 +62,7 @@ export default function OrganizationsPage() {
   }, [dispatch]);
 
   const handleSwitch = (org: any) => {
-    console.log(org)
+    console.log(org);
     dispatch(switchOrganization(org));
   };
 
@@ -98,10 +98,13 @@ export default function OrganizationsPage() {
               <div>
                 <CardTitle className="flex items-center gap-2">
                   <Check className="w-5 h-5 text-green-600" />
-                  Current Organization
+                  {currentOrganization?.organization?.name}
                 </CardTitle>
                 <CardDescription className="mt-2">
-                  {currentOrganization?.organization?.name}
+                  Slug - {currentOrganization?.organization?.slug}
+                </CardDescription>
+                <CardDescription className="mt-2">
+                  {currentOrganization?.organization?.description}
                 </CardDescription>
               </div>
               <div className="flex items-center gap-2">
@@ -135,7 +138,9 @@ export default function OrganizationsPage() {
                 Add Member
               </Button>
               <Button variant="outline" asChild>
-                <Link href="/settings">
+                <Link
+                  href={`/organizations/${currentOrganization?.organization?.slug}/settings`}
+                >
                   <Settings className="w-4 h-4 mr-2" />
                   Settings
                 </Link>
@@ -172,7 +177,7 @@ export default function OrganizationsPage() {
               return (
                 <Card
                   key={org?.organization?.id}
-                  className={`hover:shadow-lg transition-all duration-200 ${isCurrentOrg ? "border-primary bg-primary/5" : ""}`}
+                  className={`hover:shadow-lg transition-all duration-200 ${isCurrentOrg ? "border bg-primary/5" : ""}`}
                 >
                   <CardHeader className="pb-3">
                     <CardTitle className="flex items-start justify-between">
@@ -204,7 +209,9 @@ export default function OrganizationsPage() {
                       {isCurrentOrg ? (
                         <>
                           <Button variant="outline" className="w-full" asChild>
-                            <Link href={`/organizations/${org?.organization?.slug}`}>
+                            <Link
+                              href={`/organizations/${org?.organization?.slug}`}
+                            >
                               <Eye className="w-4 h-4 mr-2" />
                               View Organization
                               <ArrowRight className="w-4 h-4 ml-auto" />

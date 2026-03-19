@@ -22,7 +22,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { addMemberSchema } from "@/validation/addOrgMemberSchema";
+import { addMemberSchema } from "@/validation/organizationSchema";
 import { addMemberToOrganization } from "@/store/organization/organizationThunk";
 
 const ORG_ROLE = [

@@ -15,7 +15,7 @@ import {
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createOrgSchema } from "@/validation/createOrgSchema";
+import { createOrgSchema } from "@/validation/organizationSchema";
 import { z } from "zod";
 import { createOrganization } from "@/store/organization/organizationThunk";
 
@@ -24,7 +24,7 @@ type CreateOrgFormValues = z.infer<typeof createOrgSchema>;
 export default function CreateOrganizationPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { loading } = useAppSelector((state) => state.auth);
+  const { loading } = useAppSelector((state) => state.organization);
 
   const {
     register,

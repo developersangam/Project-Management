@@ -74,6 +74,7 @@ import {
   Trash2,
 } from "lucide-react";
 import {
+    addMemberToOrganization,
   getMemberOfOrganization,
   getOrganizationDetails,
 } from "@/store/organization/organizationThunk";
@@ -301,13 +302,19 @@ export default function ViewOrganizationPage() {
     } catch (error) {}
   };
 
-  const handleAddMember = async () => {};
+  const handleAddMember = async () => {
+    try{
+        // const response = dispatch(addMemberToOrganization())
+    }catch{
+
+    }
+  };
 
   const handleChangeRole = async () => {};
 
   const handleRemoveMember = async () => {};
 
-  const openChangeRoleDialog = (member: (typeof organization.members)[0]) => {
+  const openChangeRoleDialog = (member:any) => {
     setSelectedMember(member);
     setNewRole(member.role);
     setIsChangeRoleOpen(true);
@@ -345,7 +352,7 @@ export default function ViewOrganizationPage() {
     <div className="space-y-6 p-6">
       {/* Header */}
       <div className="flex flex-col gap-4">
-        <Button variant="ghost" className="w-fit" onClick={() => router.back()}>
+        <Button variant="ghost" className="w-fit" onClick={() => router.push("/organizations")}>
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Organizations
         </Button>

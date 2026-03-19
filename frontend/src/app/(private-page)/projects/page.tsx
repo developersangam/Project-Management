@@ -14,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogTrigger,
 } from "../../../components/ui/modal";
 import { Input } from "../../../components/ui/input";
 import {
@@ -23,7 +24,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Plus, FolderOpen } from "lucide-react";
+import { Plus, FolderOpen, Calendar, Users, ArrowRight } from "lucide-react";
 import { createProjectSchema } from "@/validation/projectSchema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -75,127 +76,175 @@ export default function ProjectsPage() {
     }
   };
   return (
-    <div className="space-y-4 lg:space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
             Projects
           </h1>
-          <p className="text-muted-foreground mt-1 lg:mt-2 text-sm lg:text-base">
-            Manage and organize your team's projects
+          <p className="text-muted-foreground mt-2">
+            Manage and organize your projects across all organizations
           </p>
         </div>
-        <Button
-          onClick={() => setIsModalOpen(true)}
-          className="w-full sm:w-auto"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          <span className="hidden sm:inline">New Project</span>
-          <span className="sm:hidden">New</span>
-        </Button>
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="w-4 h-4 mr-2" />
+              New Project
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Create New Project</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-4">
+              <div className="space-y-4 py-4">
+                <div>
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium mb-2"
+                  >
+                    Project Name
+                  </label>
+                  <Input
+                    id="name"
+                    placeholder="Enter project name"
+                    {...register("name")}
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="description"
+                    className="block text-sm font-medium mb-2"
+                  >
+                    Description
+                  </label>
+                  <Input
+                    id="description"
+                    placeholder="Enter project description (optional)"
+                    {...register("description")}
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={loading}>
+                  {loading ? "Creating..." : "Create Project"}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
 
-      {projects.data?.length === 0 ? (
-        <div className="text-center py-8 lg:py-12">
-          <FolderOpen className="mx-auto h-12 w-12 lg:h-16 lg:w-16 text-muted-foreground mb-4" />
-          <h3 className="text-lg lg:text-xl font-medium text-foreground mb-2">
-            No projects yet
-          </h3>
-          <p className="text-muted-foreground mb-4 lg:mb-6 max-w-sm mx-auto text-sm lg:text-base">
-            Get started by creating your first project.
-          </p>
-          <Button
-            className="w-full sm:w-auto"
-            onClick={() => setIsModalOpen(true)}
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Create Project
-          </Button>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
-          {projects.data?.map((project) => (
-            <Card
-              key={project._id}
-              className="hover:shadow-lg transition-all duration-200 border-0 shadow-sm bg-card"
-            >
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex-1 min-w-0">
-                    <CardTitle className="flex items-center space-x-2 text-base lg:text-lg">
-                      <FolderOpen className="w-4 h-4 lg:w-5 lg:h-5 text-muted-foreground flex-shrink-0" />
-                      <span className="truncate">{project.name}</span>
-                    </CardTitle>
-                    <CardDescription className="mt-1 line-clamp-2 text-sm">
-                      {project.description || "No description available"}
-                    </CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <Button variant="outline" className="flex-1 h-9" asChild>
-                    <Link href={`/projects/${project.slug}`}>
-                      View Details
-                    </Link>
-                  </Button>
-                  <Button className="flex-1 h-9" asChild>
-                    <Link href={`/projects/${project.slug}/board`}>
-                      Open Board
-                    </Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
-
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Create New Project</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-4">
-            <div className="space-y-4 py-4">
-              <div>
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-medium mb-2"
-                >
-                  Project Name
-                </label>
-                <Input
-                  id="name"
-                  placeholder="Enter project name"
-                  {...register("name")}
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="description"
-                  className="block text-sm font-medium mb-2"
-                >
-                  Description
-                </label>
-                <Input
-                  id="description"
-                  placeholder="Enter project description (optional)"
-                  {...register("description")}
-                />
-              </div>
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">
+              Total Projects
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{projects.data?.length}</div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Active projects
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">
+              Total Team Members
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {projects?.data?.reduce((sum, p) => sum + p.members, 0)}
             </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsModalOpen(false)}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={loading}>
-                {loading ? "Creating..." : "Create Project"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+            <p className="text-xs text-muted-foreground mt-1">
+              Across all projects
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">Total Tasks</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {projects?.data.reduce((sum, p) => sum + p.tasks, 0)}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">In progress</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Projects Grid */}
+      <div>
+        <h2 className="text-xl font-semibold mb-4">Your Projects</h2>
+        {projects.data?.length === 0 ? (
+          <Card className="border-0 py-12">
+            <CardContent className="text-center">
+              <FolderOpen className="w-12 h-12 mx-auto text-muted-foreground mb-4 opacity-50" />
+              <p className="text-muted-foreground mb-4">No projects yet</p>
+              <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create First Project
+                  </Button>
+                </DialogTrigger>
+              </Dialog>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {projects?.data.map((project) => (
+              <Link key={project.id} href={`/projects/${project.slug}`}>
+                <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer">
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <CardTitle className="line-clamp-2">
+                          {project.name}
+                        </CardTitle>
+                        <CardDescription className="text-xs mt-1">
+                          {project.organization}
+                        </CardDescription>
+                      </div>
+                      <ArrowRight className="w-4 h-4 text-muted-foreground flex-shrink-0 ml-2" />
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p className="text-sm text-muted-foreground line-clamp-2">
+                      {project.description || "No description"}
+                    </p>
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <Users className="w-3 h-3" />
+                        {project?.members} members
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Calendar className="w-3 h-3" />
+                        {new Date(project?.createdAt).toLocaleDateString()}
+                      </div>
+                    </div>
+                    <div className="pt-2 border-t">
+                      <p className="text-xs font-medium text-foreground">
+                        {project?.tasks} tasks in progress
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

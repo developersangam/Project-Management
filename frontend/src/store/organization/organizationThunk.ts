@@ -138,7 +138,7 @@ export const deleteOrganization = createAsyncThunk(
       // After deleting organization, refetch organizations to update the list
       dispatch(fetchOrganizations());
       toast.success(response.data.message || "Organization deleted successfully");
-      return response.data;
+      return response;
     } catch (error: any) {
       console.log("Error response from API:", error);
       toast.error(error?.response?.data?.message || "Failed to delete organization");

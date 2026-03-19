@@ -1,12 +1,14 @@
-import * as React from "react"
-import { Sidebar } from "./sidebar"
-import { Header } from "./header"
+import * as React from "react";
+import { Sidebar } from "./sidebar";
+import { Header } from "./header";
 
 interface DashboardLayoutProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
-export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
+export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
+  children,
+}) => {
   return (
     <div className="flex h-screen bg-background">
       <Sidebar />
@@ -19,5 +21,5 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
         </main>
       </div>
     </div>
-  )
-}
+  );
+};

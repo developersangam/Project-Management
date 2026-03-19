@@ -62,10 +62,21 @@ const getBreadcrumbs = (
     }
   } else if (segments.includes("organizations")) {
     const orgIndex = segments.indexOf("organizations");
+    console.log(orgIndex);
     if (orgIndex === 0) {
       breadcrumbs.push({ label: "Organizations", href: "/organizations" });
     }
-    if (segments.length > orgIndex + 1) {
+    if (segments.includes("settings") && segments.length > orgIndex + 2) {
+      console.log("Setting");
+      const orgSlug = segments[orgIndex + 1];
+      breadcrumbs.push({
+        label:
+          orgSlug.charAt(0).toUpperCase() + orgSlug.slice(1).replace("-", " "),
+        href: `/organizations/${orgSlug}`,
+      });
+      breadcrumbs.push({ label: "settings" });
+    } else if (segments.length > orgIndex + 1) {
+      console.log("ORG SLUG");
       const orgSlug = segments[orgIndex + 1];
       breadcrumbs.push({
         label:
