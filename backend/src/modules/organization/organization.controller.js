@@ -74,6 +74,8 @@ async function getOrganizationBySlug(req, res, next) {
         name: organization.name,
         slug: organization.slug,
         owner: String(organization.owner) === String(user.id),
+        description : organization?.description,
+        createdAt: organization?.createdAt
       },
       membership: {
         role: membership.role,

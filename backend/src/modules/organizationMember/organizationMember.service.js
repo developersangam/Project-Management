@@ -28,7 +28,11 @@ async function getMyOrganizations(userId, page, limit, status) {
       },
     },
     { $unwind: "$organization" },
-
+    {
+      $match: {
+        "organization.isActive": true,
+      },
+    },
     // Count members
     {
       $lookup: {
@@ -98,7 +102,12 @@ async function getMyOrganizations(userId, page, limit, status) {
       },
     },
   ];
-  return aggregatePaginate({ model: OrganizationMember, pipeline, page, limit });
+  return aggregatePaginate({
+    model: OrganizationMember,
+    pipeline,
+    page,
+    limit,
+  });
 }
 
 async function findMember(organizationId, userId) {
