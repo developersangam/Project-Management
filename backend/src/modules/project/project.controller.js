@@ -55,7 +55,7 @@ async function addProjectMember(req, res, next) {
   console.log("Request body for adding project member:", req.body);
   try {
     const { project, organization, user } = req;
-    const { userId, roleKey } = req.body;
+    const { email, role } = req.body;
 
     let membership;
 
@@ -64,8 +64,8 @@ async function addProjectMember(req, res, next) {
         {
           projectId: project._id,
           organizationId: organization._id,
-          userId,
-          roleKey,
+          email,
+          role,
           addedBy: user.id,
         },
         session,

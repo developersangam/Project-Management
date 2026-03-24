@@ -7,6 +7,8 @@ const userModel = require("../user/user.model");
 const organizationMemberModel = require("../organizationMember/organizationMember.model");
 const projectRoleModel = require("../accessControl/projectRole.model");
 const { seedDefaultColumns } = require("../Task/task.seed");
+const { default: mongoose } = require("mongoose");
+const { aggregatePaginate } = require("../../utils/aggregatePagination");
 
 async function createProject(data, session) {
   const baseSlug = generateSlug(data.name);
@@ -57,43 +59,144 @@ async function createProject(data, session) {
 }
 
 async function listProjects({ organizationId, userId, page, limit, status }) {
-  const result = await paginate({
-    model: ProjectMember,
-    filter: {
-      userId,
-      status: "ACTIVE",
+  let pipeline = [
+    {
+      $match: {
+        userId: new mongoose.Types.ObjectId(userId),
+        status: status || "ACTIVE",
+      },
     },
+    {
+      $lookup: {
+        from: "projects",
+        let: { projectId: "$projectId" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$_id", "$$projectId"] },
+                  {
+                    $eq: [
+                      "$organizationId",
+                      new mongoose.Types.ObjectId(organizationId),
+                    ],
+                  },
+                ],
+              },
+            },
+          },
+          {
+            $project: {
+              name: 1,
+              slug: 1,
+              description: 1,
+              status: 1,
+              createdAt: 1,
+            },
+          },
+        ],
+        as: "project",
+      },
+    },
+    {
+      $unwind: {
+        path: "$project",
+        preserveNullAndEmptyArrays: false,
+      },
+    },
+    {
+      $lookup: {
+        from: "projectmembers",
+        let: { projectId: "$projectId" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$projectId", "$$projectId"] },
+                  { $eq: ["$status", "ACTIVE"] },
+                ],
+              },
+            },
+          },
+          { $count: "totalMembers" },
+        ],
+        as: "memberStats",
+      },
+    },
+
+    // 6. Task count (fixed + optimized)
+    {
+      $lookup: {
+        from: "tasks",
+        let: { projectId: "$projectId" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$projectId", "$$projectId"],
+              },
+            },
+          },
+          { $count: "totalTasks" },
+        ],
+        as: "taskStats",
+      },
+    },
+
+    {
+      $lookup: {
+        from: "projectroles",
+        localField: "role",
+        foreignField: "_id",
+        as: "role",
+      },
+    },
+    {
+      $unwind: {
+        path: "$role",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $addFields: {
+        totalMembers: {
+          $ifNull: [{ $arrayElemAt: ["$memberStats.totalMembers", 0] }, 0],
+        },
+        totalTasks: {
+          $ifNull: [{ $arrayElemAt: ["$taskStats.totalTasks", 0] }, 0],
+        },
+      },
+    },
+
+    {
+      $project: {
+        _id: 1,
+        project: 1,
+        role: {
+          name: "$role.key",
+        },
+        totalMembers: 1,
+        totalTasks: 1,
+      },
+    },
+  ];
+
+  const result2 = await aggregatePaginate({
+    model: ProjectMember,
+    pipeline,
     page,
     limit,
-    populate: [
-      {
-        path: "projectId",
-        match: { organizationId, ...(status ? { status } : {}) }, // Filter projects by status if provided
-        // select: "name description slug status createdAt updatedAt",
-      },
-    ],
   });
-  console.log("Raw pagination result:", result.data);
-  const filteredData = result.data
-    .filter((member) => member.projectId) // Filter out memberships where the project doesn't match the status filter
-    .map((member) => {
-      let data = member.projectId.toObject(); // Convert Mongoose document to plain object
-      let role = member.role;
-
-      return {
-        ...data,
-        role: role,
-      };
-    });
-  console.log("Filtered and mapped projects:", filteredData);
   return {
-    data: filteredData,
-    meta: result.meta,
+    data: result2?.data,
+    meta: result2?.meta,
   };
 }
 
 async function addProjectMember(
-  { projectId, organizationId, email, roleKey, addedBy },
+  { projectId, organizationId, email, role, addedBy },
   session,
 ) {
   // 1️⃣ Find user by email
@@ -118,7 +221,7 @@ async function addProjectMember(
 
   // 3️⃣ Resolve role
   const projectRole = await projectRoleModel
-    .findOne({ key: roleKey })
+    .findOne({ key: role })
     .session(session);
 
   if (!projectRole) {
