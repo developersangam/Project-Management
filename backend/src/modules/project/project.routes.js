@@ -53,7 +53,7 @@ router.post(
 
 // REMOVE project member
 router.delete(
-  "/:projectSlug/members",
+  "/:projectSlug/members/:userId",
   protect,
   getOrganizationBySlug,
   requireOrgMember,

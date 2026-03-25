@@ -90,7 +90,7 @@ async function removeProjectMember(req, res, next) {
 
   try {
     const { project, organization, user } = req;
-    const { userId } = req.body;
+    const { userId } = req.params;
     console.log(
       `Attempting to remove user ${userId} from project ${project._id} by user ${user.id}`,
     );
@@ -125,7 +125,7 @@ async function changeProjectMemberRole(req, res, next) {
   try {
     const { project, user } = req;
     const { userId } = req.params;
-    const { roleKey } = req.body;
+    const { role } = req.body;
 
     let result;
 
@@ -134,7 +134,7 @@ async function changeProjectMemberRole(req, res, next) {
         {
           projectId: project._id,
           targetUserId: userId,
-          roleKey,
+          role,
           changedBy: user.id,
         },
         session
@@ -144,7 +144,8 @@ async function changeProjectMemberRole(req, res, next) {
     return successResponse(
       res,
       200,
-      "Project member role updated successfully"
+      "Project member role updated successfully",
+      {}
     );
   } catch (err) {
     next(err);

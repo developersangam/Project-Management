@@ -321,7 +321,7 @@ async function removeProjectMember({ projectId, userId, removedBy }, session) {
 }
 
 async function changeProjectMemberRole(
-  { projectId, targetUserId, roleKey, changedBy },
+  { projectId, targetUserId, role, changedBy },
   session,
 ) {
   // 1️⃣ Get changer membership
@@ -357,7 +357,7 @@ async function changeProjectMemberRole(
 
   // 4️⃣ Get new role
   const newRole = await projectRoleModel
-    .findOne({ key: roleKey })
+    .findOne({ key: role })
     .session(session);
 
   if (!newRole) {
