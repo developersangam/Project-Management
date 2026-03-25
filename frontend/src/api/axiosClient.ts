@@ -20,4 +20,9 @@ export const apiClient = {
     const response = await axiosInstance.delete(url);
     return response.data;
   },
+
+  patch: async (url: string, data:any) => {
+    const response = await axiosInstance.patch(url,data);
+    return response.data;
+  },
 };

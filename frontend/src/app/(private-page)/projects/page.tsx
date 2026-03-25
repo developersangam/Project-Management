@@ -163,7 +163,7 @@ export default function ProjectsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {projects?.data?.reduce((sum, p) => sum + p.members, 0)}
+              {projects?.data?.reduce((sum, p) => sum + p.totalMembers, 0)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
               Across all projects
@@ -176,7 +176,7 @@ export default function ProjectsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {projects?.data.reduce((sum, p) => sum + p.tasks, 0)}
+              {projects?.data.reduce((sum, p) => sum + p.totalTasks, 0)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">In progress</p>
           </CardContent>
@@ -203,8 +203,8 @@ export default function ProjectsPage() {
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {projects?.data.map((project) => (
-              <Link key={project.id} href={`/projects/${project.slug}`}>
+            {projects?.data.map(({project,totalMembers,totalTasks}) => (
+              <Link key={project._id} href={`/projects/${project.slug}`}>
                 <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer">
                   <CardHeader>
                     <div className="flex items-start justify-between">
@@ -226,7 +226,7 @@ export default function ProjectsPage() {
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <Users className="w-3 h-3" />
-                        {project?.members} members
+                        {totalMembers} members
                       </div>
                       <div className="flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
@@ -235,7 +235,7 @@ export default function ProjectsPage() {
                     </div>
                     <div className="pt-2 border-t">
                       <p className="text-xs font-medium text-foreground">
-                        {project?.tasks} tasks in progress
+                        {totalTasks} tasks in progress
                       </p>
                     </div>
                   </CardContent>
