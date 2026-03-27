@@ -18,30 +18,12 @@ import {
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { fetchProjectDetails } from "@/store/project/projectThunk";
 
-// Mock data - replace with your actual Redux store/API
-interface Project {
-  id: string;
-  name: string;
-  description: string;
-  slug: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export default function ProjectDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const projectSlug = params.projectSlug as string;
   const { loading, currentProject } = useAppSelector((state) => state.project);
-
-  // Mock state - replace with your Redux store
-  const [taskStats, setTaskStats] = useState<TaskStats>({
-    todo: 0,
-    inProgress: 0,
-    done: 0,
-  });
-  const [memberCount, setMemberCount] = useState(0);
 
   useEffect(() => {
     getProjectDetailDashboardHandler();
@@ -109,8 +91,6 @@ export default function ProjectDetailsPage() {
       </div>
     );
   }
-
-  const totalTasks = taskStats.todo + taskStats.inProgress + taskStats.done;
 
   return (
     <div className="space-y-6">
