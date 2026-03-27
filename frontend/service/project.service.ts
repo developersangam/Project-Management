@@ -30,7 +30,7 @@ export const getProjectDetailsAPI = async (projectSlug: string) => {
 
   currentOrganization = state.organization.currentOrganization;
   return apiClient.get(
-    `${PROJECT_API_BASE}/${currentOrganization?.organization?.slug}/projects/${projectSlug}`,
+    `${PROJECT_API_BASE}/${currentOrganization?.organization?.slug}/projects/${projectSlug}/dashboard`,
   );
 };
 

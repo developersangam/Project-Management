@@ -50,7 +50,8 @@ export const fetchProjectDetails = createAsyncThunk(
     dispatch(setLoading(true));
     try {
       const project = await getProjectDetailsAPI(projectSlug);
-      dispatch(setCurrentProject(project));
+      console.log(project.data)
+      dispatch(setCurrentProject(project.data));
       return project;
     } finally {
       dispatch(setLoading(false));
