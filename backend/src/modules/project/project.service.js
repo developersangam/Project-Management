@@ -9,6 +9,8 @@ const projectRoleModel = require("../accessControl/projectRole.model");
 const { seedDefaultColumns } = require("../Task/task.seed");
 const { default: mongoose } = require("mongoose");
 const { aggregatePaginate } = require("../../utils/aggregatePagination");
+const taskModel = require("../Task/task.model");
+const boardColumnModel = require("../Task/boardColumn.model");
 
 async function createProject(data, session) {
   const baseSlug = generateSlug(data.name);
@@ -193,6 +195,45 @@ async function listProjects({ organizationId, userId, page, limit, status }) {
     data: result2?.data,
     meta: result2?.meta,
   };
+}
+
+async function getProjectDashboardDetail(project) {
+  const projectId = project._id;
+  const taskStats = await taskModel.aggregate([
+    {
+      $match: {
+        projectId: new mongoose.Types.ObjectId(projectId),
+      },
+    },
+    {
+      $group: {
+        _id: "$columnId",
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+  let taskStatus = {};
+  const columns = await boardColumnModel.find({ projectId });
+  columns.forEach((item) => (taskStatus[item.name] = 0));
+
+  taskStats.forEach((item) => {
+    let column = columns.find(
+      (col) => col._id.toString() === item._id.toString(),
+    );
+    if (column) {
+      taskStatus[column.name] = item.count;
+    }
+  });
+  const memberCount = await ProjectMember.countDocuments({
+    projectId,
+    status: "ACTIVE",
+  });
+  console.log(taskStatus)
+  return {
+    project,
+    taskStatus,
+    memberCount
+  }
 }
 
 async function addProjectMember(
@@ -491,6 +532,7 @@ async function archiveProject(projectId) {
 module.exports = {
   createProject,
   listProjects,
+  getProjectDashboardDetail,
   addProjectMember,
   removeProjectMember,
   changeProjectMemberRole,

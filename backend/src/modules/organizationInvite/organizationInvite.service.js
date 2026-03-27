@@ -79,7 +79,7 @@ async function sendInvite({
     });
   }
 
-  const inviteLink = `${process.env.FRONTEND_URL}/invite/accept?token=${rawToken}`;
+  const inviteLink = `${process.env.FRONTEND_BASE_URL}/invite/accept?token=${rawToken}`;
 
   await emailService.sendOrganizationInvite({
     to: normalizedEmail,

@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const projectService = require("./project.service");
 const { successResponse } = require("../../utils/apiResponse");
+const taskModel = require("../Task/task.model");
 
 async function createProject(req, res, next) {
   const session = await mongoose.startSession();
@@ -49,6 +50,37 @@ async function listProjects(req, res, next) {
     next(err);
   }
 }
+
+const getProjectDetail = async (req, res, next) => {
+  const project = req.project;
+
+  // Optional: prevent accessing deleted project
+  if (project.status === "DELETED") {
+    return next(new AppError("Project not found", 404));
+  }
+
+  return successResponse(
+    res,
+    201,
+    "Project Detail Fetched successfully",
+    project,
+  );
+};
+
+const getProjectDetailDashboard = async (req, res, next) => {
+  const project = req.project;
+  if (project.status === "DELETED") {
+    return next(new AppError("Project not found", 404));
+  }
+
+  let projectDetail = await projectService.getProjectDashboardDetail(project);
+  return successResponse(
+    res,
+    201,
+    "Project Detail Fetched successfully",
+    projectDetail,
+  );
+};
 
 async function addProjectMember(req, res, next) {
   const session = await mongoose.startSession();
@@ -137,7 +169,7 @@ async function changeProjectMemberRole(req, res, next) {
           role,
           changedBy: user.id,
         },
-        session
+        session,
       );
     });
 
@@ -145,7 +177,7 @@ async function changeProjectMemberRole(req, res, next) {
       res,
       200,
       "Project member role updated successfully",
-      {}
+      {},
     );
   } catch (err) {
     next(err);
@@ -164,7 +196,7 @@ async function getProjectMembers(req, res, next) {
       res,
       200,
       "Project members fetched successfully",
-      members
+      members,
     );
   } catch (err) {
     next(err);
@@ -177,14 +209,14 @@ async function updateProject(req, res, next) {
 
     const updatedProject = await projectService.updateProject(
       project._id,
-      req.body
+      req.body,
     );
 
     return successResponse(
       res,
       200,
       "Project updated successfully",
-      updatedProject
+      updatedProject,
     );
   } catch (err) {
     next(err);
@@ -195,27 +227,19 @@ async function archiveProject(req, res, next) {
   try {
     const { project } = req;
 
-    await projectService.archiveProject(
-      project._id,
-      req.user.id
-    );
+    await projectService.archiveProject(project._id, req.user.id);
 
-    return successResponse(
-      res,
-      200,
-      "Project archived successfully"
-    );
+    return successResponse(res, 200, "Project archived successfully");
   } catch (err) {
     next(err);
   }
 }
 
-
-
-
 module.exports = {
   createProject,
   listProjects,
+  getProjectDetail,
+  getProjectDetailDashboard,
   addProjectMember,
   removeProjectMember,
   changeProjectMemberRole,
