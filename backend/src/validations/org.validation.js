@@ -13,8 +13,8 @@ const createOrgValidation = [
 const inviteValidation = [
   body("email").isEmail().withMessage("Invalid email"),
   body("role")
-    .isIn(["MEMBER", "PROJECT_MANAGER"])
-    .withMessage("Role must be MEMBER or PROJECT_MANAGER"),
+    .isIn(["OWNER", "ADMIN"])
+    .withMessage("Role must be OWNER or ADMIN"),
 ];
 
 const organizationMemberValidation = [
@@ -38,13 +38,13 @@ const revokeInviteValidation = [
 const resendInviteValidation = [
   body("email").isEmail().withMessage("Invalid email"),
   body("role")
-    .isIn(["ADMIN", "MEMBER", "PROJECT_MANAGER"])
-    .withMessage("Role must be ADMIN, MEMBER, or PROJECT_MANAGER"),
+    .isIn(["OWNER", "ADMIN"])
+    .withMessage("Role must be OWNER or ADMIN"),
 ];
 
 const changeMemberRoleValidation = [
   body("role")
-    .isIn(["MEMBER","PROJECT_MANAGER"])
+    .isIn(["MEMBER","ADMIN"])
     .withMessage("Invalid role"),
 ];
 

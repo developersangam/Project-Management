@@ -29,7 +29,7 @@ async function createOrganizationWithOwner({ name, description, ownerId }, sessi
       {
         organizationId: organization._id,
         userId: ownerId,
-        role: "ADMIN",
+        role: "OWNER",
         status: "ACTIVE",
         joinedAt: new Date(),
         invitedBy: null,

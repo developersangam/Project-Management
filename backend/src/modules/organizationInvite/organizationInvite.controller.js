@@ -25,7 +25,6 @@ async function acceptInvite(req, res, next) {
     const result = await organizationInviteService.acceptInvite({
       token: req.body.token,
     });
-    console.log("RESSSSSSSS",result)
     if (result?.requiresRegistration) {
       return successResponse(
         res,

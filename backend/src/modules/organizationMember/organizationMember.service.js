@@ -2,9 +2,31 @@ const OrganizationMember = require("./organizationMember.model");
 const { paginate } = require("../../utils/paginate");
 const { aggregatePaginate } = require("../../utils/aggregatePagination");
 const { default: mongoose } = require("mongoose");
+const { AppError } = require("../../utils/AppError");
 
 async function createOrgMember(data, session) {
   console.log("Creating organization member with data:", data);
+  const existingMember = await OrganizationMember.findOne({
+    organizationId: data.organizationId,
+    userId: data.userId,
+  }).session(session);
+
+  // 🔹 Reactivate if exists
+  if (existingMember) {
+    existingMember.status = "ACTIVE";
+    existingMember.role = data.role;
+    existingMember.joinedAt = new Date();
+    existingMember.invitedBy = data.invitedBy;
+
+    // 🔹 Clear removal fields
+    existingMember.removedAt = null;
+    existingMember.removedBy = null;
+
+    await existingMember.save({ session });
+    return existingMember;
+  }
+
+  // 🔹 Create new
   const [orgMember] = await OrganizationMember.create([data], { session });
   return orgMember;
 }
@@ -140,7 +162,7 @@ async function changeMemberRole({
 }) {
   // 1️⃣ Fetch target member
   const targetMember = await OrganizationMember.findOne({
-    _id: targetMemberId,
+    userId: targetMemberId,
     organizationId: organization._id,
     status: "ACTIVE",
   });
@@ -189,6 +211,18 @@ async function removeMember({ organizationId, actorUserId, targetUserId }) {
     throw new AppError(400, "You cannot remove yourself from the organization");
   }
 
+  // 2️⃣ Get actor (who is performing action)
+  const actor = await OrganizationMember.findOne({
+    organizationId,
+    userId: actorUserId,
+    status: "ACTIVE",
+  });
+
+  if (!actor) {
+    throw new AppError(403, "You are not part of this organization");
+  }
+
+  // 3️⃣ Get target member
   const member = await OrganizationMember.findOne({
     organizationId,
     userId: targetUserId,
@@ -198,12 +232,31 @@ async function removeMember({ organizationId, actorUserId, targetUserId }) {
     throw new AppError(404, "Member not found");
   }
 
-  // 2️⃣ Idempotent success
+  // 4️⃣ Idempotent success
   if (member.status === "REMOVED") {
     return member;
   }
 
-  // 3️⃣ Prevent removing last admin
+  // 5️⃣ RBAC CHECK (🔥 MAIN FIX)
+
+  // MEMBER cannot remove anyone
+  if (actor.role === "MEMBER") {
+    throw new AppError(403, "You do not have permission to remove members");
+  }
+
+  // ADMIN cannot remove OWNER
+  if (actor.role === "ADMIN" && member.role === "OWNER") {
+    throw new AppError(403, "Admin cannot remove the owner");
+  }
+
+  // ADMIN cannot remove ADMIN
+  if (actor.role === "ADMIN" && member.role === "ADMIN") {
+    throw new AppError(403, "Admin cannot remove another admin");
+  }
+
+  // OWNER can remove anyone (except self already handled)
+
+  // 6️⃣ Prevent removing last admin
   if (member.role === "ADMIN" && member.status === "ACTIVE") {
     const adminCount = await OrganizationMember.countDocuments({
       organizationId,
@@ -216,18 +269,15 @@ async function removeMember({ organizationId, actorUserId, targetUserId }) {
     }
   }
 
-  // 4️⃣ Soft remove
+  // 7️⃣ Soft remove
   member.status = "REMOVED";
   member.removedAt = new Date();
   member.removedBy = actorUserId;
+
   await member.save();
 
   return member;
 }
-
-module.exports = {
-  removeMember,
-};
 
 module.exports = {
   createOrgMember,
