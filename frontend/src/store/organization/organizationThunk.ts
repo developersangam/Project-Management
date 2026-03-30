@@ -6,14 +6,17 @@ import {
 } from "./organizationSlice";
 import { Organization } from "../../types";
 import {
+  acceptInvitationToOrganizationAPI,
   addMemberToOrganizationAPI,
+  changeMemberRoleOfOrganizationAPI,
   createOrganizationAPI,
   deleteOrganizationAPI,
   getOrganizationDetailsAPI,
   getOrganizationMembersAPI,
   getOrganizationsAPI,
+  removeOrganizationMembersAPI,
   updateOrganizationAPI,
-} from "../../../service/organization.service";
+} from "../../service/organization.service";
 import { RootState } from "../../store";
 import { toast } from "sonner";
 
@@ -113,6 +116,27 @@ export const addMemberToOrganization = createAsyncThunk(
   },
 );
 
+export const acceptInvitationToOrganization = createAsyncThunk(
+  "organization/acceptInvitationToOrganization",
+  async (
+    data: { token: string },
+    { dispatch },
+  ) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await acceptInvitationToOrganizationAPI(data);
+      toast.success(response.data.message || "Invitation accepted successfully");
+      return response.data;
+    } catch (error: any) {
+      console.log("Error response from API:", error);
+      toast.error(error?.response?.data?.message || "Failed to accept invitation");
+      throw error;
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+); 
+
 export const getOrganizationDetails = createAsyncThunk(
   "organization/getOrganizationDetails",
   async (orgSlug: string, { dispatch }) => {
@@ -193,4 +217,43 @@ export const getMemberOfOrganization = createAsyncThunk(
     }
   },
 );    
+
+export const removeMemberOfOrganization = createAsyncThunk(
+  "organization/getMemberOfOrganization",
+  async ( data:{orgSlug: string, userId:string}, { dispatch }) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await removeOrganizationMembersAPI(data);
+      toast.success(response.data.message || "Removed member successfully");
+      return response.data;
+    } catch (error: any) {
+      console.log("Error response from API:", error);
+      toast.error(error?.response?.data?.message || "Failed to remove member");
+      console.error("Failed to update organization:", error);
+      throw error;
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
+
+
+export const changeMemberRoleOfOrganization = createAsyncThunk(
+  "organization/changeMemberRoleOfOrganization",
+  async (data:any, { dispatch }) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await changeMemberRoleOfOrganizationAPI(data);
+      toast.success(response.data.message || "Removed member successfully");
+      return response.data;
+    } catch (error: any) {
+      console.log("Error response from API:", error);
+      toast.error(error?.response?.data?.message || "Failed to remove member");
+      console.error("Failed to update organization:", error);
+      throw error;
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
 

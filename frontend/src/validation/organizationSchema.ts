@@ -1,4 +1,6 @@
 import { z } from "zod";
+export const ROLE_OPTIONS = ["Admin", "Member", "Viewer"] as const;
+
 
 export const organizationSchema = z.object({
   name: z
@@ -32,6 +34,12 @@ export const addMemberSchema = z.object({
     .min(1, "Email is required")
     .email("Invalid email address"),
   role: z
+    .string()
+    .min(1, "Role is required"),
+});
+
+export const changeRoleSchema = z.object({
+   role: z
     .string()
     .min(1, "Role is required"),
 });

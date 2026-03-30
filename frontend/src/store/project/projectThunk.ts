@@ -13,7 +13,7 @@ import {
   getProjectMembersAPI,
   getProjectsAPI,
   removeProjectMemberAPI,
-} from "../../../service/project.service";
+} from "../../service/project.service";
 import { toast } from "sonner";
 
 export const fetchProjects = createAsyncThunk(

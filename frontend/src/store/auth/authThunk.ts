@@ -1,26 +1,25 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import { setUser, setToken, setLoading, logout } from './authSlice';
-import { User } from '../../types';
-import { getUserProfileAPI, loginAPI, registerAPI } from '../../../service/user.service';
-
-const logoutAPI = async (): Promise<void> => {
-  // Simulate API call
-  await new Promise(resolve => setTimeout(resolve, 500));
-};
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import { setUser, setToken, setLoading, logout } from "./authSlice";
+import { User } from "../../types";
+import {
+  getUserProfileAPI,
+  loginAPI,
+  registerAPI,
+} from "../../service/user.service";
 
 const updateUserProfileAPI = async (userData: Partial<User>): Promise<User> => {
   // Simulate API call
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 1000));
   return {
-    id: '1',
-    email: userData.email || 'user@example.com',
-    name: userData.name || 'Updated User',
+    id: "1",
+    email: userData.email || "user@example.com",
+    name: userData.name || "Updated User",
     avatar: userData.avatar,
   };
 };
 
 export const login = createAsyncThunk(
-  'auth/login',
+  "auth/login",
   async (credentials: { email: string; password: string }, { dispatch }) => {
     dispatch(setLoading(true));
     try {
@@ -31,11 +30,11 @@ export const login = createAsyncThunk(
     } finally {
       dispatch(setLoading(false));
     }
-  }
+  },
 );
 
 export const registerUser = createAsyncThunk(
-  'auth/register',
+  "auth/register",
   async (data: Partial<User>, { dispatch }) => {
     dispatch(setLoading(true));
     try {
@@ -44,19 +43,25 @@ export const registerUser = createAsyncThunk(
     } finally {
       dispatch(setLoading(false));
     }
-  }
+  },
 );
 
 export const logoutThunk = createAsyncThunk(
-  'auth/logout',
+  "auth/logout",
   async (_, { dispatch }) => {
-    await logoutAPI();
-    dispatch(logout());
-  }
+    dispatch(setLoading(true));
+    try {
+      dispatch(logout());
+    } catch (error) {
+      dispatch(setLoading(false));
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
 );
 
 export const updateUserProfile = createAsyncThunk(
-  'auth/updateUserProfile',
+  "auth/updateUserProfile",
   async (userData: Partial<User>, { dispatch }) => {
     dispatch(setLoading(true));
     try {
@@ -66,11 +71,11 @@ export const updateUserProfile = createAsyncThunk(
     } finally {
       dispatch(setLoading(false));
     }
-  }
+  },
 );
 
 export const getUserProfile = createAsyncThunk(
-  'auth/getUserProfile',
+  "auth/getUserProfile",
   async (_, { dispatch }) => {
     // Simulate fetching user profile
     dispatch(setLoading(true));
@@ -84,5 +89,5 @@ export const getUserProfile = createAsyncThunk(
       console.error("Error fetching user profile:", error);
       dispatch(setLoading(false));
     }
-  }
+  },
 );
