@@ -7,6 +7,7 @@ interface DropdownProps {
   children: React.ReactNode;
   isOpen: boolean;
   onToggle: () => void;
+  align?: "left" | "right";
 }
 
 export const Dropdown: React.FC<DropdownProps> = ({
@@ -14,19 +15,25 @@ export const Dropdown: React.FC<DropdownProps> = ({
   children,
   isOpen,
   onToggle,
+  align = "left", // Default to left
 }) => {
-  // Use the hook and tell it to call 'onToggle' (or a close function)
-  // when a click happens outside.
   const dropdownRef = useClickOutside(() => {
     if (isOpen) onToggle();
   });
 
   return (
-    // Attach the ref here
-    <div className="relative" ref={dropdownRef}>
-      <div onClick={onToggle}>{trigger}</div>
+    <div className="relative inline-block" ref={dropdownRef}>
+      <div onClick={onToggle} className="cursor-pointer">
+        {trigger}
+      </div>
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+        <div
+          className={cn(
+            "absolute mt-2 min-w-[240px] bg-white border border-gray-200 rounded-lg shadow-xl z-50 overflow-hidden",
+            /* Dynamic Alignment Logic */
+            align === "right" ? "right-0" : "left-0",
+          )}
+        >
           {children}
         </div>
       )}
@@ -43,7 +50,12 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
   children,
   onClick,
 }) => (
-  <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={onClick}>
+  /* REMOVED px-4 py-2 to prevent double-padding. 
+     Now the internal content controls the look. */
+  <div
+    className="hover:bg-slate-50 cursor-pointer transition-colors w-full"
+    onClick={onClick}
+  >
     {children}
   </div>
 );

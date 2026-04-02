@@ -31,6 +31,7 @@ import { toast } from "sonner";
 export default function DashboardPage() {
   const dispatch = useAppDispatch();
   const { currentOrganization } = useAppSelector((state) => state.organization);
+  const { user } = useAppSelector((state) => state.auth);
   const { projects } = useAppSelector((state) => state.project);
 
   useEffect(() => {
@@ -85,14 +86,14 @@ export default function DashboardPage() {
       bgColor: "bg-orange-50",
     },
   ];
-
+  console.log(projects)
   return (
     <div className="space-y-6 lg:space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
-            Good morning! 👋
+            Hello {`${user?.firstName}`}
           </h1>
           <p className="text-muted-foreground mt-1 text-sm lg:text-base">
             Here's what's happening with your projects today.
@@ -101,7 +102,9 @@ export default function DashboardPage() {
         <Button size="lg" className="shadow-sm w-full sm:w-auto" asChild>
           <Link
             href={
-              currentOrganization?.organization?.slug ? "/projects" : "/organizations/create"
+              currentOrganization?.organization?.slug
+                ? "/projects"
+                : "/organizations/create"
             }
             onClick={() => {
               !currentOrganization?.organization?.slug &&
@@ -178,22 +181,22 @@ export default function DashboardPage() {
             </Link>
           </Button>
         </div>
-
+        
         {projects?.data?.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
             {projects?.data?.map((project: any) => (
               <Card
-                key={project._id}
+                key={project?.project?._id}
                 className="hover:shadow-lg transition-all duration-200 group cursor-pointer border-0 shadow-sm bg-card"
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <CardTitle className="text-base lg:text-lg group-hover:text-primary transition-colors truncate">
-                        {project.name}
+                        {project?.project?.name}
                       </CardTitle>
                       <CardDescription className="mt-1 line-clamp-2 text-sm">
-                        {project.description || "No description available"}
+                        {project?.project?.description || "No description available"}
                       </CardDescription>
                     </div>
                     <div className="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -215,7 +218,7 @@ export default function DashboardPage() {
                       className="group-hover:bg-primary group-hover:text-primary-foreground transition-colors h-8 px-3"
                       asChild
                     >
-                      <Link href={`/projects/${project.slug}/board`}>
+                      <Link href={`/projects/${project?.project?.slug}`}>
                         <span className="hidden sm:inline">Open</span>
                         <ArrowRight className="w-3 h-3 sm:ml-1" />
                       </Link>
