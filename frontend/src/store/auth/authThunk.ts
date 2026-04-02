@@ -6,6 +6,7 @@ import {
   loginAPI,
   registerAPI,
 } from "../../service/user.service";
+import { persistor } from "../index";
 
 const updateUserProfileAPI = async (userData: Partial<User>): Promise<User> => {
   // Simulate API call
@@ -52,6 +53,7 @@ export const logoutThunk = createAsyncThunk(
     dispatch(setLoading(true));
     try {
       dispatch(logout());
+      await persistor.purge()
     } catch (error) {
       dispatch(setLoading(false));
     } finally {

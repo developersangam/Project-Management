@@ -11,7 +11,7 @@ import { combineReducers } from "@reduxjs/toolkit";
 const authPersistConfig = {
   key: "auth",
   storage,
-  whitelist: ["user", "token","isAuthenticated"], // Only persist user and token
+  whitelist: ["user", "token", "isAuthenticated"], // Only persist user and token
 };
 
 const organizationPersistConfig = {
@@ -20,13 +20,21 @@ const organizationPersistConfig = {
   whitelist: ["currentOrganization"], // Only persist currentOrganization
 };
 
-const rootReducer = combineReducers({
+const appReducer = combineReducers({
   auth: persistReducer(authPersistConfig, authReducer),
   organization: persistReducer(organizationPersistConfig, organizationReducer),
   project: projectReducer,
   task: taskReducer,
   ui: uiReducer,
 });
+
+const rootReducer = (state: any, action: any) => {
+  if (action.type === "auth/logout") {
+    state = undefined; // 🔥 clears ALL redux state
+  }
+
+  return appReducer(state, action);
+};
 
 export const store = configureStore({
   reducer: rootReducer,

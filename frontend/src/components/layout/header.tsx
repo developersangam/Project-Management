@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAppSelector, useAppDispatch } from "../../hooks/redux";
 import { switchOrganization } from "../../store/organization/organizationThunk";
 import { logoutThunk } from "../../store/auth/authThunk";
@@ -95,6 +95,7 @@ const getBreadcrumbs = (
 
 export const Header: React.FC = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const { organizations, currentOrganization } = useAppSelector(
     (state) => state.organization,
@@ -126,6 +127,8 @@ export const Header: React.FC = () => {
           variant="outline"
           size="sm"
           className="hidden sm:flex items-center space-x-2"
+          type="button"
+          onClick={() => router.push("/organizations/create")}
         >
           <Plus className="w-4 h-4" />
           <span>Create</span>
@@ -133,7 +136,9 @@ export const Header: React.FC = () => {
 
         <Dropdown
           isOpen={orgDropdownOpen}
-          onToggle={() => setOrgDropdownOpen(!orgDropdownOpen)}
+          onToggle={() => {
+            setOrgDropdownOpen(!orgDropdownOpen);
+          }}
           trigger={
             <Button
               variant="ghost"
@@ -141,7 +146,9 @@ export const Header: React.FC = () => {
               className="flex items-center space-x-2 px-2 lg:px-3"
             >
               <div className="w-6 h-6 bg-primary rounded flex items-center justify-center text-primary-foreground text-xs font-medium">
-                {currentOrganization?.name?.charAt(0).toUpperCase() || "O"}
+                {currentOrganization?.organization?.name
+                  ?.charAt(0)
+                  .toUpperCase() || "O"}
               </div>
               <span className="hidden lg:inline text-sm font-medium">
                 {currentOrganization?.organization?.name ||
@@ -167,7 +174,12 @@ export const Header: React.FC = () => {
             </DropdownItem>
           ))}
           <div className="border-t border-border mt-1 pt-1">
-            <DropdownItem>
+            <DropdownItem
+              onClick={() => {
+                setOrgDropdownOpen(false)
+                router.push("/organizations/create");
+              }}
+            >
               <Plus className="w-4 h-4 mr-3" />
               Create Organization
             </DropdownItem>

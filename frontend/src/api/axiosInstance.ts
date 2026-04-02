@@ -23,10 +23,12 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     const status = error.response?.status;
+    const requestUrl = error.config?.url;
 
-    if (status === 401) {
+    const isAuthRequest = requestUrl?.includes("/login") || requestUrl?.includes("/auth");
+
+    if (status === 401 && !isAuthRequest) {
       store.dispatch(logout());
-
       if (typeof window !== "undefined") {
         window.location.href = "/login";
       }
