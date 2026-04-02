@@ -30,6 +30,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type CreateProjectFormValues = z.infer<typeof createProjectSchema>;
 
@@ -89,7 +90,15 @@ export default function ProjectsPage() {
         </div>
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogTrigger asChild>
-            <Button>
+            <Button
+              onClick={() => {
+                if (!currentOrganization?.organization?.slug) {
+                  setIsModalOpen(false);
+                  router.push("/organizations/create");
+                  toast.warning("Create organization first");
+                }
+              }}
+            >
               <Plus className="w-4 h-4 mr-2" />
               New Project
             </Button>
@@ -193,7 +202,16 @@ export default function ProjectsPage() {
               <p className="text-muted-foreground mb-4">No projects yet</p>
               <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="outline">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      if (!currentOrganization?.organization?.slug) {
+                        setIsModalOpen(false);
+                        router.push("/organizations/create");
+                        toast.warning("Create organization first");
+                      }
+                    }}
+                  >
                     <Plus className="w-4 h-4 mr-2" />
                     Create First Project
                   </Button>
@@ -203,7 +221,7 @@ export default function ProjectsPage() {
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {projects?.data.map(({project,totalMembers,totalTasks}) => (
+            {projects?.data.map(({ project, totalMembers, totalTasks }) => (
               <Link key={project._id} href={`/projects/${project.slug}`}>
                 <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer">
                   <CardHeader>

@@ -26,6 +26,7 @@ import {
 import { cn } from "@/lib/utils";
 import { get } from "http";
 import { getUserProfile } from "@/store/auth/authThunk";
+import { toast } from "sonner";
 
 export default function DashboardPage() {
   const dispatch = useAppDispatch();
@@ -98,7 +99,15 @@ export default function DashboardPage() {
           </p>
         </div>
         <Button size="lg" className="shadow-sm w-full sm:w-auto" asChild>
-          <Link href="/projects">
+          <Link
+            href={
+              currentOrganization?.organization?.slug ? "/projects" : "/organizations/create"
+            }
+            onClick={() => {
+              !currentOrganization?.organization?.slug &&
+                toast.warning("Create organization first");
+            }}
+          >
             <Plus className="w-4 h-4 mr-2" />
             Create Project
           </Link>
@@ -230,7 +239,17 @@ export default function DashboardPage() {
                 collaborating with your team.
               </p>
               <Button size="lg" className="w-full sm:w-auto" asChild>
-                <Link href="/projects">
+                <Link
+                  href={
+                    currentOrganization?.organization?.slug
+                      ? "/projects"
+                      : "/organizations/create"
+                  }
+                  onClick={() => {
+                    !currentOrganization?.organization?.slug &&
+                      toast.warning("Create organization first");
+                  }}
+                >
                   <Plus className="w-4 h-4 mr-2" />
                   Create your first project
                 </Link>

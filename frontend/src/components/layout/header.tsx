@@ -176,7 +176,7 @@ export const Header: React.FC = () => {
           <div className="border-t border-border mt-1 pt-1">
             <DropdownItem
               onClick={() => {
-                setOrgDropdownOpen(false)
+                setOrgDropdownOpen(false);
                 router.push("/organizations/create");
               }}
             >
@@ -197,6 +197,17 @@ export const Header: React.FC = () => {
             >
               <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
                 {user?.userName?.charAt(0).toUpperCase() || "G"}
+              </div>
+              <div className="hidden md:flex flex-col items-start text-left leading-tight">
+                <span className="text-sm font-medium text-foreground truncate max-w-[120px]">
+                  {user?.userName || "Guest"}
+                </span>
+                {/* Optional: Add the user's role or email in tiny text for a more "Enterprise" feel */}
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">
+                  {currentOrganization?.organization?.owner
+                    ? "Owner"
+                    : "Member"}
+                </span>
               </div>
               <ChevronDown className="w-4 h-4" />
             </Button>
