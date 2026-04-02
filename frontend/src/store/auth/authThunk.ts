@@ -1,83 +1,75 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import { setUser, setToken, setLoading, logout } from './authSlice';
-import { User } from '../../types';
-
-// Placeholder API functions
-const loginAPI = async (credentials: { email: string; password: string }): Promise<{ user: User; token: string }> => {
-  // Simulate API call
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  // Mock response
-  return {
-    user: { id: '1', email: credentials.email, name: 'John Doe' },
-    token: 'mock-jwt-token',
-  };
-};
-
-const registerAPI = async (data: { email: string; password: string; name: string }): Promise<{ user: User; token: string }> => {
-  // Simulate API call
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  return {
-    user: { id: '1', email: data.email, name: data.name },
-    token: 'mock-jwt-token',
-  };
-};
-
-const logoutAPI = async (): Promise<void> => {
-  // Simulate API call
-  await new Promise(resolve => setTimeout(resolve, 500));
-};
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import { setUser, setToken, setLoading, logout } from "./authSlice";
+import { User } from "../../types";
+import {
+  getUserProfileAPI,
+  loginAPI,
+  registerAPI,
+} from "../../service/user.service";
+import { persistor } from "../index";
+import { toast } from "sonner";
 
 const updateUserProfileAPI = async (userData: Partial<User>): Promise<User> => {
   // Simulate API call
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 1000));
   return {
-    id: '1',
-    email: userData.email || 'user@example.com',
-    name: userData.name || 'Updated User',
+    id: "1",
+    email: userData.email || "user@example.com",
+    name: userData.name || "Updated User",
     avatar: userData.avatar,
   };
 };
 
 export const login = createAsyncThunk(
-  'auth/login',
+  "auth/login",
   async (credentials: { email: string; password: string }, { dispatch }) => {
     dispatch(setLoading(true));
     try {
       const response = await loginAPI(credentials);
-      dispatch(setUser(response.user));
-      dispatch(setToken(response.token));
+      toast.success(response.data.message || "Login successful!");
+      dispatch(setToken(response.data.token));
       return response;
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message);
     } finally {
       dispatch(setLoading(false));
     }
-  }
+  },
 );
 
-export const register = createAsyncThunk(
-  'auth/register',
-  async (data: { email: string; password: string; name: string }, { dispatch }) => {
+export const registerUser = createAsyncThunk(
+  "auth/register",
+  async (data: Partial<User>, { dispatch }) => {
     dispatch(setLoading(true));
     try {
-      const response = await registerAPI(data);
-      dispatch(setUser(response.user));
-      dispatch(setToken(response.token));
+      const response: any = await registerAPI(data);
+      toast.success(response?.data.message || "Registration successfully done");
       return response;
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message);
     } finally {
       dispatch(setLoading(false));
     }
-  }
+  },
 );
 
 export const logoutThunk = createAsyncThunk(
-  'auth/logout',
+  "auth/logout",
   async (_, { dispatch }) => {
-    await logoutAPI();
-    dispatch(logout());
-  }
+    dispatch(setLoading(true));
+    try {
+      dispatch(logout());
+      await persistor.purge();
+    } catch (error) {
+      dispatch(setLoading(false));
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
 );
 
 export const updateUserProfile = createAsyncThunk(
-  'auth/updateUserProfile',
+  "auth/updateUserProfile",
   async (userData: Partial<User>, { dispatch }) => {
     dispatch(setLoading(true));
     try {
@@ -87,5 +79,23 @@ export const updateUserProfile = createAsyncThunk(
     } finally {
       dispatch(setLoading(false));
     }
-  }
+  },
+);
+
+export const getUserProfile = createAsyncThunk(
+  "auth/getUserProfile",
+  async (_, { dispatch }) => {
+    // Simulate fetching user profile
+    dispatch(setLoading(true));
+    try {
+      const response = await getUserProfileAPI();
+      const userProfile = response.data;
+      console.log("Fetched user profile:", userProfile);
+      dispatch(setUser(userProfile));
+      return userProfile;
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+      dispatch(setLoading(false));
+    }
+  },
 );

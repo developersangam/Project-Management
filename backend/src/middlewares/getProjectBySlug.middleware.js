@@ -8,7 +8,7 @@ async function getProjectBySlug(req, res, next) {
     const project = await projectModel.findOne({
       slug: projectSlug,
       organizationId: organization._id,
-    });
+    }).lean();
 
     if (!project) {
       return res.status(404).json({

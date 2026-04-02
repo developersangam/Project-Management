@@ -29,7 +29,6 @@ async function getInviteByTokenHash(tokenHash) {
 }
 
 async function getInviteById(id) {
-
   return await OrganizationInvite.findById(id);
 }
 
@@ -79,7 +78,13 @@ async function sendInvite({
     });
   }
 
-  const inviteLink = `${process.env.FRONTEND_URL}/invite/accept?token=${rawToken}`;
+  const url = new URL(`${process.env.FRONTEND_BASE_URL}/accept-invitation`);
+  url.searchParams.set("token", rawToken);
+  url.searchParams.set("organization", `${organization.name}`);
+  url.searchParams.set("invitedBy", `${inviterName}`);
+  const inviteLink = url.toString();
+
+  console.log("INVITE", inviteLink);
 
   await emailService.sendOrganizationInvite({
     to: normalizedEmail,
@@ -142,11 +147,13 @@ async function acceptInvite({ token }) {
 
       const user = await userModel
         .findOne({ email: invite.email })
-        .session(session);
+        .session(session)
+        .lean();
+      console.log("HEELLL", user);
       if (!user) {
+        console.log("HERE");
         return { requiresRegistration: true, email: invite.email };
       }
-
       try {
         await orgMemberService.createOrgMember(
           {
@@ -166,18 +173,18 @@ async function acceptInvite({ token }) {
 
       invite.status = "ACCEPTED";
       await invite.save({ session });
+      return {
+        success: true,
+        email: user.email,
+        orgId: invite.organizationId,
+      };
     });
   } finally {
     session.endSession();
   }
 }
 
-async function resendInvite({
-  organizationId,
-  email,
-  role,
-  invitedBy,
-}) {
+async function resendInvite({ organizationId, email, role, invitedBy }) {
   const normalizedEmail = email.trim().toLowerCase();
 
   const invite = await OrganizationInvite.findOne({

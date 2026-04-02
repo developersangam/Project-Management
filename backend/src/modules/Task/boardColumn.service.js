@@ -13,12 +13,15 @@ const getColumns = async (projectId) => {
   return columns;
 };
 
-const createColumn = async ({ projectId, name, position }) => {
+const createColumn = async ({ projectId, name, position }, session) => {
+  if (position) {
+  }
   if (!position) {
     const lastColumn = await BoardColumn.findOne({
       projectId,
       isDeleted: false,
     })
+      .session(session)
       .sort({ position: -1 })
       .select("position")
       .lean();
@@ -29,20 +32,25 @@ const createColumn = async ({ projectId, name, position }) => {
     await BoardColumn.updateMany(
       { projectId, position: { $gte: position }, isDeleted: false },
       { $inc: { position: 1000 } },
-    );
+    ).session(session);
 
     // Step 2: shift back by +1
     await BoardColumn.updateMany(
       { projectId, position: { $gte: position + 1000 }, isDeleted: false },
       { $inc: { position: -999 } },
-    );
+    ).session(session);
   }
-
-  return BoardColumn.create({
-    projectId,
-    name,
-    position,
-  });
+  const [column] = await BoardColumn.create(
+    [
+      {
+        projectId,
+        name,
+        position,
+      },
+    ],
+    { session },
+  );
+  return column;
 };
 
 const updateColumn = async ({ columnId, projectId, name }) => {
@@ -76,17 +84,11 @@ const deleteColumn = async ({ columnId, projectId }) => {
   if (taskCount > 0) {
     throw new AppError(400, "Cannot delete column with tasks");
   }
-  const column = await BoardColumn.findOneAndUpdate(
+  const column = await BoardColumn.findOneAndDelete(
     {
       _id: columnId,
       projectId,
       isDeleted: false,
-    },
-    {
-      isDeleted: true,
-    },
-    {
-      new: true,
     },
   );
 

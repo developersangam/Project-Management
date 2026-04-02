@@ -1,8 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { UiState, Task } from '../../types';
+import { UIState, Task } from '../../types';
 
-const initialState: UiState = {
+const initialState: UIState = {
   sidebarOpen: true,
+  theme: 'light',
+  isMobile: false,
   taskDrawerOpen: false,
   selectedTask: null,
 };

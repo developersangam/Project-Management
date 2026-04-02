@@ -1,81 +1,157 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import { setProjects, setCurrentProject, addProject, setLoading } from './projectSlice';
-import { Project } from '../../types';
-
-const getProjectsAPI = async (organizationId: string): Promise<Project[]> => {
-  // Placeholder
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  return [
-    { id: '1', name: 'Project 1', slug: 'project-1', description: 'Desc', organizationId, createdAt: '', updatedAt: '' },
-  ];
-};
-
-const createProjectAPI = async (data: { name: string; description?: string; organizationId: string }): Promise<Project> => {
-  // Placeholder
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  return {
-    id: Date.now().toString(),
-    name: data.name,
-    slug: data.name.toLowerCase().replace(/\s+/g, '-'),
-    description: data.description,
-    organizationId: data.organizationId,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
-};
-
-const getProjectAPI = async (projectId: string): Promise<Project> => {
-  // Placeholder
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  return {
-    id: projectId,
-    name: 'Project Details',
-    slug: 'project-details',
-    description: 'Details',
-    organizationId: '1',
-    createdAt: '',
-    updatedAt: '',
-  };
-};
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  setProjects,
+  setCurrentProject,
+  setLoading,
+  setProjectMembers,
+} from "./projectSlice";
+import {
+  addProjectMemberAPI,
+  changeProjectMemberRoleAPI,
+  createProjectAPI,
+  getProjectDetailsAPI,
+  getProjectMembersAPI,
+  getProjectsAPI,
+  removeProjectMemberAPI,
+} from "../../service/project.service";
+import { toast } from "sonner";
 
 export const fetchProjects = createAsyncThunk(
-  'project/fetchProjects',
-  async (organizationId: string, { dispatch }) => {
+  "project/fetchProjects",
+  async (_, { dispatch }) => {
     dispatch(setLoading(true));
     try {
-      const projects = await getProjectsAPI(organizationId);
-      dispatch(setProjects(projects));
-      return projects;
+      const projects = await getProjectsAPI();
+      dispatch(setProjects(projects.data));
+      console.log("Fetched projects:", projects.data);
+      return projects.data;
     } finally {
       dispatch(setLoading(false));
     }
-  }
+  },
 );
 
 export const createProject = createAsyncThunk(
-  'project/createProject',
-  async (data: { name: string; description?: string; organizationId: string }, { dispatch }) => {
+  "project/createProject",
+  async (data: { name: string; description?: string }, { dispatch }) => {
     dispatch(setLoading(true));
     try {
       const project = await createProjectAPI(data);
-      dispatch(addProject(project));
       return project;
     } finally {
       dispatch(setLoading(false));
     }
-  }
+  },
 );
 
 export const fetchProjectDetails = createAsyncThunk(
-  'project/fetchProjectDetails',
-  async (projectId: string, { dispatch }) => {
+  "project/fetchProjectDetails",
+  async (projectSlug: string, { dispatch }) => {
     dispatch(setLoading(true));
     try {
-      const project = await getProjectAPI(projectId);
-      dispatch(setCurrentProject(project));
+      const project = await getProjectDetailsAPI(projectSlug);
+      console.log(project.data)
+      dispatch(setCurrentProject(project.data));
       return project;
     } finally {
       dispatch(setLoading(false));
     }
-  }
+  },
+);
+
+export const fetchProjectMembers = createAsyncThunk(
+  "project/fetchProjectMembers",
+  async (projectSlug: string, { dispatch }) => {
+    dispatch(setLoading(true));
+    try {
+      const members = await getProjectMembersAPI(projectSlug);
+      dispatch(setProjectMembers(members.data));
+      return members.data.members;
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
+
+export const addProjectMember = createAsyncThunk(
+  "project/addProjectMember",
+  async (
+    {
+      projectSlug,
+      email,
+      role,
+    }: { projectSlug: string; email: string; role: string },
+    { dispatch },
+  ) => {
+    dispatch(setLoading(true));
+    try {
+      const response = await addProjectMemberAPI(projectSlug, { email, role });
+      toast.success(
+        response.message ||
+          response.data.message ||
+          "Member added successfully",
+      );
+      return response.data;
+    } catch (error: any) {
+      console.log("HERE");
+      toast.error(error?.response?.data?.message || "Failed to add member");
+      throw error;
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
+
+export const removeProjectMember = createAsyncThunk(
+  "project/removeProjectMember",
+  async (
+    { projectSlug, userId }: { projectSlug: string; userId: string },
+    { dispatch },
+  ) => {
+    dispatch(setLoading(true));
+    try {
+      const response = await removeProjectMemberAPI({ projectSlug, userId });
+      toast.success(
+        response.message ||
+          response.data.message ||
+          "Member removed successfully",
+      );
+      return response.data;
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Failed to remove member");
+      throw error;
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
+
+export const changeProjectMemberRole = createAsyncThunk(
+  "project/changeProjectMemberRole",
+  async (
+    {
+      projectSlug,
+      userId,
+      data,
+    }: { projectSlug: string; userId: string; data: { role: string } },
+    { dispatch },
+  ) => {
+    dispatch(setLoading(true));
+    try {
+      const response = await changeProjectMemberRoleAPI({
+        projectSlug,
+        userId,
+        data,
+      });
+      toast.success(response.message || "Role changed successfully");
+      return response.data;
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message || "Failed to change member role",
+      );
+      throw error;
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
 );

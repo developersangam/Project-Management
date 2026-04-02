@@ -9,17 +9,21 @@ async function createOrg(req, res, next) {
   try {
     let organization;
     await session.withTransaction(async () => {
-      organization = await orgService.createOrganizationWithOwner({
-        name: req.body.name,
-        ownerId: req.user.id,
-      }, session);
+      organization = await orgService.createOrganizationWithOwner(
+        {
+          name: req.body.name,
+          description: req.body.description,
+          ownerId: req.user.id,
+        },
+        session,
+      );
     });
 
     successResponse(
       res,
       201,
       "Organization created successfully",
-      organization
+      organization,
     );
   } catch (err) {
     next(err);
@@ -38,24 +42,23 @@ async function getMyOrganizations(req, res, next) {
       limit,
       status,
     );
-
+    console.log("Fetched organizations for user:", result);
     const formattedOrgs = result.data.map((member) => ({
-      organizationId: member.organizationId._id,
-      name: member.organizationId.name,
-      slug: member.organizationId.slug,
-      role: member.role,
-      isOwner: String(member.organizationId.owner) === String(req.user.id),
+      organization: {
+        id: member.organization._id,
+        name: member.organization.name,
+        slug: member.organization.slug,
+        description: member.organization.description,
+        owner: String(member.organization.owner) === String(req.user.id),
+      },
+      totalProjects: member.totalProjects,
+      totalMembers: member.totalMembers,
     }));
 
-    return successResponse(
-      res,
-      200,
-      "Organizations fetched successfully",
-      {
-        data: formattedOrgs,
-        meta: result.meta,
-      },
-    );
+    return successResponse(res, 200, "Organizations fetched successfully", {
+      data: formattedOrgs,
+      meta: result.meta,
+    });
   } catch (err) {
     next(err);
   }
@@ -71,6 +74,8 @@ async function getOrganizationBySlug(req, res, next) {
         name: organization.name,
         slug: organization.slug,
         owner: String(organization.owner) === String(user.id),
+        description : organization?.description,
+        createdAt: organization?.createdAt
       },
       membership: {
         role: membership.role,
@@ -84,7 +89,7 @@ async function getOrganizationBySlug(req, res, next) {
       res,
       200,
       "Organization fetched successfully",
-      response
+      response,
     );
   } catch (err) {
     next(err);
@@ -121,11 +126,7 @@ async function deleteOrganization(req, res, next) {
       actorUserId: req.user.id,
     });
 
-    return successResponse(
-      res,
-      200,
-      "Organization deleted successfully"
-    );
+    return successResponse(res, 200, "Organization deleted successfully");
   } catch (err) {
     next(err);
   }
@@ -136,5 +137,5 @@ module.exports = {
   getMyOrganizations,
   getOrganizationBySlug,
   getOrgMembers,
-  deleteOrganization
+  deleteOrganization,
 };

@@ -6,16 +6,22 @@ const projectController = require("./project.controller");
 const {
   createProjectValidation,
   listProjectsValidation,
-    addProjectMemberValidation,
+  addProjectMemberValidation,
 } = require("../../validations/project.validation");
 
 const protect = require("../../middlewares/auth.middleware");
-const { getOrganizationBySlug } = require("../../middlewares/getOrganizationBySlug.js");
-const {requireAdmin} = require("../../middlewares/orgAdmin.middleware.js");
+const {
+  getOrganizationBySlug,
+} = require("../../middlewares/getOrganizationBySlug.js");
+const { requireAdmin } = require("../../middlewares/orgAdmin.middleware.js");
 const { validate } = require("../../middlewares/validator.middleware.js");
 const requireOrgMember = require("../../middlewares/orgMember.middleware.js");
-const { getProjectBySlug } = require("../../middlewares/getProjectBySlug.middleware.js");
-const { requireProjectPermission } = require("../../middlewares/requireProjectPermission.middleware.js");
+const {
+  getProjectBySlug,
+} = require("../../middlewares/getProjectBySlug.middleware.js");
+const {
+  requireProjectPermission,
+} = require("../../middlewares/requireProjectPermission.middleware.js");
 
 // CREATE project
 router.post(
@@ -25,7 +31,7 @@ router.post(
   requireAdmin,
   createProjectValidation,
   validate,
-  projectController.createProject
+  projectController.createProject,
 );
 // LIST projects
 router.get(
@@ -35,7 +41,27 @@ router.get(
   requireOrgMember,
   listProjectsValidation,
   validate,
-  projectController.listProjects
+  projectController.listProjects,
+);
+
+router.get(
+  "/:projectSlug",
+  protect,
+  getOrganizationBySlug,
+  requireOrgMember,
+  getProjectBySlug,
+  requireProjectPermission("VIEW_PROJECT"),
+  projectController.getProjectDetail,
+);
+
+router.get(
+  "/:projectSlug/dashboard",
+  protect,
+  getOrganizationBySlug,
+  requireOrgMember,
+  getProjectBySlug,
+  requireProjectPermission("VIEW_PROJECT"),
+  projectController.getProjectDetailDashboard,
 );
 
 // ADD project member
@@ -48,20 +74,19 @@ router.post(
   requireProjectPermission("ADD_PROJECT_MEMBER"),
   addProjectMemberValidation,
   validate,
-  projectController.addProjectMember
+  projectController.addProjectMember,
 );
 
 // REMOVE project member
 router.delete(
-  "/:projectSlug/members",
+  "/:projectSlug/members/:userId",
   protect,
   getOrganizationBySlug,
   requireOrgMember,
   getProjectBySlug,
   requireProjectPermission("REMOVE_PROJECT_MEMBER"),
-  projectController.removeProjectMember
+  projectController.removeProjectMember,
 );
-
 
 // CHANGE project member role
 router.patch(
@@ -71,7 +96,7 @@ router.patch(
   requireOrgMember,
   getProjectBySlug,
   requireProjectPermission("CHANGE_PROJECT_ROLE"),
-  projectController.changeProjectMemberRole
+  projectController.changeProjectMemberRole,
 );
 
 // GET project members
@@ -82,7 +107,7 @@ router.get(
   requireOrgMember,
   getProjectBySlug,
   requireProjectPermission("VIEW_PROJECT"),
-  projectController.getProjectMembers
+  projectController.getProjectMembers,
 );
 
 // UPDATE project
@@ -93,7 +118,7 @@ router.patch(
   requireOrgMember,
   getProjectBySlug,
   requireProjectPermission("UPDATE_PROJECT"),
-  projectController.updateProject
+  projectController.updateProject,
 );
 
 // ARCHIVE project
@@ -104,7 +129,7 @@ router.patch(
   requireOrgMember,
   getProjectBySlug,
   requireProjectPermission("ARCHIVE_PROJECT"),
-  projectController.archiveProject
+  projectController.archiveProject,
 );
 
 router.use("/:projectSlug/tasks", taskRoutes);

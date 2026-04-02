@@ -16,7 +16,8 @@ async function changeMemberRole(req, res, next) {
     return successResponse(
       res,
       200,
-      "Member role updated successfully"
+      "Member role updated successfully",
+      {}
     );
   } catch (err) {
     next(err);
@@ -37,7 +38,8 @@ async function removeMember(req, res, next) {
     return successResponse(
       res,
       200,
-      "Member removed successfully"
+      "Member removed successfully",
+      {}
     );
   } catch (err) {
     next(err);

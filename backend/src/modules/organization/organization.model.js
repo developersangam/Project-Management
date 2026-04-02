@@ -8,6 +8,8 @@ const organizationSchema = new mongoose.Schema(
       trim: true,
     },
 
+    description : { type: String, default: "" },
+    
     slug: {
       type: String,
       required: true,

@@ -32,15 +32,16 @@ const listProjectsValidation = [
 ];
 
 const addProjectMemberValidation = [
+  body("email")
+    .notEmpty().withMessage("Email is required").bail()
+    .isEmail().withMessage("Invalid email format"),
   body("userId")
+    .optional()
+    .isMongoId(),
+  body("role")
     .trim()
     .notEmpty()
-    .withMessage("User ID is required"),
-  
-  body("roleKey")
-    .trim()
-    .notEmpty()
-    .withMessage("Role key is required"),
+    .withMessage("Role is required"),
 ];
 
 

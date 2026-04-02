@@ -14,7 +14,7 @@ async function sendInvite(req, res, next) {
       inviterName: user.firstName,
     });
 
-    return successResponse(res, 200, "Invitation sent successfully");
+    return successResponse(res, 200, "Invitation sent successfully", {});
   } catch (err) {
     next(err);
   }
@@ -25,17 +25,16 @@ async function acceptInvite(req, res, next) {
     const result = await organizationInviteService.acceptInvite({
       token: req.body.token,
     });
-
     if (result?.requiresRegistration) {
       return successResponse(
         res,
         200,
         "User not found. Please register first.",
-        { email: result.email }
+        { email: result.email },
       );
     }
 
-    return successResponse(res, 200, "Invitation accepted successfully");
+    return successResponse(res, 200, "Invitation accepted successfully",{});
   } catch (err) {
     next(err);
   }
@@ -106,4 +105,10 @@ async function resendOrganizationInvite(req, res, next) {
   }
 }
 
-module.exports = { sendInvite,revokeInvite,acceptInvite,listOrganizationInvites ,resendOrganizationInvite};
+module.exports = {
+  sendInvite,
+  revokeInvite,
+  acceptInvite,
+  listOrganizationInvites,
+  resendOrganizationInvite,
+};
