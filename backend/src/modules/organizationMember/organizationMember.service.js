@@ -86,7 +86,10 @@ async function getMyOrganizations(userId, page, limit, status) {
           {
             $match: {
               $expr: {
-                $eq: ["$organizationId", "$$orgId"],
+                $and :[
+                  {$eq: ["$organizationId", "$$orgId"]}, 
+                ]
+                
               },
             },
           },

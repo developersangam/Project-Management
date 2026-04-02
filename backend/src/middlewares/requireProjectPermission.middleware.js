@@ -9,7 +9,6 @@ const requireProjectPermission = (permissionKey) => {
     if (!project) {
       return next(new AppError(500, "Project not found in request"));
     }
-
     const member = await projectMemberModel
       .findOne({
         projectId: project._id,
@@ -24,18 +23,14 @@ const requireProjectPermission = (permissionKey) => {
         },
       })
       .lean();
-
     if (!member) {
       return next(new AppError(403, "Not a project member"));
     }
-
     const permissionSet = new Set(member.role.permissions.map((p) => p.key));
     
-
     if (!permissionSet.has(permissionKey)) {
       return next(new AppError(403, "Forbidden"));
     }
-
     next();
   };
 };

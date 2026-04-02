@@ -13,8 +13,8 @@ const createOrgValidation = [
 const inviteValidation = [
   body("email").isEmail().withMessage("Invalid email"),
   body("role")
-    .isIn(["OWNER", "ADMIN"])
-    .withMessage("Role must be OWNER or ADMIN"),
+    .isIn(["OWNER", "ADMIN", "MEMBER"])
+    .withMessage("Role must be OWNER, ADMIN or MEMBER"),
 ];
 
 const organizationMemberValidation = [

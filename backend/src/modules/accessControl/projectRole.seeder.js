@@ -14,6 +14,7 @@ const DEFAULT_PROJECT_ROLES = [
     description: "Manage project and tasks",
     permissions: [
       // Project permissions
+      "VIEW_PROJECT",
       "UPDATE_PROJECT",
       "ADD_PROJECT_MEMBER",
       "REMOVE_PROJECT_MEMBER",
@@ -31,7 +32,14 @@ const DEFAULT_PROJECT_ROLES = [
   {
     key: "PROJECT_MEMBER",
     description: "Basic task access",
-    permissions: ["VIEW_TASK", "CREATE_TASK", "UPDATE_TASK", "MOVE_TASK"],
+    permissions: [
+      "VIEW_PROJECT",
+      "VIEW_TASK",
+      "CREATE_TASK",
+      "UPDATE_TASK",
+      "MOVE_TASK",
+      "ASSIGN_TASK",
+    ],
     level: 1,
   },
 ];

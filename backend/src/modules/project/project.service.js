@@ -61,6 +61,11 @@ async function createProject(data, session) {
 }
 
 async function listProjects({ organizationId, userId, page, limit, status }) {
+  // const isOwner = await organizationMemberModel.findOne({userId, organizationId}).lean()
+
+  // if(isOwner.role === "OWNER"){
+  //   pipeline.shift()
+  // }
   let pipeline = [
     {
       $match: {
@@ -84,6 +89,7 @@ async function listProjects({ organizationId, userId, page, limit, status }) {
                       new mongoose.Types.ObjectId(organizationId),
                     ],
                   },
+
                 ],
               },
             },
@@ -185,15 +191,15 @@ async function listProjects({ organizationId, userId, page, limit, status }) {
     },
   ];
 
-  const result2 = await aggregatePaginate({
+  const result = await aggregatePaginate({
     model: ProjectMember,
     pipeline,
     page,
     limit,
   });
   return {
-    data: result2?.data,
-    meta: result2?.meta,
+    data: result?.data,
+    meta: result?.meta,
   };
 }
 
