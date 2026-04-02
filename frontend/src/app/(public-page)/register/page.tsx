@@ -47,6 +47,7 @@ export default function RegisterPage() {
 
     try {
       await dispatch(registerUser(registrationData));
+      router.push("/login")
     } catch (error) {
       console.error("Registration failed:", error);
     }

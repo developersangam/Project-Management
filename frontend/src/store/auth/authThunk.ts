@@ -7,6 +7,7 @@ import {
   registerAPI,
 } from "../../service/user.service";
 import { persistor } from "../index";
+import { toast } from "sonner";
 
 const updateUserProfileAPI = async (userData: Partial<User>): Promise<User> => {
   // Simulate API call
@@ -25,9 +26,11 @@ export const login = createAsyncThunk(
     dispatch(setLoading(true));
     try {
       const response = await loginAPI(credentials);
-      console.log("Login response:", response);
+      toast.success(response.data.message || "Login successful!");
       dispatch(setToken(response.data.token));
       return response;
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message);
     } finally {
       dispatch(setLoading(false));
     }
@@ -39,8 +42,11 @@ export const registerUser = createAsyncThunk(
   async (data: Partial<User>, { dispatch }) => {
     dispatch(setLoading(true));
     try {
-      const response = await registerAPI(data);
+      const response: any = await registerAPI(data);
+      toast.success(response?.data.message || "Registration successfully done");
       return response;
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message);
     } finally {
       dispatch(setLoading(false));
     }
@@ -53,7 +59,7 @@ export const logoutThunk = createAsyncThunk(
     dispatch(setLoading(true));
     try {
       dispatch(logout());
-      await persistor.purge()
+      await persistor.purge();
     } catch (error) {
       dispatch(setLoading(false));
     } finally {
