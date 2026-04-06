@@ -158,7 +158,6 @@ export default function ViewOrganizationPage() {
   const getProjectInOrganization = async () => {
     try {
       const response = await dispatch(fetchProjects()).unwrap();
-      console.log("PERRR", response);
       setOrganizationProjects(response);
     } catch (error) {}
   };
@@ -183,7 +182,6 @@ export default function ViewOrganizationPage() {
   };
 
   const openRemoveMemberDialog = (member: (typeof organization.members)[0]) => {
-    console.log(member);
     setSelectedMember(member);
     setIsRemoveMemberOpen(true);
   };
@@ -201,7 +199,7 @@ export default function ViewOrganizationPage() {
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
-      case "Active":
+      case "ACTIVE":
         return "default";
       case "Completed":
         return "secondary";
@@ -211,6 +209,8 @@ export default function ViewOrganizationPage() {
         return "outline";
     }
   };
+
+  console.log(organizationProjects)
   return (
     <div className="space-y-6 p-6">
       {/* Header */}
@@ -555,39 +555,52 @@ export default function ViewOrganizationPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {organizationProjects?.data?.map((project: any) => (
-                      <TableRow key={project._id}>
-                        <TableCell>
-                          <div>
-                            <p className="font-medium">{project.name}</p>
-                            <p className="text-sm text-muted-foreground">
-                              /{project.slug}
-                            </p>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant={getStatusBadgeVariant(project.status)}
-                          >
-                            {project.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell text-muted-foreground">
-                          {new Date(project?.createdAt).toLocaleDateString(
-                            "en-US",
-                            {
-                              month: "short",
-                              year: "numeric",
-                            },
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Button variant="ghost" size="sm" asChild>
-                            <Link href={`/projects/${project.slug}`}>View</Link>
-                          </Button>
+                    {organizationMember?.data?.length === 0 ? (
+                      <TableRow>
+                        <TableCell
+                          colSpan={4}
+                          className="text-center py-8 text-muted-foreground"
+                        >
+                          No project found
                         </TableCell>
                       </TableRow>
-                    ))}
+                    ) : (
+                      organizationProjects?.data?.map(({project}: any) => (
+                        <TableRow key={project?._id}>
+                          <TableCell>
+                            <div>
+                              <p className="font-medium">{project.name}</p>
+                              <p className="text-sm text-muted-foreground">
+                                /{project.slug}
+                              </p>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              variant={getStatusBadgeVariant(project.status)}
+                            >
+                              {project.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="hidden md:table-cell text-muted-foreground">
+                            {new Date(project?.createdAt).toLocaleDateString(
+                              "en-US",
+                              {
+                                month: "short",
+                                year: "numeric",
+                              },
+                            )}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button variant="ghost" size="sm" asChild>
+                              <Link href={`/projects/${project.slug}`}>
+                                View
+                              </Link>
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
                   </TableBody>
                 </Table>
               </div>

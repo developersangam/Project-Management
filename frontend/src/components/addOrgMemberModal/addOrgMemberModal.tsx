@@ -54,7 +54,8 @@ export default function AddOrgMemberModal({
         role: form.getValues("role"),
         orgSlug: currentOrganization?.organization?.slug,
       };
-      dispatch(addMemberToOrganization(data));
+      await dispatch(addMemberToOrganization(data)).unwrap();
+      setIsAddMemberOpen(false)
     } catch (error) {}
   };
 

@@ -62,7 +62,6 @@ export default function OrganizationsPage() {
   }, [dispatch]);
 
   const handleSwitch = (org: any) => {
-    console.log(org);
     dispatch(switchOrganization(org));
   };
 
@@ -71,7 +70,6 @@ export default function OrganizationsPage() {
   const openAddMemberDialog = () => {
     setIsAddMemberOpen(true);
   };
-  console.log("Organizations:", organizations);
   return (
     <div className="space-y-6 p-6">
       {/* Header */}

@@ -43,7 +43,6 @@ export default function CreateOrganizationPage() {
     try {
       // TODO: Call API to create organization
       const result = await dispatch(createOrganization(data)).unwrap();
-      console.log("Organization created:", result);
       if (result) {
         router.push("/organizations");
       }

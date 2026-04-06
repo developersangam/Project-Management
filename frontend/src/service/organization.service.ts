@@ -12,6 +12,13 @@ export const createOrganizationAPI = async (data: {
   return apiClient.post(`${ORGANIZATION_API_BASE}/`, data);
 };
 
+
+export const getOrgSlugAPI = async (data: {
+  name: string;
+}) => {
+  return apiClient.post(`${ORGANIZATION_API_BASE}/getOrgSlug`, data);
+};
+
 export const addMemberToOrganizationAPI = async (data: {
   orgSlug: string;
   email: string;
@@ -72,5 +79,5 @@ export const updateOrganizationAPI = async (
   orgSlug: string,
   data: { name?: string; description?: string },
 ) => {
-  return apiClient.put(`${ORGANIZATION_API_BASE}/${orgSlug}`, data);
+  return apiClient.patch(`${ORGANIZATION_API_BASE}/${orgSlug}`, data);
 };

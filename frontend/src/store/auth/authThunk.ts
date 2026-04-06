@@ -90,7 +90,6 @@ export const getUserProfile = createAsyncThunk(
     try {
       const response = await getUserProfileAPI();
       const userProfile = response.data;
-      console.log("Fetched user profile:", userProfile);
       dispatch(setUser(userProfile));
       return userProfile;
     } catch (error) {

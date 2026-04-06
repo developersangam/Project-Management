@@ -56,8 +56,6 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     // TODO: Send email via API
-    console.log('Form submitted:', formData)
-    setSubmitted(true)
     setTimeout(() => {
       setFormData({ name: '', email: '', subject: '', message: '' })
       setSubmitted(false)

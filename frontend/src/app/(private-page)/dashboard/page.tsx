@@ -60,10 +60,10 @@ export default function DashboardPage() {
     },
     {
       title: "Team Members",
-      value: currentOrganization?.members?.length || 0,
+      value: currentOrganization?.totalMembers || 0,
       description: "People in your workspace",
       icon: Users,
-      href: "/organizations",
+      href: `/organizations/${currentOrganization?.organization?.slug}`,
       color: "text-green-600",
       bgColor: "bg-green-50",
     },
@@ -86,7 +86,6 @@ export default function DashboardPage() {
       bgColor: "bg-orange-50",
     },
   ];
-  console.log(projects)
   return (
     <div className="space-y-6 lg:space-y-8">
       {/* Header */}

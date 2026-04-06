@@ -23,7 +23,6 @@ export const fetchProjects = createAsyncThunk(
     try {
       const projects = await getProjectsAPI();
       dispatch(setProjects(projects.data));
-      console.log("Fetched projects:", projects.data);
       return projects.data;
     } finally {
       dispatch(setLoading(false));

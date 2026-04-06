@@ -246,9 +246,7 @@ export default function MembersPage() {
     return items;
   };
 
-  console.log(loading, addMemberOpen, removeMemberOpen);
   if (loading && !addMemberOpen && !removeMemberOpen && !changeRoleOpen) {
-    console.log("Hell");
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
         <div className="text-center">

@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -26,8 +26,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { ArrowLeft, Trash2, Save } from "lucide-react";
 import {
-    deleteOrganization,
+  deleteOrganization,
   getOrganizationDetails,
+  getOrgSlug,
   updateOrganization,
 } from "@/store/organization/organizationThunk";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
@@ -35,15 +36,17 @@ import { organizationSchema } from "@/validation/organizationSchema";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useDebounce } from "@/hooks/useDebounce";
 
 export default function OrganizationSettingsPage() {
   const params = useParams();
   const orgSlug = params.orgSlug as string;
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { loading } = useAppSelector((state) => state.organization);
-  const [organization, setOrganization] = React.useState<any>({});
-  const [isDeleteOpen, setIsDeleteOpen] = React.useState(false);
+  const { loading, currentOrganization } = useAppSelector(
+    (state) => state.organization,
+  );
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   type OrganizationFormValues = z.infer<typeof organizationSchema>;
 
@@ -55,10 +58,22 @@ export default function OrganizationSettingsPage() {
       description: "",
     },
   });
-
-  React.useEffect(() => {
+  const orgName = form.watch("name");
+  const debouncedSearch = useDebounce(orgName, 500);
+  useEffect(() => {
     getOrganizationDetailsHandler();
   }, [orgSlug]);
+
+  useEffect(() => {
+    if (
+      debouncedSearch.toLowerCase() ===
+      currentOrganization?.organization?.name.toLowerCase()
+    ) {
+      form.setValue("slug", currentOrganization?.organization?.slug);
+    } else {
+      getOrgSlugHander();
+    }
+  }, [debouncedSearch]);
 
   const getOrganizationDetailsHandler = async () => {
     try {
@@ -75,6 +90,15 @@ export default function OrganizationSettingsPage() {
     }
   };
 
+  const getOrgSlugHander = async () => {
+    try {
+      const response: any = await dispatch(
+        getOrgSlug({ name: orgName }),
+      ).unwrap();
+      form.setValue("slug", response.slug);
+    } catch (error) {}
+  };
+
   const handleSave = async (data: OrganizationFormValues) => {
     try {
       const payload: any = {
@@ -82,6 +106,7 @@ export default function OrganizationSettingsPage() {
         data,
       };
       await dispatch(updateOrganization(payload));
+      router.push("/organizations")
     } catch {
     } finally {
     }
@@ -91,9 +116,9 @@ export default function OrganizationSettingsPage() {
 
   const handleDelete = async () => {
     try {
-        await dispatch(deleteOrganization(orgSlug))
-    } catch(error) {
-        console.log(error)
+      await dispatch(deleteOrganization(orgSlug));
+    } catch (error) {
+      console.log(error);
     } finally {
     }
   };
@@ -159,6 +184,7 @@ export default function OrganizationSettingsPage() {
                   <Input
                     placeholder="organization-slug"
                     {...form.register("slug")}
+                    disabled
                   />
                   {form.formState.errors.slug && (
                     <p className="text-sm text-destructive">
@@ -308,8 +334,8 @@ export default function OrganizationSettingsPage() {
             <AlertDialogDescription>
               This action cannot be undone. This will permanently delete the
               organization
-              <strong> {form.getValues().name}</strong> and all associated projects
-              and data.
+              <strong> {form.getValues().name}</strong> and all associated
+              projects and data.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

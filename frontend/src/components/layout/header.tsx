@@ -14,8 +14,6 @@ const getBreadcrumbs = (
   pathname: string,
 ): Array<{ label: string; href?: string }> => {
   const segments = pathname.split("/").filter(Boolean);
-  console.log("Pathname:", pathname);
-  console.log("Segments:", segments);
   if (segments.length === 1 && segments[0] === "dashboard") {
     return [];
   }
@@ -24,7 +22,6 @@ const getBreadcrumbs = (
 
   if (segments.includes("projects")) {
     const projectIndex = segments.indexOf("projects");
-    console.log("Project index:", projectIndex);
     if (projectIndex === 0) {
       breadcrumbs.push({ label: "Projects", href: "/projects" });
     }
@@ -62,12 +59,10 @@ const getBreadcrumbs = (
     }
   } else if (segments.includes("organizations")) {
     const orgIndex = segments.indexOf("organizations");
-    console.log(orgIndex);
     if (orgIndex === 0) {
       breadcrumbs.push({ label: "Organizations", href: "/organizations" });
     }
     if (segments.includes("settings") && segments.length > orgIndex + 2) {
-      console.log("Setting");
       const orgSlug = segments[orgIndex + 1];
       breadcrumbs.push({
         label:
@@ -76,7 +71,6 @@ const getBreadcrumbs = (
       });
       breadcrumbs.push({ label: "settings" });
     } else if (segments.length > orgIndex + 1) {
-      console.log("ORG SLUG");
       const orgSlug = segments[orgIndex + 1];
       breadcrumbs.push({
         label:
@@ -115,7 +109,6 @@ export const Header: React.FC = () => {
     dispatch(logoutThunk());
     setUserDropdownOpen(false);
   };
-  console.log("Header - Organizations:", organizations);
   return (
     <header className="bg-card border-b border-border h-16 flex items-center justify-between px-4 lg:px-6 shadow-sm">
       <div className="flex items-center space-x-4 lg:space-x-6 flex-1">

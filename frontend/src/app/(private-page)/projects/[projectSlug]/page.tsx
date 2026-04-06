@@ -43,7 +43,6 @@ export default function ProjectDetailsPage() {
         taskStatus as Record<string, number>,
       ).reduce((acc: number, curr: number) => acc + curr, 0);
 
-      console.log(taskStatus[key], totalTask);
       const percentageOfTaskInEachStatus = Math.round(
         (taskStatus[key] / totalTask) * 100,
       );
