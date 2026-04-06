@@ -23,7 +23,20 @@ const projectRoutes = require("../project/project.routes");
 
 // Organization routes
 router.post("/", createOrgValidation, validate, protect, ctrl.createOrg);
+
+router.patch(
+  "/:slug",
+  createOrgValidation,
+  validate,
+  protect,
+  getOrganizationBySlug,
+  ctrl.updateOrganization,
+);
+
+router.post("/getOrgSlug", ctrl.generateOrgSlug)
+
 router.get("/my", protect, ctrl.getMyOrganizations);
+
 router.get(
   "/:slug",
   protect,
@@ -31,6 +44,7 @@ router.get(
   requireOrgMember,
   ctrl.getOrganizationBySlug,
 );
+
 router.get(
   "/:slug/members",
   protect,
@@ -49,7 +63,9 @@ router.post(
   requireAdmin,
   inviteController.sendInvite,
 );
+
 router.post("/accept", inviteRateLimiter, inviteController.acceptInvite);
+
 router.get(
   "/:slug/invitees",
   listOrgInvitesValidation,
@@ -59,6 +75,7 @@ router.get(
   requireAdmin,
   inviteController.listOrganizationInvites,
 );
+
 router.delete(
   "/:slug/invites/:inviteId",
   revokeInviteValidation,
@@ -85,7 +102,7 @@ router.patch(
   requireAdmin,
   changeMemberRoleValidation, // or OWNER logic inside service
   validate,
-  orgMemberController.changeMemberRole
+  orgMemberController.changeMemberRole,
 );
 
 router.delete(
@@ -93,7 +110,7 @@ router.delete(
   protect,
   getOrganizationBySlug,
   requireAdmin,
-  orgMemberController.removeMember
+  orgMemberController.removeMember,
 );
 
 router.delete(
@@ -101,12 +118,10 @@ router.delete(
   protect,
   getOrganizationBySlug,
   requireAdmin,
-  ctrl.deleteOrganization
+  ctrl.deleteOrganization,
 );
 
 router.use("/:slug/projects", projectRoutes);
-
-
 
 // Uncomment the following line to enable member removal
 // router.delete("/:slug/members/:userId", protect, getOrganizationBySlug, requireAdmin, ctrl.removeMember);

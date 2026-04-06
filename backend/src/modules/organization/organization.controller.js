@@ -3,6 +3,8 @@ const orgService = require("./organization.service");
 const orgMemberService = require("../organizationMember/organizationMember.service");
 const { successResponse } = require("../../utils/apiResponse");
 const ORG_PERMISSIONS = require("../../constant/organizationPermissions.constant");
+const generateSlug = require("../../utils/generateSlug");
+const organizationModel = require("./organization.model");
 
 async function createOrg(req, res, next) {
   const session = await mongoose.startSession();
@@ -30,6 +32,33 @@ async function createOrg(req, res, next) {
   } finally {
     session.endSession();
   }
+}
+async function generateOrgSlug(req, res, next) {
+  const {body} = req
+  const baseSlug = generateSlug(body.name);
+  let slug = baseSlug;
+  let counter = 1;
+
+  while (await organizationModel.exists({ slug })) {
+    slug = `${baseSlug}-${counter++}`;
+  }
+  successResponse(res, 201, "Organization updated successfully", {
+    slug: slug,
+  });
+}
+async function updateOrganization(req, res, next) {
+  const { organization, user } = req;
+  try {
+    console.log(1);
+    const result = await orgService.updateOrganization({
+      organizationId: organization?._id,
+      name: req.body.name,
+      description: req.body.description,
+      userId: user.id,
+    });
+
+    successResponse(res, 201, "Organization updated successfully", {});
+  } catch (error) {}
 }
 
 async function getMyOrganizations(req, res, next) {
@@ -74,8 +103,8 @@ async function getOrganizationBySlug(req, res, next) {
         name: organization.name,
         slug: organization.slug,
         owner: String(organization.owner) === String(user.id),
-        description : organization?.description,
-        createdAt: organization?.createdAt
+        description: organization?.description,
+        createdAt: organization?.createdAt,
       },
       membership: {
         role: membership.role,
@@ -134,6 +163,8 @@ async function deleteOrganization(req, res, next) {
 
 module.exports = {
   createOrg,
+  updateOrganization,
+  generateOrgSlug,
   getMyOrganizations,
   getOrganizationBySlug,
   getOrgMembers,

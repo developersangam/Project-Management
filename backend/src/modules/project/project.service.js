@@ -61,138 +61,208 @@ async function createProject(data, session) {
 }
 
 async function listProjects({ organizationId, userId, page, limit, status }) {
-  // const isOwner = await organizationMemberModel.findOne({userId, organizationId}).lean()
-
-  // if(isOwner.role === "OWNER"){
-  //   pipeline.shift()
-  // }
-  let pipeline = [
-    {
-      $match: {
-        userId: new mongoose.Types.ObjectId(userId),
-        status: status || "ACTIVE",
-      },
-    },
-    {
-      $lookup: {
-        from: "projects",
-        let: { projectId: "$projectId" },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $and: [
-                  { $eq: ["$_id", "$$projectId"] },
-                  {
-                    $eq: [
-                      "$organizationId",
-                      new mongoose.Types.ObjectId(organizationId),
-                    ],
-                  },
-
-                ],
-              },
-            },
-          },
-          {
-            $project: {
-              name: 1,
-              slug: 1,
-              description: 1,
-              status: 1,
-              createdAt: 1,
-            },
-          },
-        ],
-        as: "project",
-      },
-    },
-    {
-      $unwind: {
-        path: "$project",
-        preserveNullAndEmptyArrays: false,
-      },
-    },
-    {
-      $lookup: {
-        from: "projectmembers",
-        let: { projectId: "$projectId" },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $and: [
-                  { $eq: ["$projectId", "$$projectId"] },
-                  { $eq: ["$status", "ACTIVE"] },
-                ],
-              },
-            },
-          },
-          { $count: "totalMembers" },
-        ],
-        as: "memberStats",
-      },
-    },
-
-    // 6. Task count (fixed + optimized)
-    {
-      $lookup: {
-        from: "tasks",
-        let: { projectId: "$projectId" },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $eq: ["$projectId", "$$projectId"],
-              },
-            },
-          },
-          { $count: "totalTasks" },
-        ],
-        as: "taskStats",
-      },
-    },
-
-    {
-      $lookup: {
-        from: "projectroles",
-        localField: "role",
-        foreignField: "_id",
-        as: "role",
-      },
-    },
-    {
-      $unwind: {
-        path: "$role",
-        preserveNullAndEmptyArrays: true,
-      },
-    },
-    {
-      $addFields: {
-        totalMembers: {
-          $ifNull: [{ $arrayElemAt: ["$memberStats.totalMembers", 0] }, 0],
-        },
-        totalTasks: {
-          $ifNull: [{ $arrayElemAt: ["$taskStats.totalTasks", 0] }, 0],
+  const isOwner = await organizationMemberModel
+    .findOne({ userId, organizationId })
+    .lean();
+  let pipeline = [];
+  let modelDecider = isOwner.role === "OWNER" ? Project : ProjectMember;
+  if (isOwner.role === "OWNER") {
+    pipeline = [
+      {
+        $match: {
+          organizationId: new mongoose.Types.ObjectId(organizationId),
         },
       },
-    },
-
-    {
-      $project: {
-        _id: 1,
-        project: 1,
-        role: {
-          name: "$role.key",
+      {
+        $lookup: {
+          from: "projectmembers",
+          let: { projectId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$projectId", "$$projectId"] },
+                    { $eq: ["$status", "ACTIVE"] },
+                  ],
+                },
+              },
+            },
+            { $count: "totalMembers" },
+          ],
+          as: "memberStats",
         },
-        totalMembers: 1,
-        totalTasks: 1,
       },
-    },
-  ];
+      {
+        $lookup: {
+          from: "tasks",
+          let: { projectId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$projectId", "$$projectId"],
+                },
+              },
+            },
+            { $count: "totalTasks" },
+          ],
+          as: "taskStats",
+        },
+      },
+
+      {
+        $addFields: {
+          totalMembers: {
+            $ifNull: [{ $arrayElemAt: ["$memberStats.totalMembers", 0] }, 0],
+          },
+          totalTasks: {
+            $ifNull: [{ $arrayElemAt: ["$taskStats.totalTasks", 0] }, 0],
+          },
+        },
+      },
+
+      {
+        $project: {
+          _id: 0,
+          project: {
+            _id:"$_id",
+            name: "$name",
+            slug: "$slug",
+            description: "$description",
+            status: "$status",
+            createdAt: "$createdAt",
+          },
+          totalMembers: 1,
+          totalTasks: 1,
+        },
+      },
+    ];
+  } else {
+    pipeline = [
+      {
+        $match: {
+          userId: new mongoose.Types.ObjectId(userId),
+          status: status || "ACTIVE",
+        },
+      },
+      {
+        $lookup: {
+          from: "projects",
+          let: { projectId: "$projectId" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$_id", "$$projectId"] },
+                    {
+                      $eq: [
+                        "$organizationId",
+                        new mongoose.Types.ObjectId(organizationId),
+                      ],
+                    },
+                  ],
+                },
+              },
+            },
+            {
+              $project: {
+                name: 1,
+                slug: 1,
+                description: 1,
+                status: 1,
+                createdAt: 1,
+              },
+            },
+          ],
+          as: "project",
+        },
+      },
+      {
+        $unwind: {
+          path: "$project",
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $lookup: {
+          from: "projectmembers",
+          let: { projectId: "$projectId" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$projectId", "$$projectId"] },
+                    { $eq: ["$status", "ACTIVE"] },
+                  ],
+                },
+              },
+            },
+            { $count: "totalMembers" },
+          ],
+          as: "memberStats",
+        },
+      },
+
+      // 6. Task count (fixed + optimized)
+      {
+        $lookup: {
+          from: "tasks",
+          let: { projectId: "$projectId" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$projectId", "$$projectId"],
+                },
+              },
+            },
+            { $count: "totalTasks" },
+          ],
+          as: "taskStats",
+        },
+      },
+
+      {
+        $lookup: {
+          from: "projectroles",
+          localField: "role",
+          foreignField: "_id",
+          as: "role",
+        },
+      },
+      {
+        $unwind: {
+          path: "$role",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $addFields: {
+          totalMembers: {
+            $ifNull: [{ $arrayElemAt: ["$memberStats.totalMembers", 0] }, 0],
+          },
+          totalTasks: {
+            $ifNull: [{ $arrayElemAt: ["$taskStats.totalTasks", 0] }, 0],
+          },
+        },
+      },
+
+      {
+        $project: {
+          _id: 0,
+          project: 1,
+          totalMembers: 1,
+          totalTasks: 1,
+        },
+      },
+    ];
+  }
 
   const result = await aggregatePaginate({
-    model: ProjectMember,
+    model: modelDecider,
     pipeline,
     page,
     limit,
@@ -234,12 +304,12 @@ async function getProjectDashboardDetail(project) {
     projectId,
     status: "ACTIVE",
   });
-  console.log(taskStatus)
+  console.log(taskStatus);
   return {
     project,
     taskStatus,
-    memberCount
-  }
+    memberCount,
+  };
 }
 
 async function addProjectMember(

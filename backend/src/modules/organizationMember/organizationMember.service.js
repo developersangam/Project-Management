@@ -119,6 +119,7 @@ async function getMyOrganizations(userId, page, limit, status) {
           _id: "$organization._id",
           name: "$organization.name",
           slug: "$organization.slug",
+          description:"$organization.description",
           owner: "$organization.owner",
           isActive: "$organization.isActive",
         },
