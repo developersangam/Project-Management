@@ -49,7 +49,6 @@ export const fetchProjectDetails = createAsyncThunk(
     dispatch(setLoading(true));
     try {
       const project = await getProjectDetailsAPI(projectSlug);
-      console.log(project.data)
       dispatch(setCurrentProject(project.data));
       return project;
     } finally {
@@ -92,7 +91,6 @@ export const addProjectMember = createAsyncThunk(
       );
       return response.data;
     } catch (error: any) {
-      console.log("HERE");
       toast.error(error?.response?.data?.message || "Failed to add member");
       throw error;
     } finally {

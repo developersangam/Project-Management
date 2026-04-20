@@ -6,12 +6,18 @@ import { Moon, Sun } from 'lucide-react'
 
 export const ThemeToggle: React.FC = () => {
   const [mounted, setMounted] = React.useState(false)
-  const [isDark, setIsDark] = React.useState(false)
+  const [isDark, setIsDark] = React.useState(() => {
+    if (typeof window === 'undefined') return false
+    try {
+      const theme = localStorage.getItem('theme') || 'light'
+      return theme === 'dark'
+    } catch (e) {
+      return false
+    }
+  })
 
   React.useEffect(() => {
     setMounted(true)
-    const isDarkMode = document.documentElement.classList.contains('dark')
-    setIsDark(isDarkMode)
   }, [])
 
   if (!mounted) {
@@ -32,11 +38,12 @@ export const ThemeToggle: React.FC = () => {
     const nextIsDark = !isDark
     if (nextIsDark) {
       root.classList.add('dark')
+      localStorage.setItem('theme', 'dark')
     } else {
       root.classList.remove('dark')
+      localStorage.setItem('theme', 'light')
     }
     setIsDark(nextIsDark)
-    localStorage.setItem('theme', nextIsDark ? 'dark' : 'light')
   }
 
   return (

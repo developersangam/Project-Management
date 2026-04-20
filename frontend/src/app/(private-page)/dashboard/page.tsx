@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import { useAppSelector, useAppDispatch } from "@/hooks/redux";
 import { fetchOrganizations } from "@/store/organization/organizationThunk";

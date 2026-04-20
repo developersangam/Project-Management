@@ -8,6 +8,7 @@ import { logoutThunk } from "../../store/auth/authThunk";
 import { Dropdown, DropdownItem } from "../ui/dropdown";
 import { Breadcrumb } from "../ui/breadcrumb";
 import { Button } from "../ui/button";
+import { ThemeToggle } from "../ui/theme-toggle";
 import { ChevronDown, User, LogOut, Building, Plus } from "lucide-react";
 
 const getBreadcrumbs = (
@@ -87,7 +88,7 @@ const getBreadcrumbs = (
   return breadcrumbs;
 };
 
-export const Header: React.FC = () => {
+export const PrivateHeader: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -116,6 +117,8 @@ export const Header: React.FC = () => {
       </div>
 
       <div className="flex items-center space-x-2 lg:space-x-3">
+        <ThemeToggle />
+        
         <Button
           variant="outline"
           size="sm"

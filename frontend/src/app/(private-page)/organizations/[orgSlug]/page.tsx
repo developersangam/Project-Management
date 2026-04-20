@@ -210,7 +210,6 @@ export default function ViewOrganizationPage() {
     }
   };
 
-  console.log(organizationProjects)
   return (
     <div className="space-y-6 p-6">
       {/* Header */}

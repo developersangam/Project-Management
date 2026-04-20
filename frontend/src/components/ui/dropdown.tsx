@@ -29,7 +29,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
       {isOpen && (
         <div
           className={cn(
-            "absolute mt-2 min-w-[240px] bg-white border border-gray-200 rounded-lg shadow-xl z-50 overflow-hidden",
+            "absolute mt-2 min-w-[240px] bg-popover border border-border rounded-lg shadow-xl z-50 overflow-hidden",
             /* Dynamic Alignment Logic */
             align === "right" ? "right-0" : "left-0",
           )}
