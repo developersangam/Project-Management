@@ -107,7 +107,7 @@ export default function PricingPage() {
           {plans.map((plan) => (
             <Card
               key={plan.name}
-              className={`relative hover:shadow-lg transition-shadow ${
+              className={`border border-[color:var(--border)] relative hover:shadow-2xl hover:border-primary/40 transition-all duration-300 hover:-translate-y-1 ${
                 plan.popular ? 'ring-2 ring-primary md:scale-105' : ''
               }`}
             >
@@ -156,7 +156,7 @@ export default function PricingPage() {
             {faqs.map((faq, index) => (
               <Card
                 key={index}
-                className="cursor-pointer hover:shadow-md transition-shadow"
+                className="border border-[color:var(--border)] cursor-pointer hover:shadow-2xl hover:border-primary/40 transition-all duration-300 hover:-translate-y-1"
                 onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
               >
                 <CardHeader>

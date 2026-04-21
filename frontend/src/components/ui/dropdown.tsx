@@ -50,10 +50,8 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
   children,
   onClick,
 }) => (
-  /* REMOVED px-4 py-2 to prevent double-padding. 
-     Now the internal content controls the look. */
   <div
-    className="hover:bg-slate-50 cursor-pointer transition-colors w-full"
+    className="hover:bg-[color:var(--secondary)] cursor-pointer transition-colors w-full"
     onClick={onClick}
   >
     {children}

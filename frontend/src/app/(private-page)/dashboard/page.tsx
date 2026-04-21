@@ -124,7 +124,7 @@ export default function DashboardPage() {
             <Link key={stat.title} href={stat.href} className="block">
               <Card
                 key={stat.title}
-                className="hover:shadow-lg transition-all duration-200 border-0 shadow-sm bg-card"
+                className="border border-[color:var(--border)] shadow-lg hover:shadow-2xl hover:border-primary/40 transition-all duration-300 hover:-translate-y-1 bg-card"
               >
                 <CardContent className="p-4 lg:p-6">
                   <div className="flex items-center justify-between">
@@ -186,7 +186,7 @@ export default function DashboardPage() {
             {projects?.data?.map((project: any) => (
               <Card
                 key={project?.project?._id}
-                className="hover:shadow-lg transition-all duration-200 group cursor-pointer border-0 shadow-sm bg-card"
+                className="border border-[color:var(--border)] shadow-lg hover:shadow-2xl hover:border-primary/40 transition-all duration-300 hover:-translate-y-1 group cursor-pointer bg-card"
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between gap-3">

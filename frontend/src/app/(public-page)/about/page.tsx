@@ -163,7 +163,7 @@ export default function AboutPage() {
             {features.map((feature) => {
               const Icon = feature.icon
               return (
-                <Card key={feature.title} className="hover:shadow-lg transition-shadow">
+                <Card key={feature.title} className="border border-[color:var(--border)] shadow-lg hover:shadow-2xl hover:border-primary/40 transition-all duration-300 hover:-translate-y-1">
                   <CardContent className="p-6">
                     <Icon className="w-12 h-12 text-primary mb-4" />
                     <h3 className="font-semibold mb-2">{feature.title}</h3>

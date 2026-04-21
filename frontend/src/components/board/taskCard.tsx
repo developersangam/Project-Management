@@ -33,7 +33,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onClick }) => {
       {...listeners}
       {...attributes}
       className={cn(
-        "bg-card border border-border rounded-lg p-3 cursor-pointer hover:shadow-lg transition-all duration-200 group",
+        "bg-card border border-[color:var(--border)] rounded-lg p-3 cursor-pointer hover:shadow-2xl hover:border-primary/40 transition-all duration-300 hover:-translate-y-1 group",
         isDragging && "opacity-50 rotate-2 shadow-2xl"
       )}
       onClick={onClick}

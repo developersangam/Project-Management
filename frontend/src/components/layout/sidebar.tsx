@@ -4,7 +4,7 @@ import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "../../lib/utils"
-import { Home, Users, FolderOpen, BarChart3, Settings, ChevronLeft } from "lucide-react"
+import { Home, Users, FolderOpen, BarChart3, Settings, ChevronLeft, Zap } from "lucide-react"
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
@@ -23,28 +23,41 @@ export const Sidebar: React.FC = () => {
 
   return (
     <div className={cn(
-      "bg-card border-r border-border h-full flex flex-col transition-all duration-300",
-      collapsed ? "w-16" : "w-64"
+      "bg-[color:var(--card)] border-r border-[color:var(--border)] h-full flex flex-col transition-all duration-300 relative",
+      collapsed ? "w-20" : "w-72"
     )}>
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-border">
+      <div className="flex items-center justify-between px-5 h-16 border-b border-[color:var(--border)]">
         {!collapsed && (
-          <h2 className="text-lg font-semibold text-foreground">Task Management</h2>
+          <div className="flex items-center gap-2">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Zap className="w-4 h-4 text-primary" />
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-[color:var(--foreground)]">JiraClone</h2>
+              <p className="text-xs text-[color:var(--muted-foreground)]">Management</p>
+            </div>
+          </div>
         )}
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="p-1.5 rounded-md hover:bg-muted transition-colors"
+          className="p-2 rounded-lg bg-[color:var(--secondary)]/50 hover:bg-primary hover:text-primary-foreground transition-all duration-300 ml-auto group"
         >
           <ChevronLeft className={cn(
-            "w-4 h-4 text-muted-foreground transition-transform",
+            "w-4 h-4 transition-transform duration-300 group-hover:scale-125",
             collapsed && "rotate-180"
           )} />
         </button>
       </div>
 
       {/* Main Navigation */}
-      <nav className="flex-1 p-2">
-        <ul className="space-y-1">
+      <nav className="flex-1 px-3 py-4">
+        {!collapsed && (
+          <div className="text-xs font-semibold text-[color:var(--muted-foreground)] uppercase tracking-wider mb-4 px-2">
+            Menu
+          </div>
+        )}
+        <ul className="space-y-2">
           {navigation.map((item) => {
             const Icon = item.icon
             const isActive = pathname.includes(item.href)
@@ -53,18 +66,21 @@ export const Sidebar: React.FC = () => {
                 <Link
                   href={item.href}
                   className={cn(
-                    "flex items-center space-x-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-200 group",
+                    "flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-all duration-200 relative group",
                     isActive
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                      : "text-[color:var(--muted-foreground)] hover:text-[color:var(--foreground)] hover:bg-[color:var(--secondary)]"
                   )}
                   title={collapsed ? item.name : undefined}
                 >
                   <Icon className={cn(
-                    "w-5 h-5 flex-shrink-0",
-                    isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground"
+                    "w-4 h-4 flex-shrink-0 transition-all duration-200",
+                    isActive ? "text-primary-foreground" : "group-hover:scale-110"
                   )} />
-                  {!collapsed && <span>{item.name}</span>}
+                  {!collapsed && <span className="truncate">{item.name}</span>}
+                  {isActive && !collapsed && (
+                    <div className="absolute right-0 w-1 h-8 bg-primary rounded-l-full" />
+                  )}
                 </Link>
               </li>
             )
@@ -73,8 +89,8 @@ export const Sidebar: React.FC = () => {
       </nav>
 
       {/* Bottom Navigation */}
-      <div className="p-2 border-t border-border">
-        <ul className="space-y-1">
+      <div className="px-3 py-4 border-t border-[color:var(--border)]">
+        <ul className="space-y-2">
           {bottomNavigation.map((item) => {
             const Icon = item.icon
             const isActive = pathname === item.href
@@ -83,18 +99,18 @@ export const Sidebar: React.FC = () => {
                 <Link
                   href={item.href}
                   className={cn(
-                    "flex items-center space-x-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-200 group",
+                    "flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-all duration-200 group",
                     isActive
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                      : "text-[color:var(--muted-foreground)] hover:text-[color:var(--foreground)] hover:bg-[color:var(--secondary)]"
                   )}
                   title={collapsed ? item.name : undefined}
                 >
                   <Icon className={cn(
-                    "w-5 h-5 flex-shrink-0",
-                    isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground"
+                    "w-4 h-4 flex-shrink-0 transition-all duration-200",
+                    isActive ? "text-primary-foreground" : "group-hover:scale-110"
                   )} />
-                  {!collapsed && <span>{item.name}</span>}
+                  {!collapsed && <span className="truncate">{item.name}</span>}
                 </Link>
               </li>
             )
@@ -104,10 +120,11 @@ export const Sidebar: React.FC = () => {
 
       {/* Footer */}
       {!collapsed && (
-        <div className="p-4 border-t border-border">
-          <div className="text-xs text-muted-foreground text-center">
+        <div className="px-5 py-4 border-t border-[color:var(--border)] text-center">
+          <p className="text-xs text-[color:var(--muted-foreground)] leading-relaxed">
+            <span className="block font-semibold text-[color:var(--foreground)] mb-1">v1.0.0</span>
             © 2026 JiraClone
-          </div>
+          </p>
         </div>
       )}
     </div>

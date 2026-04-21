@@ -116,7 +116,7 @@ export default function LandingPage() {
                     <ArrowRight className="w-5 h-5" />
                   </Link>
                 </Button>
-                <Button size="lg" variant="outline" className="text-base px-6 py-4 border-slate-300 text-foreground hover:border-primary/80 hover:bg-primary/5">
+                <Button size="lg" variant="outline" className="text-base px-6 py-4 border-[color:var(--border)] text-foreground hover:border-primary/80 hover:bg-primary/5">
                   <Play className="w-5 h-5" />
                   Watch Demo
                 </Button>
@@ -240,7 +240,7 @@ export default function LandingPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
+            <Card className="border border-[color:var(--border)] shadow-lg hover:shadow-2xl hover:border-primary/40 transition-all duration-300 hover:-translate-y-1">
               <CardContent className="p-8">
                 <Target className="w-12 h-12 text-blue-600 mb-6" />
                 <h3 className="text-xl font-semibold mb-4">
@@ -267,7 +267,7 @@ export default function LandingPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
+            <Card className="border border-[color:var(--border)] shadow-lg hover:shadow-2xl hover:border-primary/40 transition-all duration-300 hover:-translate-y-1">
               <CardContent className="p-8">
                 <Users className="w-12 h-12 text-green-600 mb-6" />
                 <h3 className="text-xl font-semibold mb-4">
@@ -294,7 +294,7 @@ export default function LandingPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
+            <Card className="border border-[color:var(--border)] shadow-lg hover:shadow-2xl hover:border-primary/40 transition-all duration-300 hover:-translate-y-1">
               <CardContent className="p-8">
                 <BarChart3 className="w-12 h-12 text-purple-600 mb-6" />
                 <h3 className="text-xl font-semibold mb-4">
@@ -338,7 +338,7 @@ export default function LandingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <Card key={index} className="border-0 shadow-lg">
+              <Card key={index} className="border border-[color:var(--border)] shadow-lg hover:shadow-2xl hover:border-primary/40 transition-all duration-300 hover:-translate-y-1">
                 <CardContent className="p-8">
                   <div className="flex items-center mb-4">
                     {[...Array(5)].map((_, i) => (

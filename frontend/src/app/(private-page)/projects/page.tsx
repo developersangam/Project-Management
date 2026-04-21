@@ -196,7 +196,7 @@ export default function ProjectsPage() {
       <div>
         <h2 className="text-xl font-semibold mb-4">Your Projects</h2>
         {projects.data?.length === 0 ? (
-          <Card className="border-0 py-12">
+          <Card className="border border-[color:var(--border)] py-12 hover:shadow-2xl hover:border-primary/40 transition-all duration-300 hover:-translate-y-1">
             <CardContent className="text-center">
               <FolderOpen className="w-12 h-12 mx-auto text-muted-foreground mb-4 opacity-50" />
               <p className="text-muted-foreground mb-4">No projects yet</p>
@@ -223,7 +223,7 @@ export default function ProjectsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {projects?.data.map(({ project, totalMembers, totalTasks }) => (
               <Link key={project._id} href={`/projects/${project.slug}`}>
-                <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer">
+                <Card className="h-full border border-[color:var(--border)] shadow-lg hover:shadow-2xl hover:border-primary/40 transition-all duration-300 hover:-translate-y-1 cursor-pointer">
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div className="flex-1">

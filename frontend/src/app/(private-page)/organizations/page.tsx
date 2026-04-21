@@ -90,7 +90,7 @@ export default function OrganizationsPage() {
 
       {/* Current Organization Highlight */}
       {currentOrganization && (
-        <Card className="border-primary bg-primary/5">
+        <Card className="border-primary bg-primary/5 hover:shadow-2xl hover:border-primary/40 transition-all duration-300 hover:-translate-y-1">
           <CardHeader>
             <div className="flex items-start justify-between">
               <div>
@@ -175,7 +175,7 @@ export default function OrganizationsPage() {
               return (
                 <Card
                   key={org?.organization?.id}
-                  className={`hover:shadow-lg transition-all duration-200 ${isCurrentOrg ? "border bg-primary/5" : ""}`}
+                  className={`border border-[color:var(--border)] shadow-lg hover:shadow-2xl hover:border-primary/40 transition-all duration-300 hover:-translate-y-1 cursor-pointer ${isCurrentOrg ? "bg-primary/5 border-primary" : ""}`}
                 >
                   <CardHeader className="pb-3">
                     <CardTitle className="flex items-start justify-between">

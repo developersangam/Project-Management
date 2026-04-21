@@ -82,7 +82,7 @@ export default function ContactPage() {
           {contactInfo.map((info) => {
             const Icon = info.icon
             return (
-              <Card key={info.title} className="hover:shadow-lg transition-shadow">
+              <Card key={info.title} className="border border-[color:var(--border)] shadow-lg hover:shadow-2xl hover:border-primary/40 transition-all duration-300 hover:-translate-y-1">
                 <CardContent className="p-6 space-y-4">
                   <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                     <Icon className="w-6 h-6 text-blue-600" />
