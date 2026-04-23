@@ -64,7 +64,10 @@ export interface Column {
 export interface Task {
   id: string;
   title?: string;
+  columnId: string;
   [key: string]: any;
+  column?: any;
+  tasks?: any[];
 }
 
 export interface Comment {
@@ -103,6 +106,7 @@ export interface ProjectState {
 export interface TaskState {
   tasks: any[];
   currentTask: Task | null;
+  columns: any[];
   loading: boolean;
   error?: string;
 }

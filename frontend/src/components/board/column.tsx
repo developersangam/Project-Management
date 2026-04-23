@@ -82,7 +82,7 @@ export const Column: React.FC<ColumnProps> = ({
         )}
       >
         {tasks.map(task => (
-          <TaskCard key={task.id} task={task} onClick={() => onTaskClick(task)} />
+          <TaskCard key={task._id} task={task} onClick={() => onTaskClick(task)} />
         ))}
 
         {/* Empty state */}

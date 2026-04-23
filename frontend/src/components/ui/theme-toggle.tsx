@@ -1,20 +1,15 @@
 "use client"
 
 import * as React from 'react'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import { toggleTheme } from '@/store/ui/uiSlice'
 import { Button } from './button'
 import { Moon, Sun } from 'lucide-react'
 
 export const ThemeToggle: React.FC = () => {
+  const dispatch = useAppDispatch()
+  const theme = useAppSelector((state) => state.ui.theme)
   const [mounted, setMounted] = React.useState(false)
-  const [isDark, setIsDark] = React.useState(() => {
-    if (typeof window === 'undefined') return false
-    try {
-      const theme = localStorage.getItem('theme') || 'light'
-      return theme === 'dark'
-    } catch (e) {
-      return false
-    }
-  })
 
   React.useEffect(() => {
     setMounted(true)
@@ -33,28 +28,19 @@ export const ThemeToggle: React.FC = () => {
     )
   }
 
-  const toggle = () => {
-    const root = document.documentElement
-    const nextIsDark = !isDark
-    if (nextIsDark) {
-      root.classList.add('dark')
-      localStorage.setItem('theme', 'dark')
-    } else {
-      root.classList.remove('dark')
-      localStorage.setItem('theme', 'light')
-    }
-    setIsDark(nextIsDark)
+  const handleToggle = () => {
+    dispatch(toggleTheme())
   }
 
   return (
     <Button
       variant="ghost"
       size="sm"
-      onClick={toggle}
+      onClick={handleToggle}
       className="p-2 rounded-full bg-background/20 hover:bg-background/30"
-      title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+      title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
     >
-      {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+      {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
     </Button>
   )
 }

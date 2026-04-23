@@ -1,53 +1,68 @@
-'use client'
+"use client";
 
-import * as React from 'react'
-import Link from 'next/link'
-import { useParams, useRouter } from 'next/navigation'
-import { useAppSelector, useAppDispatch } from '@/hooks/redux'
-import { fetchTasks } from '@/store/task/taskThunk'
-import { openTaskDrawer } from '@/store/ui/uiSlice'
-import { BoardContainer } from '@/components/board/boardContainer'
-import { TaskDrawer } from '@/components/board/taskDrawer'
-import { Button } from '@/components/ui/button'
-import { Plus, ArrowLeft, Settings } from 'lucide-react'
+import { use, useEffect } from "react";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { useAppSelector, useAppDispatch } from "@/hooks/redux";
+import { fetchAllColumns, fetchTasks } from "@/store/task/taskThunk";
+import { openTaskDrawer } from "@/store/ui/uiSlice";
+import { BoardContainer } from "@/components/board/boardContainer";
+import { TaskDrawer } from "@/components/board/taskDrawer";
+import { Button } from "@/components/ui/button";
+import { Plus, ArrowLeft, Settings } from "lucide-react";
+import { get } from "http";
 
 export default function BoardPage() {
-  const params = useParams()
-  const router = useRouter()
-  const projectSlug = params.projectSlug as string
-  const orgSlug = params.orgSlug as string
-  const dispatch = useAppDispatch()
-  const { tasks, loading } = useAppSelector(state => state.task)
-  const { currentProject } = useAppSelector(state => state.project)
-  const { taskDrawerOpen, selectedTask } = useAppSelector(state => state.ui)
+  const params = useParams();
+  const router = useRouter();
+  const projectSlug = params.projectSlug as string;
+  const orgSlug = params.orgSlug as string;
+  const dispatch = useAppDispatch();
+  const { tasks, loading, columns } = useAppSelector((state) => state.task);
+  const { currentProject } = useAppSelector((state) => state.project);
+  const { taskDrawerOpen, selectedTask } = useAppSelector((state) => state.ui);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (projectSlug) {
-      dispatch(fetchTasks(projectSlug))
+      //  fettchTasksHandler()
     }
-  }, [projectSlug, dispatch])
+  }, [projectSlug, dispatch]);
+
+  useEffect(() => {
+    getAllColumns();
+  }, [currentProject, dispatch]);
 
   const handleTaskClick = (task: any) => {
-    dispatch(openTaskDrawer(task))
-  }
+    dispatch(openTaskDrawer(task));
+  };
 
-  // Default columns if project doesn't have them
-  const columns = currentProject?.columns || [
-    { id: 'todo', name: 'To Do', position: 0 },
-    { id: 'in-progress', name: 'In Progress', position: 1 },
-    { id: 'done', name: 'Done', position: 2 },
-  ]
+  const fettchTasksHandler = async () => {
+    let params: any = {
+      projectSlug,
+      view: "board",
+      limit: 30,
+    };
+    try {
+      await dispatch(fetchTasks(params));
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+  };
+  const getAllColumns = async () => {
+    try {
+      await dispatch(fetchAllColumns(projectSlug));
+      fettchTasksHandler();
+    } catch (error) {
+      console.error("Error fetching columns:", error);
+    }
+  };
 
   return (
     <div className="relative space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-2">
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={() => router.back()}
-          >
+          <Button variant="ghost" size="sm" onClick={() => router.back()}>
             <ArrowLeft className="w-4 h-4" />
           </Button>
           <div>
@@ -80,17 +95,17 @@ export default function BoardPage() {
           <p className="text-muted-foreground">Loading board...</p>
         </div>
       ) : (
-        <BoardContainer 
-          tasks={tasks} 
+        <BoardContainer
+          tasks={tasks}
           columns={columns}
           projectSlug={projectSlug}
-          orgSlug={orgSlug || ''}
-          onTaskClick={handleTaskClick} 
+          orgSlug={orgSlug || ""}
+          onTaskClick={handleTaskClick}
         />
       )}
 
       {/* Task Drawer */}
       <TaskDrawer task={selectedTask} isOpen={taskDrawerOpen} />
     </div>
-  )
+  );
 }

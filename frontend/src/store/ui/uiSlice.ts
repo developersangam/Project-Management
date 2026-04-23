@@ -16,6 +16,12 @@ const uiSlice = createSlice({
     toggleSidebar: (state) => {
       state.sidebarOpen = !state.sidebarOpen;
     },
+    setTheme: (state, action: PayloadAction<'light' | 'dark'>) => {
+      state.theme = action.payload;
+    },
+    toggleTheme: (state) => {
+      state.theme = state.theme === 'light' ? 'dark' : 'light';
+    },
     openTaskDrawer: (state, action: PayloadAction<Task>) => {
       state.taskDrawerOpen = true;
       state.selectedTask = action.payload;
@@ -27,5 +33,5 @@ const uiSlice = createSlice({
   },
 });
 
-export const { toggleSidebar, openTaskDrawer, closeTaskDrawer } = uiSlice.actions;
+export const { toggleSidebar, setTheme, toggleTheme, openTaskDrawer, closeTaskDrawer } = uiSlice.actions;
 export default uiSlice.reducer;

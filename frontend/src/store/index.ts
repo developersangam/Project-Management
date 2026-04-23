@@ -20,12 +20,18 @@ const organizationPersistConfig = {
   whitelist: ["currentOrganization"], // Only persist currentOrganization
 };
 
+const uiPersistConfig = {
+  key: "ui",
+  storage,
+  whitelist: ["theme"], // Only persist theme
+};
+
 const appReducer = combineReducers({
   auth: persistReducer(authPersistConfig, authReducer),
   organization: persistReducer(organizationPersistConfig, organizationReducer),
   project: projectReducer,
   task: taskReducer,
-  ui: uiReducer,
+  ui: persistReducer(uiPersistConfig, uiReducer),
 });
 
 const rootReducer = (state: any, action: any) => {

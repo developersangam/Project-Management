@@ -1,25 +1,22 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { setTasks, addTask, updateTask, deleteTask, setCurrentTask, setLoading } from './taskSlice';
+import { setTasks, addTask, updateTask, deleteTask, setCurrentTask, setLoading, setColumns } from './taskSlice';
 import { Task, Comment } from '../../types';
+import { getAllColumnsAPI, getTasksAPI } from '@/service/task.service';
 
-const getTasksAPI = async (projectId: string): Promise<Task[]> => {
-  // Placeholder
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  return [
-    {
-      id: '1',
-      title: 'Task 1',
-      description: 'Desc',
-      priority: 'high',
-      status: 'todo',
-      assigneeId: '1',
-      dueDate: '2024-01-01',
-      projectId,
-      createdAt: '',
-      updatedAt: '',
-    },
-  ];
-};
+
+export const fetchAllColumns = createAsyncThunk(
+  "project/fetchProjects",
+  async (projectSlug: string, { dispatch }) => {
+    dispatch(setLoading(true));
+    try {
+      const columns = await getAllColumnsAPI(projectSlug);
+      dispatch(setColumns(columns.data));
+      return columns.data;
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
 
 const createTaskAPI = async (data: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>): Promise<Task> => {
   // Placeholder
@@ -90,11 +87,11 @@ const deleteCommentAPI = async (taskId: string, commentId: string): Promise<void
 
 export const fetchTasks = createAsyncThunk(
   'task/fetchTasks',
-  async (projectId: string, { dispatch }) => {
+  async (params: { projectSlug: string; view: string; limit: number }, { dispatch }) => {
     dispatch(setLoading(true));
     try {
-      const tasks = await getTasksAPI(projectId);
-      dispatch(setTasks(tasks));
+      const tasks = await getTasksAPI(params);
+      dispatch(setTasks(tasks.data));
       return tasks;
     } finally {
       dispatch(setLoading(false));

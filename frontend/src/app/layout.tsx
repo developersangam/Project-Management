@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ReduxProvider } from '../components/providers';
+import { ThemeInitializer } from '../components/providers/ThemeInitializer';
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -25,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -34,8 +35,6 @@ export default function RootLayout({
                 const theme = localStorage.getItem('theme') || 'light';
                 if (theme === 'dark') {
                   document.documentElement.classList.add('dark');
-                } else {
-                  document.documentElement.classList.remove('dark');
                 }
               } catch (e) {}
             `,
@@ -46,6 +45,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ReduxProvider>
+          <ThemeInitializer />
           {children}
           <Toaster position="top-right" richColors />
         </ReduxProvider>

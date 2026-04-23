@@ -21,7 +21,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onClick }) => {
   const priorityColors = {
     low: 'bg-green-500',
     medium: 'bg-yellow-500',
-    high: 'bg-red-500',
+    HIGH: 'bg-red-500',
   }
 
   const isOverdue = task.dueDate && new Date(task.dueDate) < new Date()

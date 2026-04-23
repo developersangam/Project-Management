@@ -53,7 +53,7 @@ export const TaskDrawer: React.FC<TaskDrawerProps> = ({ task, isOpen }) => {
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Status</label>
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-secondary text-secondary-foreground">
-                  {task.status.replace('-', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
+                  {task?.status?.replace('-', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
                 </span>
               </div>
 

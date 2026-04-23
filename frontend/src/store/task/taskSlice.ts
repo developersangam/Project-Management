@@ -4,6 +4,7 @@ import { TaskState, Task } from '../../types';
 const initialState: TaskState = {
   tasks: [],
   currentTask: null,
+  columns: [],
   loading: false,
 };
 
@@ -11,8 +12,12 @@ const taskSlice = createSlice({
   name: 'task',
   initialState,
   reducers: {
+
     setTasks: (state, action: PayloadAction<Task[]>) => {
       state.tasks = action.payload;
+    },
+    setColumns: (state, action: PayloadAction<any[]>) => {
+      state.columns = action.payload;
     },
     addTask: (state, action: PayloadAction<Task>) => {
       state.tasks.push(action.payload);
@@ -41,5 +46,5 @@ const taskSlice = createSlice({
   },
 });
 
-export const { setTasks, addTask, updateTask, deleteTask, setCurrentTask, setLoading } = taskSlice.actions;
+export const { setTasks, setColumns, addTask, updateTask, deleteTask, setCurrentTask, setLoading } = taskSlice.actions;
 export default taskSlice.reducer;
