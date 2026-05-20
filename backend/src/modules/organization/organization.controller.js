@@ -128,12 +128,14 @@ async function getOrganizationBySlug(req, res, next) {
 async function getOrgMembers(req, res, next) {
   try {
     const { organization } = req;
-    const { page, limit, role } = req.query;
+    const { page, limit, role,email,search } = req.query;
     const members = await orgMemberService.getOrgMembers(
       organization._id,
       page,
       limit,
       role,
+      email,
+      search
     );
     return successResponse(
       res,

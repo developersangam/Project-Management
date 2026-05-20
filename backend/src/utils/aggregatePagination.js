@@ -9,23 +9,25 @@ export const aggregatePaginate = async ({
 
   const skip = (page - 1) * limit;
 
-  const dataPipeline = [
+  const result = await model.aggregate([
     ...pipeline,
-    { $skip: skip },
-    { $limit: limit },
-  ];
 
-  const countPipeline = [
-    ...pipeline,
-    { $count: "total" },
-  ];
-
-  const [data, totalResult] = await Promise.all([
-    model.aggregate(dataPipeline),
-    model.aggregate(countPipeline),
+    {
+      $facet: {
+        data: [
+          { $skip: skip },
+          { $limit: limit },
+        ],
+        totalCount: [
+          { $count: "total" },
+        ],
+      },
+    },
   ]);
 
-  const total = totalResult[0]?.total || 0;
+  const data = result[0]?.data || [];
+  const total = result[0]?.totalCount[0]?.total || 0;
+
   const totalPages = Math.ceil(total / limit);
 
   return {

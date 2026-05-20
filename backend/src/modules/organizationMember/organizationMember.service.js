@@ -86,10 +86,7 @@ async function getMyOrganizations(userId, page, limit, status) {
           {
             $match: {
               $expr: {
-                $and :[
-                  {$eq: ["$organizationId", "$$orgId"]}, 
-                ]
-                
+                $and: [{ $eq: ["$organizationId", "$$orgId"] }],
               },
             },
           },
@@ -119,7 +116,7 @@ async function getMyOrganizations(userId, page, limit, status) {
           _id: "$organization._id",
           name: "$organization.name",
           slug: "$organization.slug",
-          description:"$organization.description",
+          description: "$organization.description",
           owner: "$organization.owner",
           isActive: "$organization.isActive",
         },
@@ -144,14 +141,85 @@ async function findMember(organizationId, userId) {
   });
 }
 
-async function getOrgMembers(organizationId, page, limit, role) {
-  const filter = { organizationId, status: "ACTIVE" };
+async function getOrgMembers(organizationId, page, limit, role, email, search) {
+  const matchStage = {
+    organizationId: new mongoose.Types.ObjectId(organizationId),
+    status: "ACTIVE",
+  };
+
+  // 🎯 Apply filters (exact match)
   if (role) {
-    filter.role = role;
+    matchStage.role = role;
   }
-  return await paginate({
+
+  if (email) {
+    matchStage.email = email;
+  }
+
+  const pipeline = [
+    { $match: matchStage },
+
+    {
+      $lookup: {
+        from: "users",
+        let: { userId: "$userId" },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: ["$_id", "$$userId"] },
+
+              // 🔍 search inside lookup (only for user fields)
+              ...(search && {
+                $or: [
+                  { email: { $regex: search, $options: "i" } },
+                  { userName: { $regex: search, $options: "i" } },
+                ],
+              }),
+            },
+          },
+          {
+            $project: {
+              userName: 1,
+              email: 1,
+            },
+          },
+        ],
+        as: "user",
+      },
+    },
+
+    { $unwind: "$user" },
+  ];
+
+  // 🔍 search on role OR matched user
+  if (search) {
+    pipeline.push({
+      $match: {
+        $or: [
+          { role: { $regex: search, $options: "i" } },
+          { user: { $exists: true } }, // matched via lookup
+        ],
+      },
+    });
+  }
+
+  pipeline.push(
+    {
+      $project: {
+        role: 1,
+        status: 1,
+        joinedAt: 1,
+        "user._id": 1,
+        "user.userName": 1,
+        "user.email": 1,
+      },
+    },
+    { $sort: { createdAt: -1 } },
+  );
+
+  return await aggregatePaginate({
     model: OrganizationMember,
-    filter,
+    pipeline,
     page,
     limit,
     populate: [{ path: "userId", select: "userName email" }],
