@@ -18,7 +18,7 @@ import { Column } from "./column";
 import { TaskCard } from "./taskCard";
 import { Task, Column as ColumnType } from "../../types";
 import { useAppDispatch } from "../../hooks/redux";
-import { updateTaskThunk } from "../../store/task/taskThunk";
+import { moveTask } from "../../store/task/taskThunk";
 
 interface BoardContainerProps {
   tasks: Task[];
@@ -50,10 +50,14 @@ export const BoardContainer: React.FC<BoardContainerProps> = ({
     }),
   );
 
+  const getTaskByColumnId = (tasks: Task[], columnId: string) => {
+    return tasks.filter((task) => task.columnId === columnId);
+  };
+
   const handleDragStart = (event: DragStartEvent) => {
     console.log("Drag started:", event.active);
     const { active } = event;
-    const task = tasks.find((t) => t.id === active.id);
+    const task = tasks.find((t) => t._id === active.id);
     setActiveTask(task || null);
   };
 
@@ -65,42 +69,37 @@ export const BoardContainer: React.FC<BoardContainerProps> = ({
 
     const activeId = active.id as string;
     const overId = over.id as string;
+    console.log("Drag ended:", { activeId, overId });
 
-    const activeTask = tasks.find((t) => t.id === activeId);
+    const activeTask = tasks.find((t) => t._id === activeId);
     if (!activeTask) return;
 
     let newColumnId = activeTask.columnId;
-    let newStatus = activeTask.status;
 
     // Check if dropped on a column
-    const overColumn = columns.find((c) => c.id === overId);
+    const overColumn = columns.find((c) => c._id === overId);
     if (overColumn) {
+      console.log("Dropped on column:", overColumn.name);
       newColumnId = overId;
-      // Map column name to status
-      const statusMap: Record<string, any> = {
-        "To Do": "TODO",
-        "In Progress": "IN_PROGRESS",
-        Done: "DONE",
-      };
-      newStatus = statusMap[overColumn.name] || activeTask.status;
     } else {
       // Dropped on another task, find its column
-      const overTask = tasks.find((t) => t.id === overId);
+      console.log("Dropped on task:", overId);
+      const overTask = tasks.find((t) => t._id === overId);
       if (overTask) {
         newColumnId = overTask.columnId;
-        newStatus = overTask.status;
       }
     }
 
-    if (
-      newColumnId !== activeTask.columnId ||
-      newStatus !== activeTask.status
-    ) {
+    if (newColumnId !== activeTask.columnId) {
       dispatch(
-        updateTaskThunk({
-          ...activeTask,
+        moveTask({
+          payload: {
+            ...activeTask,
+            columnId: newColumnId,
+          },
+          projectSlug,
+          taskId: activeTask._id,
           columnId: newColumnId,
-          status: newStatus,
         }),
       );
     }
@@ -114,12 +113,12 @@ export const BoardContainer: React.FC<BoardContainerProps> = ({
     >
       <div className="flex space-x-6 overflow-x-auto pb-6 px-2">
         {tasks && tasks.length > 0 ? (
-          tasks.map((record) => (
+          columns.map((column) => (
             <Column
-              key={record.column._id}
-              id={record.column._id}
-              title={record.column.name}
-              tasks={record.tasks as [Task]}
+              key={column._id}
+              id={column._id}
+              title={column.name}
+              tasks={getTaskByColumnId(tasks, column._id)}
               onTaskClick={onTaskClick || (() => {})}
               projectSlug={projectSlug}
               orgSlug={orgSlug}

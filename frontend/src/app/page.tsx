@@ -27,7 +27,7 @@ const testimonials = [
     role: "Product Manager",
     company: "TechCorp",
     content:
-      "JiraClone transformed how our team manages projects. The intuitive interface and powerful features helped us deliver projects 40% faster.",
+      "Taskify transformed how our team manages projects. The intuitive interface and powerful features helped us deliver projects 40% faster.",
     avatar: "SJ",
   },
   {
@@ -102,7 +102,7 @@ export default function LandingPage() {
                   Build better projects with a single team workspace.
                 </h1>
                 <p className="max-w-2xl text-base text-muted-foreground">
-                  JiraClone combines planning, collaboration, and reporting so your team can stay aligned and move faster from ideas to delivery.
+                  Taskify combines planning, collaboration, and reporting so your team can stay aligned and move faster from ideas to delivery.
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4 items-start" data-animate>
@@ -332,7 +332,7 @@ export default function LandingPage() {
               Loved by teams worldwide
             </h2>
             <p className="text-xl text-muted-foreground">
-              See what our customers have to say about JiraClone
+              See what our customers have to say about Taskify
             </p>
           </div>
 
@@ -376,7 +376,7 @@ export default function LandingPage() {
             Ready to transform your workflow?
           </h2>
           <p className="text-xl mb-8 opacity-90">
-            Join thousands of teams already using JiraClone to deliver projects
+            Join thousands of teams already using Taskify to deliver projects
             faster.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -414,7 +414,7 @@ export default function LandingPage() {
                 <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
                   <Target className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-xl font-bold">JiraClone</span>
+                <span className="text-xl font-bold">Taskify</span>
               </div>
               <p className="text-muted-foreground">
                 The modern project management platform for teams that want to
@@ -499,7 +499,7 @@ export default function LandingPage() {
           </div>
           <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm text-muted-foreground">
-              © 2026 JiraClone. All rights reserved.
+              © 2026 Taskify. All rights reserved.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <a

@@ -34,7 +34,7 @@ export const Sidebar: React.FC = () => {
               <Zap className="w-4 h-4 text-primary" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-[color:var(--foreground)]">JiraClone</h2>
+              <h2 className="text-sm font-bold text-[color:var(--foreground)]">Taskify</h2>
               <p className="text-xs text-[color:var(--muted-foreground)]">Management</p>
             </div>
           </div>
@@ -123,7 +123,7 @@ export const Sidebar: React.FC = () => {
         <div className="px-5 py-4 border-t border-[color:var(--border)] text-center">
           <p className="text-xs text-[color:var(--muted-foreground)] leading-relaxed">
             <span className="block font-semibold text-[color:var(--foreground)] mb-1">v1.0.0</span>
-            © 2026 JiraClone
+            © 2026 Taskify
           </p>
         </div>
       )}

@@ -103,7 +103,7 @@ const plans = [
 const faqs = [
   {
     question: 'How does the free trial work?',
-    answer: 'You can try JiraClone Pro free for 14 days. No credit card required. At the end of the trial, you can choose to continue with a paid plan or downgrade to our free plan.'
+    answer: 'You can try Taskify Pro free for 14 days. No credit card required. At the end of the trial, you can choose to continue with a paid plan or downgrade to our free plan.'
   },
   {
     question: 'Can I change my plan anytime?',
@@ -219,7 +219,7 @@ export default function AboutPage() {
         <div className="space-y-6">
           <div className="text-center">
             <h2 className="text-3xl md:text-4xl font-bold">Frequently Asked Questions</h2>
-            <p className="text-muted-foreground mt-2">Everything you need to know about JiraClone</p>
+            <p className="text-muted-foreground mt-2">Everything you need to know about Taskify</p>
           </div>
           <div className="space-y-4">
             {faqs.map((faq, index) => (
@@ -242,7 +242,7 @@ export default function AboutPage() {
               <CardContent className="p-6 text-center">
                 <Mail className="w-8 h-8 text-primary mx-auto mb-4" />
                 <h3 className="font-semibold mb-2">Email</h3>
-                <p className="text-sm text-muted-foreground">hello@jiraclone.com</p>
+                <p className="text-sm text-muted-foreground">hello@taskify.com</p>
               </CardContent>
             </Card>
             <Card>
@@ -312,7 +312,7 @@ export default function AboutPage() {
             </div>
           </div>
           <div className="border-t pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; 2024 JiraClone. All rights reserved.</p>
+            <p>&copy; 2024 Taskify. All rights reserved.</p>
           </div>
         </div>
       </footer>

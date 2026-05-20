@@ -1,8 +1,21 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import { setTasks, addTask, updateTask, deleteTask, setCurrentTask, setLoading, setColumns } from './taskSlice';
-import { Task, Comment } from '../../types';
-import { getAllColumnsAPI, getTasksAPI } from '@/service/task.service';
-
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  setTasks,
+  updateTask,
+  deleteTask,
+  setLoading,
+  setColumns,
+  setCurrentTask,
+} from "./taskSlice";
+import { Task, Comment } from "../../types";
+import {
+  createTaskAPI,
+  getAllColumnsAPI,
+  getTasksAPI,
+  moveTaskAPI,
+  updateTaskAPI,
+} from "@/service/task.service";
+import { toast } from "sonner";
 
 export const fetchAllColumns = createAsyncThunk(
   "project/fetchProjects",
@@ -18,117 +31,142 @@ export const fetchAllColumns = createAsyncThunk(
   },
 );
 
-const createTaskAPI = async (data: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>): Promise<Task> => {
-  // Placeholder
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  return {
-    ...data,
-    id: Date.now().toString(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
-};
-
-const updateTaskAPI = async (task: Task): Promise<Task> => {
-  // Placeholder
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  return { ...task, updatedAt: new Date().toISOString() };
-};
-
 const deleteTaskAPI = async (id: string): Promise<void> => {
   // Placeholder
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 500));
 };
 
 const fetchTaskByIdAPI = async (id: string): Promise<Task> => {
   // Placeholder
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 1000));
   return {
     id,
-    title: 'Sample Task',
-    description: 'This is a sample task description',
-    priority: 'medium',
-    status: 'todo',
-    assigneeId: '1',
-    dueDate: '2024-01-01',
-    projectId: '1',
+    title: "Sample Task",
+    description: "This is a sample task description",
+    priority: "medium",
+    status: "todo",
+    assigneeId: "1",
+    dueDate: "2024-01-01",
+    projectId: "1",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     comments: [
       {
-        id: '1',
-        content: 'This is a sample comment',
-        authorId: '1',
-        author: { id: '1', name: 'John Doe', email: 'john@example.com' },
+        id: "1",
+        content: "This is a sample comment",
+        authorId: "1",
+        author: { id: "1", name: "John Doe", email: "john@example.com" },
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-      }
+      },
     ],
   };
 };
 
-const addCommentAPI = async (taskId: string, content: string, authorId: string): Promise<Comment> => {
+const addCommentAPI = async (
+  taskId: string,
+  content: string,
+  authorId: string,
+): Promise<Comment> => {
   // Placeholder
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 500));
   return {
     id: Date.now().toString(),
     content,
     authorId,
-    author: { id: authorId, name: 'Current User', email: 'user@example.com' },
+    author: { id: authorId, name: "Current User", email: "user@example.com" },
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
 };
 
-const deleteCommentAPI = async (taskId: string, commentId: string): Promise<void> => {
+const deleteCommentAPI = async (
+  taskId: string,
+  commentId: string,
+): Promise<void> => {
   // Placeholder
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 500));
 };
 
 export const fetchTasks = createAsyncThunk(
-  'task/fetchTasks',
-  async (params: { projectSlug: string; view: string; limit: number }, { dispatch }) => {
+  "task/fetchTasks",
+  async (
+    params: { projectSlug: string; view: string; limit: number },
+    { dispatch },
+  ) => {
     dispatch(setLoading(true));
     try {
-      const tasks = await getTasksAPI(params);
-      dispatch(setTasks(tasks.data));
-      return tasks;
+      const response = await getTasksAPI(params);
+      const columns = response.data.reduce((acc: any, record: any) => {
+        const column = record.column;
+        acc.push(column);
+        return acc;
+      }, []);
+
+      const tasks = response.data.reduce((acc: any, record: any) => {
+        acc.push(...record.tasks);
+        return acc;
+      }, []);
+      dispatch(setColumns(columns));
+      dispatch(setTasks(tasks));
+      return response.data;
     } finally {
       dispatch(setLoading(false));
     }
-  }
+  },
 );
 
 export const createTask = createAsyncThunk(
-  'task/createTask',
-  async (data: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>, { dispatch }) => {
+  "task/createTask",
+  async (data: Omit<Task, "id" | "createdAt" | "updatedAt">, { dispatch }) => {
     dispatch(setLoading(true));
     try {
-      const task = await createTaskAPI(data);
-      dispatch(addTask(task));
-      return task;
+      const response = await createTaskAPI(data);
+      toast.success(
+        response.message ||
+          response.data.message ||
+          "Task created successfully",
+      );
+      return response.data;
+    } catch (error: any) {
+      console.error("Error creating task:", error);
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to create task. Please try again.",
+      );
+      throw error;
     } finally {
       dispatch(setLoading(false));
     }
-  }
+  },
 );
 
-export const updateTaskThunk = createAsyncThunk(
-  'task/updateTask',
-  async (task: Task, { dispatch }) => {
-    dispatch(setLoading(true));
+export const moveTask = createAsyncThunk(
+  "task/moveTask",
+  async (
+    params: {
+      projectSlug: string;
+      taskId: string;
+      columnId: string;
+      payload: Partial<Task>;
+    },
+    { dispatch },
+  ) => {
     try {
-      const updatedTask = await updateTaskAPI(task);
-      dispatch(updateTask(updatedTask));
+      const updatedTask = await moveTaskAPI(params);
+      dispatch(updateTask(params.payload as Task));
       return updatedTask;
+    } catch (error) {
+      console.error("Error moving task:", error);
+      throw error;
     } finally {
       dispatch(setLoading(false));
     }
-  }
+  },
 );
 
 export const deleteTaskThunk = createAsyncThunk(
-  'task/deleteTask',
+  "task/deleteTask",
   async (id: string, { dispatch }) => {
     dispatch(setLoading(true));
     try {
@@ -137,11 +175,11 @@ export const deleteTaskThunk = createAsyncThunk(
     } finally {
       dispatch(setLoading(false));
     }
-  }
+  },
 );
 
 export const fetchTaskById = createAsyncThunk(
-  'task/fetchTaskById',
+  "task/fetchTaskById",
   async (id: string, { dispatch }) => {
     dispatch(setLoading(true));
     try {
@@ -151,12 +189,19 @@ export const fetchTaskById = createAsyncThunk(
     } finally {
       dispatch(setLoading(false));
     }
-  }
+  },
 );
 
 export const addComment = createAsyncThunk(
-  'task/addComment',
-  async ({ taskId, content, authorId }: { taskId: string; content: string; authorId: string }, { dispatch, getState }) => {
+  "task/addComment",
+  async (
+    {
+      taskId,
+      content,
+      authorId,
+    }: { taskId: string; content: string; authorId: string },
+    { dispatch, getState },
+  ) => {
     dispatch(setLoading(true));
     try {
       const comment = await addCommentAPI(taskId, content, authorId);
@@ -173,12 +218,15 @@ export const addComment = createAsyncThunk(
     } finally {
       dispatch(setLoading(false));
     }
-  }
+  },
 );
 
 export const deleteComment = createAsyncThunk(
-  'task/deleteComment',
-  async ({ taskId, commentId }: { taskId: string; commentId: string }, { dispatch, getState }) => {
+  "task/deleteComment",
+  async (
+    { taskId, commentId }: { taskId: string; commentId: string },
+    { dispatch, getState },
+  ) => {
     dispatch(setLoading(true));
     try {
       await deleteCommentAPI(taskId, commentId);
@@ -187,12 +235,14 @@ export const deleteComment = createAsyncThunk(
       if (currentTask) {
         const updatedTask = {
           ...currentTask,
-          comments: currentTask.comments?.filter((c: Comment) => c.id !== commentId) || [],
+          comments:
+            currentTask.comments?.filter((c: Comment) => c.id !== commentId) ||
+            [],
         };
         dispatch(setCurrentTask(updatedTask));
       }
     } finally {
       dispatch(setLoading(false));
     }
-  }
+  },
 );

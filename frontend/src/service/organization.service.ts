@@ -12,10 +12,7 @@ export const createOrganizationAPI = async (data: {
   return apiClient.post(`${ORGANIZATION_API_BASE}/`, data);
 };
 
-
-export const getOrgSlugAPI = async (data: {
-  name: string;
-}) => {
+export const getOrgSlugAPI = async (data: { name: string }) => {
   return apiClient.post(`${ORGANIZATION_API_BASE}/getOrgSlug`, data);
 };
 
@@ -40,8 +37,15 @@ export const getOrganizationDetailsAPI = async (orgSlug: string) => {
   return apiClient.get(`${ORGANIZATION_API_BASE}/${orgSlug}`);
 };
 
-export const getOrganizationMembersAPI = async (orgSlug: string) => {
-  return apiClient.get(`${ORGANIZATION_API_BASE}/${orgSlug}/members`);
+export const getOrganizationMembersAPI = async (params: {
+  orgSlug: string;
+  search?: string;
+}) => {
+  const { orgSlug, search } = params;
+  return apiClient.get(
+    `${ORGANIZATION_API_BASE}/${orgSlug}/members`,
+    params.search ? { params: { search } } : undefined,
+  );
 };
 
 export const removeOrganizationMembersAPI = async (data: {

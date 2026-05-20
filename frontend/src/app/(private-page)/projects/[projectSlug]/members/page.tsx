@@ -45,15 +45,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-  PaginationEllipsis,
-} from "@/components/ui/pagination";
+// import {
+//   Pagination,
+//   PaginationContent,
+//   PaginationItem,
+//   PaginationLink,
+//   PaginationNext,
+//   PaginationPrevious,
+//   PaginationEllipsis,
+// } from "@/components/ui/pagination";
 import { Label } from "@/components/ui/label";
 import {
   ArrowLeft,
@@ -482,7 +482,7 @@ export default function MembersPage() {
           </div>
 
           {/* Pagination */}
-          {totalPages > 1 && (
+          {/* {totalPages > 1 && (
             <div className="mt-6">
               <Pagination>
                 <PaginationContent>
@@ -539,7 +539,7 @@ export default function MembersPage() {
                 </PaginationContent>
               </Pagination>
             </div>
-          )}
+          )} */}
         </CardContent>
       </Card>
 

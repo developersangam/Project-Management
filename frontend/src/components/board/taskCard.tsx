@@ -11,7 +11,7 @@ interface TaskCardProps {
 
 export const TaskCard: React.FC<TaskCardProps> = ({ task, onClick }) => {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-    id: task.id,
+    id: task._id,
   })
 
   const style = transform ? {
@@ -19,8 +19,8 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onClick }) => {
   } : undefined
 
   const priorityColors = {
-    low: 'bg-green-500',
-    medium: 'bg-yellow-500',
+    LOW: 'bg-green-500',
+    MEDIUM: 'bg-yellow-500',
     HIGH: 'bg-red-500',
   }
 
@@ -34,7 +34,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onClick }) => {
       {...attributes}
       className={cn(
         "bg-card border border-[color:var(--border)] rounded-lg p-3 cursor-pointer hover:shadow-2xl hover:border-primary/40 transition-all duration-300 hover:-translate-y-1 group",
-        isDragging && "opacity-50 rotate-2 shadow-2xl"
+        isDragging && "shadow-2xl"
       )}
       onClick={onClick}
     >

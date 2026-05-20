@@ -20,7 +20,7 @@ const contactInfo = [
     icon: Mail,
     title: 'Email',
     description: 'Send us an email and we\'ll respond within 24 hours',
-    value: 'support@jiraclone.com'
+    value: 'support@taskify.com'
   },
   {
     icon: Phone,

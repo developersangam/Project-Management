@@ -86,6 +86,8 @@ import {
 } from "@/store/project/projectThunk";
 import AddOrgMemberModal from "@/components/addOrgMemberModal/addOrgMemberModal";
 import ChangeOrgMemberModal from "@/components/changeOrgRoleModal/changeOrgRoleModal";
+import { useDebounce } from "@/hooks/useDebounce";
+import Pagination from "@/components/ui/pagination";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -119,15 +121,18 @@ export default function ViewOrganizationPage() {
   >(null);
 
   // Form states
-  const [newMemberEmail, setNewMemberEmail] = React.useState("");
-  const [newMemberRole, setNewMemberRole] = React.useState("Member");
   const [newRole, setNewRole] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
+
+  const debouncedSearch = useDebounce(searchQuery, 500);
 
   // Reset to page 1 when search changes
   React.useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery]);
+    if (searchQuery.trim() === "" || searchQuery.trim().length >= 3) {
+      getOrganizationMembersHandler();
+    }
+  }, [debouncedSearch]);
 
   React.useEffect(() => {
     getOrganizationDetailsHandler();
@@ -146,9 +151,11 @@ export default function ViewOrganizationPage() {
 
   const getOrganizationMembersHandler = async () => {
     try {
-      const response = await dispatch(
-        getMemberOfOrganization(orgSlug),
-      ).unwrap();
+      let params = {
+        orgSlug,
+        search: searchQuery,
+      };
+      const response = await dispatch(getMemberOfOrganization(params)).unwrap();
       setOrganizationMember(response);
     } catch (error) {
       console.error("Error fetching organization details:", error);
@@ -336,7 +343,6 @@ export default function ViewOrganizationPage() {
             Projects
           </TabsTrigger>
         </TabsList>
-
         {/* Members Tab */}
         <TabsContent value="members" className="space-y-4">
           <Card>
@@ -397,10 +403,10 @@ export default function ViewOrganizationPage() {
                               <Avatar className="w-9 h-9">
                                 <AvatarImage
                                   src={member?.avatar}
-                                  alt={member?.userId?.name}
+                                  alt={member?.user?.name}
                                 />
                                 <AvatarFallback>
-                                  {member?.userId?.userName
+                                  {member?.user?.userName
                                     .split(" ")
                                     .map((n: any) => n[0])
                                     .join("")}
@@ -408,10 +414,10 @@ export default function ViewOrganizationPage() {
                               </Avatar>
                               <div>
                                 <p className="font-medium">
-                                  {member?.userId?.userName}
+                                  {member?.user?.userName}
                                 </p>
                                 <p className="text-sm text-muted-foreground">
-                                  {member?.userId?.email}
+                                  {member?.user?.email}
                                 </p>
                               </div>
                             </div>
@@ -520,7 +526,6 @@ export default function ViewOrganizationPage() {
             </CardContent>
           </Card>
         </TabsContent>
-
         {/* Projects Tab */}
         <TabsContent value="projects" className="space-y-4">
           <Card>
@@ -564,7 +569,7 @@ export default function ViewOrganizationPage() {
                         </TableCell>
                       </TableRow>
                     ) : (
-                      organizationProjects?.data?.map(({project}: any) => (
+                      organizationProjects?.data?.map(({ project }: any) => (
                         <TableRow key={project?._id}>
                           <TableCell>
                             <div>
@@ -606,6 +611,13 @@ export default function ViewOrganizationPage() {
             </CardContent>
           </Card>
         </TabsContent>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={organizationProjects?.meta?.totalPages}
+          total={organization?.meta?.orgatotal}
+          isLoading={isLoading}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
       </Tabs>
 
       {/* Add Member Dialog */}

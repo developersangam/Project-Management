@@ -60,7 +60,7 @@ const plans = [
 const faqs = [
   {
     question: 'How does the free trial work?',
-    answer: 'You can try JiraClone Pro free for 14 days. No credit card required. At the end of the trial, you can choose to continue with a paid plan or downgrade to our free plan.'
+    answer: 'You can try Taskify Pro free for 14 days. No credit card required. At the end of the trial, you can choose to continue with a paid plan or downgrade to our free plan.'
   },
   {
     question: 'Can I change my plan anytime?',
@@ -176,7 +176,7 @@ export default function PricingPage() {
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-8 md:p-12 text-center space-y-4">
           <h2 className="text-3xl font-bold text-white">Ready to get started?</h2>
           <p className="text-blue-100 max-w-xl mx-auto">
-            Join thousands of teams using JiraClone to manage their projects more effectively.
+            Join thousands of teams using Taskify to manage their projects more effectively.
           </p>
           <Button size="lg" variant="secondary" asChild>
             <Link href="/register">

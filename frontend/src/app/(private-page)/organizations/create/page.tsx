@@ -99,7 +99,7 @@ export default function CreateOrganizationPage() {
                   onChange={(e) => {}}
                 />
                 <p className="text-xs text-muted-foreground">
-                  This will be used in URLs: jiraclone.com/dashboard/xyz
+                  This will be used in URLs: taskify.com/dashboard/xyz
                 </p>
               </div>
 

@@ -19,15 +19,13 @@ const taskSlice = createSlice({
     setColumns: (state, action: PayloadAction<any[]>) => {
       state.columns = action.payload;
     },
-    addTask: (state, action: PayloadAction<Task>) => {
-      state.tasks.push(action.payload);
-    },
     updateTask: (state, action: PayloadAction<Task>) => {
-      const index = state.tasks.findIndex(t => t.id === action.payload.id);
+      console.log("Updating task in reducer:", action.payload);
+      const index = state.tasks.findIndex(t => t._id === action.payload._id);
       if (index !== -1) {
         state.tasks[index] = action.payload;
       }
-      if (state.currentTask && state.currentTask.id === action.payload.id) {
+      if (state.currentTask && state.currentTask._id === action.payload._id) {
         state.currentTask = action.payload;
       }
     },
@@ -46,5 +44,5 @@ const taskSlice = createSlice({
   },
 });
 
-export const { setTasks, setColumns, addTask, updateTask, deleteTask, setCurrentTask, setLoading } = taskSlice.actions;
+export const { setTasks, setColumns, updateTask, deleteTask, setCurrentTask, setLoading } = taskSlice.actions;
 export default taskSlice.reducer;

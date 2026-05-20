@@ -227,10 +227,10 @@ export const updateOrganization = createAsyncThunk(
 
 export const getMemberOfOrganization = createAsyncThunk(
   "organization/getMemberOfOrganization",
-  async (orgSlug: string, { dispatch }) => {
+  async (params: { orgSlug: string; search?: string }, { dispatch }) => {
     try {
       dispatch(setLoading(true));
-      const response = await getOrganizationMembersAPI(orgSlug);
+      const response = await getOrganizationMembersAPI(params);
       // toast.success(response.data.message || "Organization updated successfully");
       return response.data;
     } catch (error: any) {

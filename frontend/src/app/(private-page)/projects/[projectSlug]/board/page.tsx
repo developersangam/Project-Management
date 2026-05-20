@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useAppSelector, useAppDispatch } from "@/hooks/redux";
@@ -10,7 +10,6 @@ import { BoardContainer } from "@/components/board/boardContainer";
 import { TaskDrawer } from "@/components/board/taskDrawer";
 import { Button } from "@/components/ui/button";
 import { Plus, ArrowLeft, Settings } from "lucide-react";
-import { get } from "http";
 
 export default function BoardPage() {
   const params = useParams();
